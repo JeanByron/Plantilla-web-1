@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Manuel Correa — Caldas al Congreso 2026</title>
+  <meta name="description" content="Manuel Correa, candidato al Congreso por Caldas. Propuestas reales para los 27 municipios de Caldas." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@300;400;500;600;700&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+
+  <!-- 1. LOADER -->
+  <div id="loader">
+    <div class="loader-brand">MC</div>
+    <div class="loader-tagline">Caldas al Congreso</div>
+    <div class="loader-bar-wrap">
+      <div id="loader-bar"></div>
+    </div>
+    <div id="loader-percent">0%</div>
+  </div>
+
+  <!-- 2. FIXED HEADER -->
+  <header class="site-header">
+    <nav class="site-nav">
+      <a href="#" class="nav-logo">MC</a>
+      <ul class="nav-links">
+        <li><a href="#inicio">Inicio</a></li>
+        <li><a href="#caldas">Caldas</a></li>
+        <li><a href="#galeria">Galería</a></li>
+        <li><a href="#propuestas">Propuestas</a></li>
+        <li><a href="#contacto" class="nav-cta">Únete</a></li>
+      </ul>
+      <button class="nav-toggle" aria-label="Menú">
+        <span></span><span></span><span></span>
+      </button>
+    </nav>
+  </header>
+
+  <!-- 3. CANVAS (fixed, full viewport, SIN clip-path) -->
+  <div class="canvas-wrap">
+    <canvas id="canvas"></canvas>
+  </div>
+
+  <!-- 4. HERO OVERLAY (fixed, fuera del scroll container) -->
+  <div id="hero-overlay">
+    <div class="hero-content">
+      <div class="hero-label">Candidato al Congreso · Caldas 2026</div>
+      <h1 class="hero-heading">
+        <span class="hero-word">MANUEL</span>
+        <span class="hero-word">CORREA</span>
+      </h1>
+      <p class="hero-tagline">27 municipios. Una sola voz.</p>
+      <div class="scroll-indicator">
+        <span class="scroll-line"></span>
+        <span class="scroll-text">Scroll</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- 5. DARK OVERLAY (para sección stats) -->
+  <div id="dark-overlay"></div>
+
+  <!-- 5b. FONDO DIFUMINADO post-galería -->
+  <div id="bg-photo">
+    <img src="images/20.jpeg" alt="" loading="lazy"/>
+  </div>
+
+  <!-- 6. SCROLL CONTAINER (2000vh — 600vh dedicados a galería) -->
+  <div id="scroll-container">
+
+    <!-- SECTION 1: Quién es — align-left, fade-up, 8%–18% -->
+    <section
+      class="scroll-section section-content align-left"
+      data-enter="8"
+      data-leave="18"
+      data-animation="fade-up"
+      id="inicio"
+    >
+      <div class="section-photo photo-right">
+        <img src="images/21.jpeg" alt="Manuel Correa candidato" loading="lazy"/>
+      </div>
+      <div class="section-inner">
+        <span class="section-label">001 / Candidato</span>
+        <h2 class="section-heading">Voz de<br>Caldas</h2>
+        <p class="section-body">
+          Manuel Correa es abogado, líder comunitario y defensor de los derechos de los caldenses.
+          Con ocho años de trabajo en los municipios más vulnerables del departamento,
+          lleva las propuestas del pueblo al Congreso de la República.
+        </p>
+        <a href="#caldas" class="section-link">Conocer el territorio →</a>
+      </div>
+    </section>
+
+    <!-- SECTION 2: Mapa de Caldas — center, map-reveal, 18%–32% -->
+    <section
+      class="scroll-section section-map"
+      data-enter="18"
+      data-leave="32"
+      data-animation="map-reveal"
+      id="caldas"
+    >
+      <div class="mapa-inner">
+        <div class="mapa-header-row">
+          <div>
+            <div class="section-label map-label">002 / El Territorio</div>
+            <h2 class="map-title">Caldas votó<br><em style="color:var(--orange)">municipio a municipio</em></h2>
+            <p class="map-desc-top">Explora la presencia en cada uno de los 27 municipios. Pasa el cursor para ver el detalle.</p>
+          </div>
+          <div class="mapa-total">
+            <div class="mapa-total-num" id="total-counter">0</div>
+            <div class="mapa-total-label">votos totales en Caldas</div>
+          </div>
+        </div>
+        <div class="mapa-layout">
+          <div class="mapa-svg-container">
+            <div class="map-corner tl"></div>
+            <div class="map-corner tr"></div>
+            <div class="map-corner bl"></div>
+            <div class="map-corner br"></div>
+            <div class="map-scan-line"></div>
+            <svg id="caldas-map" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:100%;display:block;position:relative;z-index:1"></svg>
+            <div id="map-tooltip" class="map-tooltip"></div>
+            <div id="map-loading" style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:rgba(245,241,235,0.45);font-size:.8rem;letter-spacing:.12em;text-transform:uppercase">Cargando mapa…</div>
+          </div>
+          <div class="mapa-sidebar">
+            <div class="mapa-selected" id="mapa-selected">
+              <div class="mapa-selected-hint">Pasa el cursor sobre<br>un municipio</div>
+            </div>
+            <div class="mapa-ranking">
+              <div class="mapa-ranking-title">Top municipios</div>
+              <div id="ranking-list"></div>
+            </div>
+            <div class="mapa-legend">
+              <div class="legend-label">Menos votos</div>
+              <div class="legend-bar"></div>
+              <div class="legend-label">Más votos</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION 3: Galería — full-width, gallery-reveal, 32%–62% (600vh = 50vh por imagen) -->
+    <section
+      class="scroll-section section-gallery"
+      data-enter="32"
+      data-leave="62"
+      data-animation="gallery-reveal"
+      id="galeria"
+    >
+      <div class="gallery-header">
+        <span class="section-label gallery-label">003 / Galería</span>
+        <h2 class="gallery-title">En Campo,<br>Con la Gente</h2>
+      </div>
+
+      <div class="gallery-track-outer" id="gallery-outer">
+        <div id="gallery-track">
+          <div class="gallery-item" data-index="0">
+            <div class="gallery-item-inner">
+              <img src="images/1.jpeg" alt="Manuel Correa en campaña" loading="lazy"/>
+              <div class="gallery-caption">Recorrido por Caldas</div>
+            </div>
+          </div>
+          <div class="gallery-item" data-index="1">
+            <div class="gallery-item-inner">
+              <img src="images/2.jpeg" alt="Manuel Correa con la comunidad" loading="lazy"/>
+              <div class="gallery-caption">Con las comunidades</div>
+            </div>
+          </div>
+          <div class="gallery-item" data-index="2">
+            <div class="gallery-item-inner">
+              <img src="images/3.jpeg" alt="Manuel Correa acto público" loading="lazy"/>
+              <div class="gallery-caption">Actos de campaña</div>
+            </div>
+          </div>
+          <div class="gallery-item" data-index="3">
+            <div class="gallery-item-inner">
+              <img src="images/4.jpeg" alt="Manuel Correa liderazgo" loading="lazy"/>
+              <div class="gallery-caption">Liderazgo comunitario</div>
+            </div>
+          </div>
+          <div class="gallery-item" data-index="4">
+            <div class="gallery-item-inner">
+              <img src="images/5.jpeg" alt="Manuel Correa en el territorio" loading="lazy"/>
+              <div class="gallery-caption">En el territorio</div>
+            </div>
+          </div>
+          <div class="gallery-item" data-index="5">
+            <div class="gallery-item-inner">
+              <img src="images/6.jpeg" alt="Manuel Correa Caldas 2026" loading="lazy"/>
+              <div class="gallery-caption">Caldas 2026</div>
+            </div>
+          </div>
+          <div class="gallery-item" data-index="6">
+            <div class="gallery-item-inner">
+              <img src="images/7.jpeg" alt="Manuel Correa trabajo de campo" loading="lazy"/>
+              <div class="gallery-caption">Trabajo de campo</div>
+            </div>
+          </div>
+          <div class="gallery-item" data-index="7">
+            <div class="gallery-item-inner">
+              <img src="images/8.jpeg" alt="Manuel Correa con ciudadanos" loading="lazy"/>
+              <div class="gallery-caption">Escuchando al pueblo</div>
+            </div>
+          </div>
+          <div class="gallery-item" data-index="8">
+            <div class="gallery-item-inner">
+              <img src="images/9.jpeg" alt="Manuel Correa visión" loading="lazy"/>
+              <div class="gallery-caption">Visión de futuro</div>
+            </div>
+          </div>
+          <div class="gallery-item" data-index="9">
+            <div class="gallery-item-inner">
+              <img src="images/10.jpeg" alt="Manuel Correa propuestas" loading="lazy"/>
+              <div class="gallery-caption">Propuestas reales</div>
+            </div>
+          </div>
+          <div class="gallery-item" data-index="10">
+            <div class="gallery-item-inner">
+              <img src="images/11.jpeg" alt="Manuel Correa municipios" loading="lazy"/>
+              <div class="gallery-caption">Los 27 municipios</div>
+            </div>
+          </div>
+          <div class="gallery-item" data-index="11">
+            <div class="gallery-item-inner">
+              <img src="images/12.jpeg" alt="Manuel Correa al Congreso" loading="lazy"/>
+              <div class="gallery-caption">Caldas al Congreso</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="gallery-controls">
+        <button class="gallery-prev" aria-label="Foto anterior">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 18l-6-6 6-6"/></svg>
+        </button>
+        <span class="gallery-counter">01 / 12</span>
+        <button class="gallery-next" aria-label="Foto siguiente">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
+        </button>
+      </div>
+      <div class="gallery-dots" id="gallery-dots"></div>
+      <div class="gallery-scroll-hint">↓ Scroll para continuar</div>
+    </section>
+
+    <!-- SECTION 4: Stats — center, dark overlay, stagger-up, 62%–72% -->
+    <section
+      class="scroll-section section-stats"
+      data-enter="62"
+      data-leave="72"
+      data-animation="stagger-up"
+    >
+      <div class="stats-grid">
+        <div class="stat">
+          <span class="stat-number" data-value="27" data-decimals="0">0</span>
+          <span class="stat-suffix"></span>
+          <span class="stat-label">municipios de Caldas</span>
+        </div>
+        <div class="stat">
+          <span class="stat-number" data-value="9" data-decimals="0">0</span>
+          <span class="stat-suffix"></span>
+          <span class="stat-label">proyectos legislativos</span>
+        </div>
+        <div class="stat">
+          <span class="stat-number" data-value="500" data-decimals="0">0</span>
+          <span class="stat-suffix">K+</span>
+          <span class="stat-label">caldenses a representar</span>
+        </div>
+        <div class="stat">
+          <span class="stat-number" data-value="8" data-decimals="0">0</span>
+          <span class="stat-suffix"></span>
+          <span class="stat-label">años de trabajo en campo</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION 5: Propuestas — align-right, clip-reveal, 72%–84% -->
+    <section
+      class="scroll-section section-content align-right"
+      data-enter="72"
+      data-leave="84"
+      data-animation="clip-reveal"
+      id="propuestas"
+    >
+      <div class="section-photo photo-left">
+        <img src="images/22.jpeg" alt="Manuel Correa propuestas" loading="lazy"/>
+      </div>
+      <div class="section-inner">
+        <span class="section-label">004 / Propuestas</span>
+        <h2 class="section-heading">Salud.<br>Educación.<br>Empleo.</h2>
+        <p class="section-body">
+          Tres ejes que transformarán Caldas. Cobertura total de salud rural,
+          educación técnica en los 27 municipios y generación de empleo
+          a través del turismo y la agroindustria.
+        </p>
+        <ul class="agenda-list">
+          <li>Ley de Salud Rural Universal</li>
+          <li>Fondo de Conectividad Digital Caldas</li>
+          <li>Reforma Educación Técnica Municipal</li>
+          <li>Plan de Turismo Cafetero</li>
+        </ul>
+        <a href="#contacto" class="section-link">Unirme a la campaña →</a>
+      </div>
+    </section>
+
+    <!-- SECTION 6: CTA Contacto — align-left, blur-up, persist, 84%–100% -->
+    <section
+      class="scroll-section section-content section-cta align-left"
+      data-enter="84"
+      data-leave="100"
+      data-animation="blur-up"
+      data-persist="true"
+      id="contacto"
+    >
+      <div class="section-photo photo-right">
+        <img src="images/24.jpeg" alt="Manuel Correa Caldas" loading="lazy"/>
+      </div>
+      <div class="section-inner">
+        <span class="section-label">005 / Únete</span>
+        <h2 class="section-heading">Caldas<br>nos necesita.</h2>
+        <p class="section-body">
+          Sé parte del cambio. Deja tus datos y te contactamos
+          para informarte sobre nuestra campaña en tu municipio.
+        </p>
+        <form class="cta-form" id="cta-form">
+          <input type="text" placeholder="Tu nombre" class="cta-input" required />
+          <input type="text" placeholder="Tu municipio" class="cta-input" required />
+          <input type="tel" placeholder="Tu WhatsApp" class="cta-input" required />
+          <button type="submit" class="cta-button">Unirme a la campaña</button>
+        </form>
+        <div class="cta-social">
+          <a href="#" class="social-link">Instagram</a>
+          <a href="#" class="social-link">Facebook</a>
+          <a href="#" class="social-link">WhatsApp</a>
+        </div>
+      </div>
+    </section>
+
+  </div><!-- /scroll-container -->
+
+  <!-- FOOTER -->
+  <footer class="site-footer">
+    <p>© 2026 Manuel Correa · Candidato al Congreso por Caldas</p>
+    <p class="footer-legal">Inscrito ante el Consejo Nacional Electoral</p>
+  </footer>
+
+  <!-- CDN SCRIPTS (este orden es mandatorio) -->
+  <script src="https://cdn.jsdelivr.net/npm/lenis@1/dist/lenis.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3/dist/gsap.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3/dist/ScrollTrigger.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/d3@7.9.0/dist/d3.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/topojson-client@3.1.0/dist/topojson-client.min.js"></script>
+  <script src="js/app.js"></script>
+
+</body>
+</html>
