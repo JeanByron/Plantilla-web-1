@@ -40,34 +40,34 @@ const MAP_VOTE_COUNT = {
 };
 const MAP_TOTAL  = 35946;
 const MAP_MAX_V  = Math.max(...Object.values(MAP_VOTE_COUNT));
-const MAP_MUN_INFO = {
-  'Manizales':   { img:'images/4.jpeg',  text:'Gran cierre de campaña en la Plaza de Bolívar con más de 10,000 asistentes.' },
-  'Aguadas':     { img:'images/2.jpeg',  text:'Apoyo a los artesanos del sombrero aguadeño y promoción del turismo cultural.' },
-  'Anserma':     { img:'images/5.jpeg',  text:'Encuentro con caficultores y asociaciones campesinas para fortalecer el comercio agrícola.' },
-  'Aranzazu':    { img:'images/6.jpeg',  text:'Diálogos comunitarios enfocados en vías terciarias y educación rural.' },
-  'Belalcázar':  { img:'images/7.jpeg',  text:'Recorrido por el Cristo Rey y compromisos con el desarrollo turístico religioso.' },
-  'Chinchiná':   { img:'images/9.jpeg',  text:'Visita a las cooperativas de caficultores y propuestas para el comercio.' },
-  'Filadelfia':  { img:'images/10.jpeg', text:'Reunión con familias tradicionales y apoyo a programas deportivos juveniles.' },
-  'La Dorada':   { img:'images/11.jpeg', text:'Recorrido por el Magdalena Centro, compromisos con la reactivación del puerto.' },
-  'La Merced':   { img:'images/12.jpeg', text:'Impulso a los emprendimientos locales y protección del medio ambiente.' },
-  'Manzanares':  { img:'images/13.jpeg', text:'Visita a la cuna del aguardiente amarillo y apoyo a la agroindustria local.' },
-  'Marmato':     { img:'images/14.jpeg', text:'Diálogos sobre el Paisaje Cultural Minero y defensa de la minería ancestral.' },
-  'Marquetalia': { img:'images/15.jpeg', text:'Abrazando a la comunidad y escuchando a los adultos mayores de la región.' },
-  'Marulanda':   { img:'images/16.jpeg', text:'Promoción del Paisaje Cultural Ovejero y apoyo a la tradición de la lana.' },
-  'Neira':       { img:'images/17.jpeg', text:'Lanzamiento del proyecto Parque Nacional de las Aves y recorrido por las calles.' },
-  'Norcasia':    { img:'images/18.jpeg', text:'Compromiso con el turismo ecológico y la protección de los recursos hídricos.' },
-  'Pácora':      { img:'images/19.jpeg', text:'Encuentro con las colonias y apoyo a la cultura de las matracas.' },
-  'Palestina':   { img:'images/20.jpeg', text:'Foro sobre el Aeropuerto del Café y su impacto en la conectividad regional.' },
-  'Pensilvania': { img:'images/23.jpeg', text:'Diálogos sobre la vocación forestal y oportunidades para los jóvenes.' },
-  'Riosucio':    { img:'images/24.jpeg', text:'Encuentro con resguardos indígenas y apoyo al Carnaval del Diablo.' },
-  'Risaralda':   { img:'images/25.jpeg', text:'Caminata por la Colina Iluminada y propuestas para el desarrollo agrícola.' },
-  'Salamina':    { img:'images/3.jpeg',  text:'Recorrido por el patrimonio arquitectónico y fomento del Paisaje Cultural Cafetero.' },
-  'Samaná':      { img:'images/1.jpeg',  text:'Encuentros por la reconciliación y el apoyo a las víctimas del conflicto.' },
-  'San José':    { img:'images/8.jpeg',  text:'Reunión con líderes cívicos para mejorar la infraestructura de servicios.' },
-  'Supía':       { img:'images/11.jpeg', text:'Visita a los mineros artesanales y promoción de la gastronomía local.' },
-  'Victoria':    { img:'images/15.jpeg', text:'Recorrido por el oriente caldense y apoyo a proyectos ganaderos sustentables.' },
-  'Villamaría':  { img:'images/17.jpeg', text:'Apoyo a la protección del Parque Nacional Natural Los Nevados.' },
-  'Viterbo':     { img:'images/20.jpeg', text:'Encuentro en el paraíso turístico de Caldas y fomento del sector turístico.' }
+const MAP_MUN_DATA = {
+  'Manizales':   { desc:'Capital de Caldas · Hub universitario y cultural', eje:'Conectividad Digital y Educación', propuesta:'Ampliación del Fondo de Conectividad Digital Caldas y fortalecimiento de los institutos de educación técnica articulados con las universidades de la capital.' },
+  'Aguadas':     { desc:'Norte de Caldas · Patrimonio del sombrero aguadeño', eje:'Turismo Cultural y Artesanías', propuesta:'Plan de Turismo Cafetero con rutas culturales que posicionen el sombrero aguadeño —declarado Patrimonio Cultural de la Nación— como atractivo turístico del norte caldense.' },
+  'Anserma':     { desc:'Occidente de Caldas · Economía cafetera y panelera', eje:'Salud Rural y Vías Terciarias', propuesta:'Ley de Salud Rural Universal para garantizar acceso médico en las veredas del occidente cafetero; inversión en vías terciarias para conectar los cultivos con los centros de acopio.' },
+  'Aranzazu':    { desc:'Centro de Caldas · Municipio cafetero de mediana escala', eje:'Salud Rural y Conectividad', propuesta:'Puestos de salud operativos en cada corregimiento mediante la Ley de Salud Rural Universal; Fondo de Conectividad Digital para mejorar el acceso a servicios digitales en zonas rurales.' },
+  'Belalcázar':  { desc:'Occidente de Caldas · Turismo religioso y paisaje cafetero', eje:'Turismo y Desarrollo Rural', propuesta:'Plan de Turismo Cafetero que potencie el turismo religioso y paisajístico del occidente caldense como motor económico, complementado con mejoras en infraestructura rural.' },
+  'Chinchiná':   { desc:'Sur de Caldas · Epicentro de la industria cafetera colombiana', eje:'Turismo Cafetero y Educación Técnica', propuesta:'Plan de Turismo Cafetero para posicionar Chinchiná en las rutas del Eje Cafetero; Reforma de Educación Técnica Municipal con formación en barismo, agroindustria y exportación local.' },
+  'Filadelfia':  { desc:'Norte de Caldas · Municipio rural con alta dispersión poblacional', eje:'Salud Rural Universal', propuesta:'Ley de Salud Rural Universal: equipos médicos móviles y telesalud para llegar a las veredas más alejadas del norte de Caldas sin centro hospitalario propio.' },
+  'La Dorada':   { desc:'Magdalena Centro · Puerto fluvial y centro económico del oriente', eje:'Empleo y Reactivación Económica', propuesta:'Proyecto legislativo para la reactivación del Puerto de La Dorada como nodo logístico del río Magdalena, con generación de empleo formal y mejora de la conectividad vial regional.' },
+  'La Merced':   { desc:'Occidente de Caldas · Municipio de economía campesina', eje:'Conectividad Digital y Salud Rural', propuesta:'Fondo de Conectividad Digital Caldas para llevar internet a las escuelas rurales; Ley de Salud Rural Universal para municipios sin hospital en el occidente caldense.' },
+  'Manzanares':  { desc:'Oriente de Caldas · Cuna del aguardiente amarillo caldense', eje:'Educación Técnica y Agroindustria', propuesta:'Reforma de Educación Técnica Municipal para crear oferta de formación en agroindustria y procesamiento de alimentos, aprovechando la vocación productiva del oriente caldense.' },
+  'Marmato':     { desc:'Occidente de Caldas · Minería aurífera ancestral desde el siglo XVI', eje:'Derechos Mineros y Patrimonio Cultural', propuesta:'Defensa legislativa de los mineros artesanales ante megaproyectos mineros; reconocimiento del Paisaje Cultural Minero de Marmato y garantía de derechos para las comunidades históricas.' },
+  'Marquetalia': { desc:'Oriente de Caldas · Zona en proceso de reconciliación post-conflicto', eje:'Reconciliación, Salud y Empleo Rural', propuesta:'Agenda de salud rural y empleabilidad para comunidades del oriente caldense afectadas por el conflicto armado; apoyo a proyectos productivos en zonas de sustitución.' },
+  'Marulanda':   { desc:'Centro-oriente de Caldas · Municipio más frío, zona de páramo andino', eje:'Medio Ambiente y Desarrollo Sostenible', propuesta:'Protección legislativa de los páramos del oriente caldense; fomento de la economía de la lana de oveja como producto artesanal identitario y sostenible de Marulanda.' },
+  'Neira':       { desc:'Centro de Caldas · Municipio histórico sobre el Camino Real', eje:'Educación Técnica y Empleo', propuesta:'Reforma de Educación Técnica Municipal con oferta de formación laboral en el centro de Caldas, con énfasis en caficultura tecnificada y turismo patrimonial.' },
+  'Norcasia':    { desc:'Oriente de Caldas · Zona de la represa La Miel · Turismo ecológico', eje:'Turismo Ecológico y Recursos Hídricos', propuesta:'Plan de Turismo Cafetero con circuitos ecológicos en la represa La Miel; defensa de los recursos hídricos del oriente caldense y distribución justa de regalías energéticas.' },
+  'Pácora':      { desc:'Norte de Caldas · Tradición cultural de las matracas', eje:'Turismo Cultural y Conectividad', propuesta:'Plan de Turismo Cafetero con énfasis en la identidad cultural del norte caldense; Fondo de Conectividad Digital para mejorar el acceso a servicios en municipios rurales como Pácora.' },
+  'Palestina':   { desc:'Sur de Caldas · Sede del Aeropuerto Internacional del Café', eje:'Conectividad Aérea y Turismo Cafetero', propuesta:'Gestión legislativa para la operación sostenida del Aeropuerto Internacional del Café y su articulación con rutas turísticas del Eje Cafetero, dinamizando la economía regional.' },
+  'Pensilvania': { desc:'Oriente de Caldas · Vocación maderera y forestal', eje:'Educación Técnica y Empleo Forestal', propuesta:'Reforma de Educación Técnica Municipal con énfasis en silvicultura, manejo forestal sostenible y carpintería, aprovechando la vocación productiva del municipio.' },
+  'Riosucio':    { desc:'Occidente de Caldas · Mayor concentración indígena del departamento · Carnaval del Diablo', eje:'Derechos Étnicos y Salud Intercultural', propuesta:'Defensa de los derechos de los resguardos indígenas Emberá y Chamí; salud intercultural mediante la Ley de Salud Rural Universal; protección del Carnaval del Diablo como Bien de Interés Cultural Nacional.' },
+  'Risaralda':   { desc:'Occidente de Caldas · Municipio cafetero de pequeña escala', eje:'Salud Rural y Agricultura', propuesta:'Ley de Salud Rural Universal para municipios pequeños del occidente caldense; asistencia técnica agropecuaria para caficultores independientes y mejora de vías rurales.' },
+  'Salamina':    { desc:'Norte de Caldas · Patrimonio Histórico Nacional · Paisaje Cultural Cafetero UNESCO', eje:'Turismo Patrimonial y Cultura', propuesta:'Plan de Turismo Cafetero con Salamina como nodo del Paisaje Cultural Cafetero UNESCO; recursos para conservación del patrimonio arquitectónico y promoción turística nacional e internacional.' },
+  'Samaná':      { desc:'Oriente de Caldas · Municipio históricamente afectado por el conflicto armado', eje:'Salud Rural y Reconciliación', propuesta:'Ley de Salud Rural Universal para municipios que fueron escenario del conflicto; programas de empleo rural y acceso a servicios básicos para las comunidades víctimas del oriente.' },
+  'San José':    { desc:'Occidente de Caldas · Municipio de economía campesina', eje:'Salud Rural y Vías', propuesta:'Garantía de servicios de salud básicos mediante la Ley de Salud Rural Universal e inversión en vías terciarias para corregimientos del occidente caldense.' },
+  'Supía':       { desc:'Occidente de Caldas · Minería artesanal y comunidades indígenas', eje:'Derechos Étnicos y Desarrollo Local', propuesta:'Defensa de los derechos de las comunidades indígenas del occidente caldense y de los mineros artesanales; promoción de la gastronomía y el turismo local como alternativas económicas sostenibles.' },
+  'Victoria':    { desc:'Oriente de Caldas · Municipio ganadero sobre el río Magdalena', eje:'Infraestructura Vial y Conectividad', propuesta:'Proyecto de mejora vial para conectar municipios del oriente caldense con la red nacional; Fondo de Conectividad Digital para llevar servicios digitales al sector rural.' },
+  'Villamaría':  { desc:'Sur de Caldas · Puerta al Parque Nacional Natural Los Nevados', eje:'Medio Ambiente y Ecoturismo', propuesta:'Protección legislativa del Parque Nacional Natural Los Nevados; circuito de ecoturismo andino que posicione a Villamaría como destino de turismo de naturaleza y referente ambiental.' },
+  'Viterbo':     { desc:'Occidente de Caldas · Destino turístico con Lago Distracción', eje:'Turismo y Desarrollo Local', propuesta:'Plan de Turismo Cafetero con rutas en el occidente caldense que incorporen a Viterbo como destino de turismo rural y ecoturismo lacustre.' }
 };
 
 function mapVoteColor(v) {
@@ -225,7 +225,7 @@ function drawGenerativeFrame(frameIndex, maxFrames) {
 // ── FRAME-TO-SCROLL BINDING ──────────────────────────────────
 const GALLERY_ENTER = 0.32;
 const GALLERY_LEAVE = 0.62;
-const GALLERY_FADE  = 0.018; // crossfade range antes/después del fondo plano
+const GALLERY_FADE  = 0.058; // crossfade gradual (~116vh de transición suave)
 
 function drawFlatBg(cw, ch) {
   ctx.fillStyle = '#0A1A17';
@@ -259,18 +259,20 @@ function initFrameScroll() {
           // Fondo plano puro durante galería
           drawFlatBg(cw, ch);
         } else if (p >= GALLERY_ENTER - GALLERY_FADE && p < GALLERY_ENTER) {
-          // Transición entrada: video → plano
+          // Transición entrada: video → plano (con ease-in-out suave)
           if (hasFrames && frames[currentFrame]) drawFrame(currentFrame);
           else drawGenerativeFrame(currentFrame, maxF);
           const t = (p - (GALLERY_ENTER - GALLERY_FADE)) / GALLERY_FADE;
-          ctx.fillStyle = `rgba(10,26,23,${(t * 0.97).toFixed(3)})`;
+          const te = t < 0.5 ? 2 * t * t : -1 + (4 - 2 * t) * t;
+          ctx.fillStyle = `rgba(10,26,23,${(te * 0.97).toFixed(3)})`;
           ctx.fillRect(0, 0, cw, ch);
         } else if (p > GALLERY_LEAVE && p < GALLERY_LEAVE + GALLERY_FADE) {
-          // Transición salida: plano → video
+          // Transición salida: plano → video (con ease-in-out suave)
           if (hasFrames && frames[currentFrame]) drawFrame(currentFrame);
           else drawGenerativeFrame(currentFrame, maxF);
           const t = (p - GALLERY_LEAVE) / GALLERY_FADE;
-          ctx.fillStyle = `rgba(10,26,23,${((1 - t) * 0.97).toFixed(3)})`;
+          const te = t < 0.5 ? 2 * t * t : -1 + (4 - 2 * t) * t;
+          ctx.fillStyle = `rgba(10,26,23,${((1 - te) * 0.97).toFixed(3)})`;
           ctx.fillRect(0, 0, cw, ch);
         } else {
           if (hasFrames && frames[currentFrame]) drawFrame(currentFrame);
@@ -284,6 +286,7 @@ function initFrameScroll() {
 // ── MAP v1 — REAL GeoJSON + RADAR SWEEP ───────────────────────
 let mapLoaded = false;
 let mapAllMuns = [];
+let activePath = null;
 
 function mapInitParticles(container) {
   const c = document.createElement('canvas');
@@ -354,65 +357,137 @@ function mapCreatePulse(px, py, container) {
   });
 }
 
-function mapAttachEvents(el, name, votes, cx, cy, svgEl, container, tooltip, selPanel) {
+function mapAttachEvents(el, name, votes, cx, cy, svgEl, container, tooltip, detailPanel) {
   el._cx = cx; el._cy = cy;
-  el.addEventListener('mouseenter', () => {
-    document.querySelectorAll('#caldas-map path,#caldas-map polygon').forEach(p =>
-      gsap.to(p, { opacity: p === el ? 1 : 0.38, duration: 0.25 })
-    );
-    el.setAttribute('stroke','#E8621A'); el.setAttribute('stroke-width','2');
+
+  function getMapPos() {
     const svgRect = svgEl.getBoundingClientRect();
     const cRect   = container.getBoundingClientRect();
-    const px = cx * (svgRect.width / 860) + (svgRect.left - cRect.left);
-    const py = cy * (svgRect.height / 520) + (svgRect.top  - cRect.top);
-    mapCreatePulse(px, py, container);
-    const pct  = ((votes / MAP_TOTAL) * 100).toFixed(1);
-    const info = MAP_MUN_INFO[name] || { img:'images/1.jpeg', text:'Presencia activa en este municipio.' };
+    return {
+      px: cx * (svgRect.width / 860) + (svgRect.left - cRect.left),
+      py: cy * (svgRect.height / 520) + (svgRect.top  - cRect.top)
+    };
+  }
+
+  const pct = ((votes / MAP_TOTAL) * 100).toFixed(1);
+
+  el.addEventListener('mouseenter', () => {
     tooltip.innerHTML = `
-      <img src="${info.img}" class="map-tooltip-img" alt="${name}">
-      <div class="map-tooltip-body">
-        <div class="map-tooltip-title">${name}</div>
-        <div class="map-tooltip-stats">${votes.toLocaleString()} votos &nbsp;·&nbsp; ${pct}%</div>
-        <div class="map-tooltip-bar"><div class="map-tooltip-bar-fill" style="width:${(votes/MAP_MAX_V*100).toFixed(1)}%"></div></div>
-        <div class="map-tooltip-desc">${info.text}</div>
-      </div>`;
+      <div class="map-tooltip-name">${name}</div>
+      <div class="map-tooltip-stats">${votes.toLocaleString()} votos &nbsp;·&nbsp; ${pct}%</div>`;
     tooltip.classList.add('visible');
-    mapShowSel({ name, votes }, selPanel);
+    const { px, py } = getMapPos();
+    mapCreatePulse(px, py, container);
+    if (el !== activePath) {
+      el.setAttribute('stroke', '#E8621A');
+      el.setAttribute('stroke-width', '1.5');
+      el.style.filter = 'brightness(1.3) drop-shadow(0 0 8px rgba(232,98,26,.5))';
+      if (!activePath) {
+        document.querySelectorAll('#caldas-map path,#caldas-map polygon').forEach(p => {
+          if (p !== el) gsap.to(p, { opacity: 0.42, duration: 0.25 });
+        });
+      }
+    }
   });
+
   el.addEventListener('mousemove', e => {
     const rc = container.getBoundingClientRect();
-    let left = e.clientX - rc.left + 24;
-    let top  = Math.max(e.clientY - rc.top - 145, 8);
-    if (left + 252 > rc.width) left = e.clientX - rc.left - 265;
+    let left = e.clientX - rc.left + 18;
+    let top  = Math.max(e.clientY - rc.top - 56, 8);
+    if (left + 190 > rc.width) left = e.clientX - rc.left - 208;
     tooltip.style.left = left + 'px';
     tooltip.style.top  = top  + 'px';
   });
+
   el.addEventListener('mouseleave', () => {
-    document.querySelectorAll('#caldas-map path,#caldas-map polygon').forEach(p => {
-      p.setAttribute('stroke','rgba(5,13,11,0.85)');
-      p.setAttribute('stroke-width','1');
-      gsap.to(p, { opacity: 1, duration: 0.3 });
-    });
     tooltip.classList.remove('visible');
+    if (el !== activePath) {
+      el.setAttribute('stroke', 'rgba(5,13,11,0.85)');
+      el.setAttribute('stroke-width', '1');
+      el.style.filter = '';
+      if (!activePath) {
+        document.querySelectorAll('#caldas-map path,#caldas-map polygon').forEach(p => {
+          gsap.to(p, { opacity: 1, duration: 0.3 });
+        });
+      } else {
+        gsap.to(el, { opacity: 0.35, duration: 0.25 });
+      }
+    }
+  });
+
+  el.addEventListener('click', () => {
+    const allPaths = document.querySelectorAll('#caldas-map path,#caldas-map polygon');
+    const { px, py } = getMapPos();
+    mapCreatePulse(px, py, container);
+    if (activePath === el) {
+      activePath = null;
+      el.setAttribute('stroke', 'rgba(5,13,11,0.85)');
+      el.setAttribute('stroke-width', '1');
+      el.style.filter = '';
+      allPaths.forEach(p => gsap.to(p, { opacity: 1, duration: 0.3 }));
+      mapClearDetail(detailPanel);
+    } else {
+      if (activePath) {
+        activePath.setAttribute('stroke', 'rgba(5,13,11,0.85)');
+        activePath.setAttribute('stroke-width', '1');
+        activePath.style.filter = '';
+      }
+      activePath = el;
+      el.setAttribute('stroke', '#E8621A');
+      el.setAttribute('stroke-width', '2.5');
+      el.style.filter = 'brightness(1.25) drop-shadow(0 0 14px rgba(232,98,26,.65))';
+      allPaths.forEach(p => gsap.to(p, { opacity: p === el ? 1 : 0.35, duration: 0.3 }));
+      mapShowDetail(name, votes, detailPanel);
+    }
   });
 }
 
-function mapShowSel(m, selPanel) {
-  if (!selPanel) return;
-  const sorted = [...mapAllMuns].sort((a,b) => b.votes - a.votes);
-  const rank   = sorted.findIndex(x => x.name === m.name) + 1;
-  const pct    = ((m.votes / MAP_TOTAL) * 100).toFixed(1);
-  selPanel.classList.add('has-data');
-  selPanel.innerHTML = `
-    <div class="mapa-selected-name">${m.name}</div>
-    <div class="mapa-selected-votes">${m.votes.toLocaleString()}</div>
-    <div class="mapa-selected-bar"><div class="mapa-selected-bar-fill" style="width:0%"></div></div>
-    <div class="mapa-selected-pct">${pct}% del total de votos</div>
-    <div class="mapa-selected-rank">#${rank} en Caldas</div>`;
+function mapShowDetail(name, votes, detailPanel) {
+  if (!detailPanel) return;
+  const data   = MAP_MUN_DATA[name] || { desc:'Caldas', eje:'Propuestas Generales', propuesta:'Manuel Correa trabaja por los 27 municipios de Caldas con propuestas de salud rural, conectividad digital, educación técnica y turismo cafetero.' };
+  const sorted = [...mapAllMuns].sort((a, b) => b.votes - a.votes);
+  const rank   = sorted.findIndex(x => x.name === name) + 1;
+  const pct    = ((votes / MAP_TOTAL) * 100).toFixed(1);
+
+  detailPanel.classList.add('has-data');
+  detailPanel.querySelector('#detail-name').textContent      = name;
+  detailPanel.querySelector('#detail-desc').textContent      = data.desc;
+  detailPanel.querySelector('#detail-votes').textContent     = votes.toLocaleString();
+  detailPanel.querySelector('#detail-pct').textContent       = pct + '% del total';
+  detailPanel.querySelector('#detail-rank').textContent      = '#' + rank + ' en Caldas';
+  detailPanel.querySelector('#detail-eje').textContent       = data.eje;
+  detailPanel.querySelector('#detail-propuesta').textContent = data.propuesta;
+
+  const emptyEl   = document.getElementById('mapa-detail-empty');
+  const contentEl = document.getElementById('mapa-detail-content');
+
+  if (contentEl && contentEl.hidden) {
+    contentEl.hidden = false;
+    if (emptyEl) gsap.to(emptyEl, { opacity: 0, duration: 0.2, onComplete: () => { emptyEl.style.display = 'none'; } });
+    gsap.fromTo(contentEl, { opacity: 0, y: 14 }, { opacity: 1, y: 0, duration: 0.45, ease: 'power2.out' });
+  } else if (contentEl) {
+    gsap.fromTo(contentEl, { opacity: 0.5, y: 8 }, { opacity: 1, y: 0, duration: 0.3, ease: 'power2.out' });
+  }
+
   setTimeout(() => {
-    const f = selPanel.querySelector('.mapa-selected-bar-fill');
-    if (f) f.style.width = (m.votes / MAP_MAX_V * 100).toFixed(1) + '%';
-  }, 50);
+    const barFill = document.getElementById('detail-bar-fill');
+    if (barFill) barFill.style.width = (votes / MAP_MAX_V * 100).toFixed(1) + '%';
+  }, 80);
+}
+
+function mapClearDetail(detailPanel) {
+  if (!detailPanel) return;
+  detailPanel.classList.remove('has-data');
+  const emptyEl   = document.getElementById('mapa-detail-empty');
+  const contentEl = document.getElementById('mapa-detail-content');
+  if (!emptyEl || !contentEl) return;
+  gsap.to(contentEl, { opacity: 0, y: -8, duration: 0.25, onComplete: () => {
+    contentEl.hidden = true;
+    emptyEl.style.display = '';
+    gsap.fromTo(emptyEl, { opacity: 0 }, { opacity: 1, duration: 0.3 });
+    const barFill = document.getElementById('detail-bar-fill');
+    if (barFill) barFill.style.width = '0%';
+  }});
 }
 
 let mapCounterTimer;
@@ -445,9 +520,9 @@ function mapBuildRanking() {
 }
 
 async function mapLoad(section) {
-  const svgEl    = section.querySelector('#caldas-map');
-  const tooltip  = section.querySelector('#map-tooltip');
-  const selPanel = section.querySelector('#mapa-selected');
+  const svgEl     = section.querySelector('#caldas-map');
+  const tooltip   = section.querySelector('#map-tooltip');
+  const detailPanel = section.querySelector('#mapa-detail');
   const container = section.querySelector('.mapa-svg-container');
   if (!svgEl || !container) return;
 
@@ -476,7 +551,7 @@ async function mapLoad(section) {
       if (r.ok) { topo = await r.json(); if (topo && (topo.arcs || topo.features)) break; }
     } catch(e) { continue; }
   }
-  if (!topo) { mapRenderFallback(svgEl, container, tooltip, selPanel, section); return; }
+  if (!topo) { mapRenderFallback(svgEl, container, tooltip, detailPanel, section); return; }
 
   let features;
   if (topo.type === 'Topology' && topo.objects) {
@@ -508,7 +583,7 @@ async function mapLoad(section) {
     el.setAttribute('stroke', 'rgba(5,13,11,0.85)');
     el.setAttribute('stroke-width', '1');
     const c = pathGen.centroid(feat);
-    mapAttachEvents(el, name, votes, c[0]||W/2, c[1]||H/2, svgEl, container, tooltip, selPanel);
+    mapAttachEvents(el, name, votes, c[0]||W/2, c[1]||H/2, svgEl, container, tooltip, detailPanel);
     svgEl.appendChild(el);
     elements.push(el);
   });
@@ -636,71 +711,65 @@ function setupSectionAnimation(section) {
   if (type === 'map-reveal') {
     setupMapAnimation(section, tl);
   } else if (type === 'gallery-reveal') {
-    // Gallery is position:fixed and fully managed by initGallery()
-    // No standard section animation or ScrollTrigger needed here
     return;
   } else {
-    // Standard children animation
     const children = section.querySelectorAll(
       '.section-label, .section-heading, .section-body, .section-note, .section-link, ' +
-      '.cta-button, .cta-input, .cta-social, .cta-form, .agenda-list, .stat, .section-photo'
+      '.cta-button, .cta-input, .cta-social, .cta-form, .agenda-list, .stat, .section-photo, .section-muro-wall'
     );
     gsap.set(children, { visibility: 'visible' });
 
     switch (type) {
       case 'fade-up':
         tl.fromTo(children,
-          { y: 50, opacity: 0 },
-          { y: 0, opacity: 1, stagger: 0.12, duration: 0.9, ease: 'power3.out' });
+          { y: 28, opacity: 0 },
+          { y: 0, opacity: 1, stagger: 0.08, duration: 0.75, ease: 'power2.out' });
         break;
       case 'clip-reveal':
         tl.fromTo(children,
-          { clipPath: 'inset(100% 0 0 0)', opacity: 0 },
-          { clipPath: 'inset(0% 0 0 0)', opacity: 1, stagger: 0.15, duration: 1.2, ease: 'power4.inOut' });
+          { y: 30, opacity: 0 },
+          { y: 0, opacity: 1, stagger: 0.08, duration: 0.85, ease: 'power3.out' });
         break;
       case 'stagger-up':
         tl.fromTo(children,
-          { y: 60, opacity: 0 },
-          { y: 0, opacity: 1, stagger: 0.15, duration: 0.8, ease: 'power3.out' });
+          { y: 32, opacity: 0 },
+          { y: 0, opacity: 1, stagger: 0.09, duration: 0.72, ease: 'power3.out' });
         break;
       case 'scale-up':
         tl.fromTo(children,
-          { y: 40, scale: 0.85, opacity: 0 },
-          { y: 0, scale: 1, opacity: 1, stagger: 0.12, duration: 1.0, ease: 'power2.out' });
+          { y: 22, scale: 0.93, opacity: 0 },
+          { y: 0, scale: 1, opacity: 1, stagger: 0.08, duration: 0.8, ease: 'power2.out' });
         break;
       case 'blur-up':
         tl.fromTo(children,
-          { y: 50, opacity: 0, filter: 'blur(8px)' },
-          { y: 0, opacity: 1, filter: 'blur(0px)', stagger: 0.12, duration: 1.0, ease: 'power3.out' });
+          { y: 26, opacity: 0, filter: 'blur(4px)' },
+          { y: 0, opacity: 1, filter: 'blur(0px)', stagger: 0.08, duration: 0.85, ease: 'power3.out' });
         break;
       default:
         tl.fromTo(children,
-          { y: 40, opacity: 0 },
-          { y: 0, opacity: 1, stagger: 0.1, duration: 0.8, ease: 'power2.out' });
+          { y: 22, opacity: 0 },
+          { y: 0, opacity: 1, stagger: 0.07, duration: 0.7, ease: 'power2.out' });
     }
   }
+
+  // Play/reverse system: animations run at natural speed (no scroll-sync scrubbing)
+  // This eliminates abrupt cuts and aggressive jumps when scrolling fast.
+  let visible = false;
 
   ScrollTrigger.create({
     trigger: sc,
     start: 'top top',
     end: 'bottom bottom',
-    scrub: false,
     onUpdate: (self) => {
       const p = self.progress;
-      const inView   = p >= enter - WINDOW && p <= (persist ? 1 : leave + WINDOW);
-      const entering = p >= enter && p <= enter + WINDOW;
-      const leaving  = !persist && p >= leave && p <= leave + WINDOW;
+      const shouldShow = p >= enter - 0.04 && p <= (persist ? 1 : leave + 0.04);
 
-      if (entering) {
-        tl.progress(Math.min((p - enter) / WINDOW, 1));
-      } else if (inView && !leaving) {
-        tl.progress(1);
-      } else if (leaving) {
-        tl.progress(1 - Math.min((p - leave) / WINDOW, 1));
-      } else if (p < enter - WINDOW) {
-        tl.progress(0);
-      } else if (!persist && p > leave + WINDOW) {
-        tl.progress(0);
+      if (shouldShow && !visible) {
+        visible = true;
+        tl.play();
+      } else if (!shouldShow && visible) {
+        visible = false;
+        if (tl.progress() > 0) tl.reverse();
       }
     }
   });
@@ -829,7 +898,7 @@ function initGallery() {
   const items = [...track.querySelectorAll('.gallery-item')];
   let currentIndex = 0;
   let lastIdx      = -1;
-  const FADE       = 0.018;
+  const FADE       = 0.048;
 
   // Build progress dots
   if (dotsEl) {
@@ -985,12 +1054,12 @@ function runFakeLoader() {
     const txt = document.getElementById('loader-percent');
     let pct = 0;
     const iv = setInterval(() => {
-      const step = pct < 40 ? 3.5 : pct < 70 ? 2.2 : pct < 88 ? 1.0 : 0.3;
+      const step = pct < 50 ? 5 : pct < 80 ? 3.5 : pct < 95 ? 1.5 : 0.4;
       pct = Math.min(pct + step, 100);
       if (bar) bar.style.width = pct + '%';
       if (txt) txt.textContent = Math.round(pct) + '%';
-      if (pct >= 100) { clearInterval(iv); setTimeout(resolve, 250); }
-    }, 35);
+      if (pct >= 100) { clearInterval(iv); setTimeout(resolve, 100); }
+    }, 20);
   });
 }
 
@@ -1000,7 +1069,7 @@ function slideOutLoader() {
     if (!loader) { resolve(); return; }
     gsap.to(loader, {
       yPercent: -100,
-      duration: 0.9,
+      duration: 0.65,
       ease: 'power3.inOut',
       onComplete: () => { loader.style.display = 'none'; resolve(); }
     });
@@ -1030,6 +1099,137 @@ function initLenis() {
   window.lenis = lenis;
 
   return lenis;
+}
+
+// ── MURO DE IDEAS ─────────────────────────────────────────────
+function initMuro() {
+  const STORAGE_KEY = 'mc_muro_v1';
+  const form      = document.getElementById('muro-form');
+  const successEl = document.getElementById('muro-success');
+  const newBtn    = document.getElementById('muro-new-btn');
+  const cardsEl   = document.getElementById('muro-cards');
+  const emptyEl   = document.getElementById('muro-empty');
+  const countEl   = document.getElementById('muro-count');
+  const msgEl     = document.getElementById('muro-mensaje');
+
+  if (!form || !cardsEl) return;
+
+  function escapeHtml(str) {
+    return String(str)
+      .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
+      .replace(/"/g,'&quot;').replace(/'/g,'&#039;');
+  }
+
+  function formatDate(ts) {
+    const diff = Date.now() - ts;
+    if (diff < 3600000)  return 'Hace ' + Math.max(1, Math.round(diff / 60000)) + ' min';
+    if (diff < 86400000) return 'Hace ' + Math.round(diff / 3600000) + 'h';
+    return new Date(ts).toLocaleDateString('es-CO', { day:'numeric', month:'short' });
+  }
+
+  function loadPosts() {
+    try { const raw = localStorage.getItem(STORAGE_KEY); return raw ? JSON.parse(raw) : []; }
+    catch { return []; }
+  }
+
+  function savePosts(posts) {
+    try { localStorage.setItem(STORAGE_KEY, JSON.stringify(posts.slice(0, 50))); } catch {}
+  }
+
+  function createCard(post, delay = 0) {
+    const initial = (post.nombre || 'A')[0].toUpperCase();
+    const card = document.createElement('div');
+    card.className = 'muro-card';
+    card.style.animationDelay = delay + 'ms';
+    card.innerHTML = `
+      <div class="muro-card-header">
+        <div class="muro-avatar">${initial}</div>
+        <div class="muro-card-meta">
+          <div class="muro-card-name">${escapeHtml(post.nombre)}</div>
+          <div class="muro-card-loc">${escapeHtml(post.municipio)}</div>
+        </div>
+        <div class="muro-card-date">${formatDate(post.fecha)}</div>
+      </div>
+      <div class="muro-card-msg">${escapeHtml(post.mensaje)}</div>`;
+    return card;
+  }
+
+  function renderPosts(posts) {
+    cardsEl.innerHTML = '';
+    const sorted = [...posts].sort((a, b) => b.fecha - a.fecha).slice(0, 20);
+    if (sorted.length === 0) {
+      if (emptyEl) emptyEl.hidden = false;
+    } else {
+      if (emptyEl) emptyEl.hidden = true;
+      sorted.forEach((p, i) => cardsEl.appendChild(createCard(p, i * 45)));
+    }
+    if (countEl) {
+      const n = posts.length;
+      countEl.textContent = n === 0 ? '' : n === 1 ? '1 propuesta' : n + ' propuestas';
+    }
+  }
+
+  let posts = loadPosts();
+  renderPosts(posts);
+
+  form.addEventListener('submit', (e) => {
+    e.preventDefault();
+    const nombre    = document.getElementById('muro-nombre').value.trim();
+    const municipio = document.getElementById('muro-municipio').value.trim();
+    const telefono  = document.getElementById('muro-telefono').value.trim();
+    const mensaje   = msgEl ? msgEl.value.trim() : '';
+    if (!nombre || !municipio || !telefono || !mensaje) return;
+
+    const newPost = { nombre, municipio, telefono, mensaje, fecha: Date.now() };
+    posts = [newPost, ...posts];
+    savePosts(posts);
+
+    if (emptyEl) emptyEl.hidden = true;
+    cardsEl.insertBefore(createCard(newPost, 0), cardsEl.firstChild);
+    if (countEl) {
+      const n = posts.length;
+      countEl.textContent = n === 1 ? '1 propuesta' : n + ' propuestas';
+    }
+
+    form.reset();
+    if (successEl) {
+      successEl.hidden = false;
+      clearTimeout(successEl._timer);
+      successEl._timer = setTimeout(() => { successEl.hidden = true; }, 4000);
+    }
+  });
+
+  if (newBtn) {
+    newBtn.addEventListener('click', () => {
+      if (successEl) { successEl.hidden = true; clearTimeout(successEl._timer); }
+    });
+  }
+}
+
+// ── FOOTER REVEAL ─────────────────────────────────────────────
+function initFooter() {
+  const footer = document.querySelector('.site-footer');
+  if (!footer) return;
+  const sc = document.getElementById('scroll-container');
+  let footerVisible = false;
+
+  ScrollTrigger.create({
+    trigger: sc,
+    start: 'top top',
+    end: 'bottom bottom',
+    onUpdate: (self) => {
+      const show = self.progress >= 0.86;
+      if (show && !footerVisible) {
+        footerVisible = true;
+        footer.style.pointerEvents = 'auto';
+        gsap.to(footer, { y: 0, opacity: 1, duration: 0.65, ease: 'power2.out' });
+      } else if (!show && footerVisible) {
+        footerVisible = false;
+        footer.style.pointerEvents = 'none';
+        gsap.to(footer, { y: '100%', opacity: 0, duration: 0.4, ease: 'power2.in' });
+      }
+    }
+  });
 }
 
 // ── INIT ──────────────────────────────────────────────────────
@@ -1074,6 +1274,8 @@ async function init() {
   initCounters();
   initGallery();
   initHeader();
+  initMuro();
+  initFooter();
 
   requestAnimationFrame(() => {
     if (hasFrames && frames[0]) drawFrame(0);

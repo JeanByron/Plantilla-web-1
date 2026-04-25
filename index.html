@@ -14,7 +14,7 @@
 
   <!-- 1. LOADER -->
   <div id="loader">
-    <div class="loader-brand">MC</div>
+    <div class="loader-brand">Manuel<em>Correa</em></div>
     <div class="loader-tagline">Caldas al Congreso</div>
     <div class="loader-bar-wrap">
       <div id="loader-bar"></div>
@@ -25,7 +25,7 @@
   <!-- 2. FIXED HEADER -->
   <header class="site-header">
     <nav class="site-nav">
-      <a href="#" class="nav-logo">MC</a>
+      <a href="#" class="nav-logo">Manuel<em>Correa</em></a>
       <ul class="nav-links">
         <li><a href="#inicio">Inicio</a></li>
         <li><a href="#caldas">Caldas</a></li>
@@ -306,7 +306,7 @@
       </div>
     </section>
 
-    <!-- SECTION 6: CTA Contacto — align-left, blur-up, persist, 84%–100% -->
+    <!-- SECTION 6: CTA Contacto + Muro — align-left, blur-up, persist, 84%–100% -->
     <section
       class="scroll-section section-content section-cta align-left"
       data-enter="84"
@@ -315,22 +315,37 @@
       data-persist="true"
       id="contacto"
     >
-      <div class="section-photo photo-right">
-        <img src="images/24.jpeg" alt="Manuel Correa Caldas" loading="lazy"/>
+      <!-- Muro comunitario (reemplaza la foto) -->
+      <div class="section-muro-wall">
+        <div class="muro-wall-header">
+          <span class="muro-wall-title">Lo que dice la comunidad</span>
+          <span class="muro-wall-count" id="muro-count"></span>
+        </div>
+        <div class="muro-cards" id="muro-cards"></div>
+        <div class="muro-empty" id="muro-empty" hidden>
+          <span>Sé el primero en<br>dejar tu propuesta</span>
+        </div>
       </div>
+
       <div class="section-inner">
         <span class="section-label">005 / Únete</span>
         <h2 class="section-heading">Caldas<br>nos necesita.</h2>
         <p class="section-body">
-          Sé parte del cambio. Deja tus datos y te contactamos
-          para informarte sobre nuestra campaña en tu municipio.
+          Sé parte del cambio. Comparte tu nombre, municipio y una propuesta o idea
+          con Manuel Correa y toda la comunidad.
         </p>
-        <form class="cta-form" id="cta-form">
-          <input type="text" placeholder="Tu nombre" class="cta-input" required />
-          <input type="text" placeholder="Tu municipio" class="cta-input" required />
-          <input type="tel" placeholder="Tu WhatsApp" class="cta-input" required />
-          <button type="submit" class="cta-button">Unirme a la campaña</button>
+        <form class="cta-form" id="muro-form">
+          <input type="text" id="muro-nombre" placeholder="Tu nombre" class="cta-input" required />
+          <input type="text" id="muro-municipio" placeholder="Tu municipio" class="cta-input" required />
+          <input type="tel" id="muro-telefono" placeholder="Tu WhatsApp" class="cta-input" required />
+          <textarea id="muro-mensaje" placeholder="Tu propuesta o idea para Caldas…" class="cta-input cta-textarea" required maxlength="500"></textarea>
+          <button type="submit" class="cta-button">Publicar en el muro</button>
         </form>
+        <div id="muro-success" class="muro-success-inline" hidden>
+          <span class="muro-check">✓</span>
+          <span>¡Tu propuesta fue publicada!</span>
+          <button class="muro-new-btn" id="muro-new-btn">Publicar otra</button>
+        </div>
         <div class="cta-social">
           <a href="#" class="social-link">Instagram</a>
           <a href="#" class="social-link">Facebook</a>
@@ -341,10 +356,18 @@
 
   </div><!-- /scroll-container -->
 
-  <!-- FOOTER -->
+  <!-- FOOTER (fixed, animado desde JS cuando scroll ≥ 86%) -->
   <footer class="site-footer">
-    <p>© 2026 Manuel Correa · Candidato al Congreso por Caldas</p>
-    <p class="footer-legal">Inscrito ante el Consejo Nacional Electoral</p>
+    <a href="#" class="footer-logo">Manuel<em>Correa</em></a>
+    <div class="footer-mid">
+      <p>Caldas al Congreso 2026</p>
+      <p class="footer-legal">© 2026 · Inscrito ante el Consejo Nacional Electoral</p>
+    </div>
+    <div class="footer-links">
+      <a href="#" class="footer-link">Instagram</a>
+      <a href="#" class="footer-link">Facebook</a>
+      <a href="#" class="footer-link">WhatsApp</a>
+    </div>
   </footer>
 
   <!-- CDN SCRIPTS (este orden es mandatorio) -->
