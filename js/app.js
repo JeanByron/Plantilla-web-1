@@ -5,6 +5,10 @@
 
 'use strict';
 
+// Forzar que el navegador siempre empiece desde arriba
+if ('scrollRestoration' in history) history.scrollRestoration = 'manual';
+window.scrollTo(0, 0);
+
 // ── CONFIG ────────────────────────────────────────────────────
 const FRAME_SPEED   = 1.0;   // reducido para 2000vh
 const IMAGE_SCALE   = 1.0;   // 1.0 = full-cover sin barras laterales
@@ -224,8 +228,8 @@ function drawGenerativeFrame(frameIndex, maxFrames) {
 
 // ── FRAME-TO-SCROLL BINDING ──────────────────────────────────
 const GALLERY_ENTER = 0.32;
-const GALLERY_LEAVE = 0.62;
-const GALLERY_FADE  = 0.058; // crossfade gradual (~116vh de transición suave)
+const GALLERY_LEAVE = 0.48;
+const GALLERY_FADE  = 0.058;
 
 function drawFlatBg(cw, ch) {
   ctx.fillStyle = '#0A1A17';
@@ -900,6 +904,13 @@ function initGallery() {
   let lastIdx      = -1;
   const FADE       = 0.048;
 
+  // Ancla relativa para el avance scroll-driven.
+  // galleryScrollBase: posición de scroll que define el índice galleryBaseIdx.
+  // Cuando el autoplay o el usuario cambia imagen, la ancla se actualiza al scroll actual.
+  let galleryScrollBase = -1;
+  let galleryBaseIdx    = 0;
+  let currentScrollP    = 0; // se actualiza en cada frame de onUpdate
+
   // Build progress dots
   if (dotsEl) {
     items.forEach((_, i) => {
@@ -978,33 +989,80 @@ function initGallery() {
     }
   }
 
+  // ── Autoplay ──────────────────────────────────────────────────
+  const AUTOPLAY_MS   = 3000;
+  let autoTimer       = null;
+  let userPaused      = false;
+  let isScrolling     = false;
+  let scrollStopTimer = null;
+
+  function autoNext() {
+    if (section.style.visibility !== 'visible' || isScrolling) return;
+    const next = currentIndex < items.length - 1 ? currentIndex + 1 : 0;
+    lastIdx = next;
+    // Sincronizar ancla relativa: el próximo scroll parte desde el índice nuevo
+    galleryScrollBase = currentScrollP;
+    galleryBaseIdx    = next;
+    goTo(next);
+  }
+
+  function startAuto() {
+    if (userPaused || isScrolling) return;
+    clearInterval(autoTimer);
+    autoTimer = setInterval(autoNext, AUTOPLAY_MS);
+  }
+
+  function pauseAuto(resume = true) {
+    clearInterval(autoTimer);
+    autoTimer = null;
+    if (resume) setTimeout(startAuto, AUTOPLAY_MS);
+  }
+
+  // Llamar esto en cada evento de scroll para pausar y retomar tras 800 ms de inactividad
+  function onScrollActivity() {
+    isScrolling = true;
+    clearInterval(autoTimer);
+    autoTimer = null;
+    clearTimeout(scrollStopTimer);
+    scrollStopTimer = setTimeout(() => {
+      isScrolling = false;
+      if (!userPaused && section.style.visibility === 'visible') startAuto();
+    }, 800);
+  }
+
   // Click on non-active item navigates to it
   items.forEach((item, i) => {
-    item.addEventListener('click', () => { if (i !== currentIndex) goTo(i); });
+    item.addEventListener('click', () => { if (i !== currentIndex) { pauseAuto(); goTo(i); } });
   });
 
   // Initialize after layout
   requestAnimationFrame(() => goTo(0, false));
 
   // Arrow buttons
-  document.querySelector('.gallery-prev')?.addEventListener('click', () => goTo(currentIndex - 1));
-  document.querySelector('.gallery-next')?.addEventListener('click', () => goTo(currentIndex + 1));
+  document.querySelector('.gallery-prev')?.addEventListener('click', () => { pauseAuto(); goTo(currentIndex - 1); });
+  document.querySelector('.gallery-next')?.addEventListener('click', () => { pauseAuto(); goTo(currentIndex + 1); });
+
+  // Pause on hover, resume on leave
+  section.addEventListener('mouseenter', () => { clearInterval(autoTimer); autoTimer = null; });
+  section.addEventListener('mouseleave', () => { if (!userPaused && !isScrolling) startAuto(); });
 
   // Keyboard (only when gallery is visible)
   document.addEventListener('keydown', (e) => {
     if (section.style.visibility !== 'visible') return;
-    if (e.key === 'ArrowLeft')  goTo(currentIndex - 1);
-    if (e.key === 'ArrowRight') goTo(currentIndex + 1);
+    if (e.key === 'ArrowLeft')  { pauseAuto(); goTo(currentIndex - 1); }
+    if (e.key === 'ArrowRight') { pauseAuto(); goTo(currentIndex + 1); }
   });
 
   // Touch swipe
   let touchStartX = 0;
   track.addEventListener('touchstart', (e) => {
     touchStartX = e.touches[0].clientX;
+    pauseAuto(false);
   }, { passive: true });
   track.addEventListener('touchend', (e) => {
     const dx = e.changedTouches[0].clientX - touchStartX;
-    if (Math.abs(dx) > 50) goTo(currentIndex + (dx < 0 ? 1 : -1));
+    if (Math.abs(dx) > 50) { goTo(currentIndex + (dx < 0 ? 1 : -1)); }
+    setTimeout(startAuto, AUTOPLAY_MS);
   }, { passive: true });
 
   // Resize — recalculate item sizes
@@ -1014,6 +1072,8 @@ function initGallery() {
 
   // Scroll-driven: section visibility + index advancement
   const sc = document.getElementById('scroll-container');
+  const stepSize = (GALLERY_LEAVE - GALLERY_ENTER) / (items.length * 2);
+
   ScrollTrigger.create({
     trigger: sc,
     start: 'top top',
@@ -1021,33 +1081,60 @@ function initGallery() {
     scrub: true,
     onUpdate: (self) => {
       const p = self.progress;
+      currentScrollP = p; // siempre actualizado para que autoNext lo pueda leer
+
+      // Detectar actividad de scroll para gestionar el autoplay
+      onScrollActivity();
 
       // Fade section in/out
       if (p >= GALLERY_ENTER && p <= GALLERY_LEAVE) {
-        section.style.opacity    = '1';
-        section.style.visibility = 'visible';
+        section.style.opacity       = '1';
+        section.style.visibility    = 'visible';
         section.style.pointerEvents = 'auto';
       } else if (p > GALLERY_ENTER - FADE && p < GALLERY_ENTER) {
         const t = (p - (GALLERY_ENTER - FADE)) / FADE;
-        section.style.opacity    = t.toFixed(3);
-        section.style.visibility = 'visible';
+        section.style.opacity       = Math.max(0, t).toFixed(3);
+        section.style.visibility    = 'visible';
         section.style.pointerEvents = 'none';
+        clearInterval(autoTimer); autoTimer = null;
+        isScrolling = false; clearTimeout(scrollStopTimer);
+        galleryScrollBase = -1; // resetear ancla al salir
       } else if (p > GALLERY_LEAVE && p < GALLERY_LEAVE + FADE) {
         const t = 1 - (p - GALLERY_LEAVE) / FADE;
-        section.style.opacity    = t.toFixed(3);
-        section.style.visibility = 'visible';
+        section.style.opacity       = Math.max(0, t).toFixed(3);
+        section.style.visibility    = 'visible';
         section.style.pointerEvents = 'none';
+        clearInterval(autoTimer); autoTimer = null;
+        isScrolling = false; clearTimeout(scrollStopTimer);
+        galleryScrollBase = -1;
       } else {
-        section.style.opacity    = '0';
-        section.style.visibility = 'hidden';
+        section.style.opacity       = '0';
+        section.style.visibility    = 'hidden';
         section.style.pointerEvents = 'none';
+        clearInterval(autoTimer); autoTimer = null;
+        isScrolling = false; clearTimeout(scrollStopTimer);
+        galleryScrollBase = -1;
       }
 
-      // Advance carousel index based on scroll progress within gallery range
+      // Avance del carrusel por scroll — sistema de ancla relativa
       if (p >= GALLERY_ENTER && p <= GALLERY_LEAVE) {
-        const localP = (p - GALLERY_ENTER) / (GALLERY_LEAVE - GALLERY_ENTER);
-        const idx = Math.min(Math.floor(localP * items.length), items.length - 1);
-        if (idx !== lastIdx) { lastIdx = idx; goTo(idx, true); }
+        if (galleryScrollBase < 0) {
+          // Primera vez que entramos: anclar en imagen 0 desde el inicio
+          galleryScrollBase = GALLERY_ENTER;
+          galleryBaseIdx    = 0;
+          if (currentIndex !== 0) { lastIdx = 0; goTo(0, false); }
+        }
+
+        const relSteps = Math.floor((p - galleryScrollBase) / stepSize);
+        const idx = Math.max(0, Math.min(items.length - 1, galleryBaseIdx + relSteps));
+
+        if (idx !== lastIdx) {
+          lastIdx           = idx;
+          // Actualizar ancla al paso exacto donde estamos ahora
+          galleryScrollBase = GALLERY_ENTER + idx * stepSize;
+          galleryBaseIdx    = idx;
+          goTo(idx, true);
+        }
       }
     }
   });
@@ -1072,16 +1159,24 @@ function initHeader() {
 // ── LOADER (v1-style fake progress + slide-out) ───────────────
 function runFakeLoader() {
   return new Promise(resolve => {
-    const bar = document.getElementById('loader-bar');
-    const txt = document.getElementById('loader-percent');
-    let pct = 0;
-    const iv = setInterval(() => {
-      const step = pct < 50 ? 5 : pct < 80 ? 3.5 : pct < 95 ? 1.5 : 0.4;
-      pct = Math.min(pct + step, 100);
-      if (bar) bar.style.width = pct + '%';
-      if (txt) txt.textContent = Math.round(pct) + '%';
-      if (pct >= 100) { clearInterval(iv); setTimeout(resolve, 100); }
-    }, 20);
+    const bar   = document.getElementById('loader-bar');
+    const txt   = document.getElementById('loader-percent');
+    const proxy = { v: 0 };
+    gsap.to(proxy, {
+      v: 100,
+      duration: 2.0,
+      ease: 'power1.inOut',
+      onUpdate() {
+        const v = Math.round(proxy.v);
+        if (bar) bar.style.width = proxy.v.toFixed(2) + '%';
+        if (txt) txt.textContent = v + '%';
+      },
+      onComplete() {
+        if (bar) bar.style.width = '100%';
+        if (txt) txt.textContent = '100%';
+        setTimeout(resolve, 80);
+      }
+    });
   });
 }
 
