@@ -19,8 +19,8 @@ const FRAME_EXT     = 'jpg';
 const STATS_ENTER   = 0.62;
 const STATS_LEAVE   = 0.72;
 
-// Hero desaparece al 12% de scroll
-const HERO_FADE_END = 0.12;
+// Hero desaparece al 7% de scroll (antes de que entre la sección 1 al 8%)
+const HERO_FADE_END = 0.07;
 
 // ── MAP DATA (v1 real vote counts) ────────────────────────────
 const MAP_VOTES = {
@@ -855,18 +855,71 @@ function initBgPhotoOverlay() {
   });
 }
 
+// ── CUSTOM CURSOR ─────────────────────────────────────────────
+function initCustomCursor() {
+  const dot  = document.getElementById('cursor-dot');
+  const ring = document.getElementById('cursor-ring');
+  if (!dot || !ring) return;
+  if (window.matchMedia('(pointer: coarse)').matches) return;
+
+  let mx = window.innerWidth / 2, my = window.innerHeight / 2;
+  let rx = mx, ry = my;
+  let visible = false;
+
+  document.addEventListener('mousemove', (e) => {
+    mx = e.clientX; my = e.clientY;
+    dot.style.left = mx + 'px';
+    dot.style.top  = my + 'px';
+    if (!visible) {
+      visible = true;
+      dot.style.opacity  = '1';
+      ring.style.opacity = '1';
+    }
+  }, { passive: true });
+
+  document.addEventListener('mouseleave', () => {
+    dot.style.opacity = '0'; ring.style.opacity = '0'; visible = false;
+  });
+  document.addEventListener('mouseenter', () => {
+    dot.style.opacity = '1'; ring.style.opacity = '1'; visible = true;
+  });
+
+  (function tick() {
+    rx += (mx - rx) * 0.11;
+    ry += (my - ry) * 0.11;
+    ring.style.left = rx.toFixed(2) + 'px';
+    ring.style.top  = ry.toFixed(2) + 'px';
+    requestAnimationFrame(tick);
+  })();
+
+  document.querySelectorAll('a, button').forEach(el => {
+    el.addEventListener('mouseenter', () => ring.classList.add('is-hover'));
+    el.addEventListener('mouseleave', () => ring.classList.remove('is-hover'));
+  });
+}
+
 // ── HERO FADE ─────────────────────────────────────────────────
 function initHeroFade() {
-  const hero = document.getElementById('hero-overlay');
+  const hero  = document.getElementById('hero-overlay');
+  const cardL = document.querySelector('.hero-card-left');
+  const cardR = document.querySelector('.hero-card-right');
+
   ScrollTrigger.create({
     trigger: document.getElementById('scroll-container'),
     start: 'top top',
     end: 'bottom bottom',
     scrub: true,
     onUpdate: (self) => {
-      const opacity = Math.max(0, 1 - self.progress / HERO_FADE_END);
+      const p = self.progress;
+      const opacity = Math.max(0, 1 - p / HERO_FADE_END);
       hero.style.opacity = opacity;
       hero.style.pointerEvents = opacity > 0 ? '' : 'none';
+
+      // Cards caen mientras el hero se desvanece
+      const t = Math.min(1, p / HERO_FADE_END);
+      const fallY = t * 160;
+      if (cardL) gsap.set(cardL, { y: fallY });
+      if (cardR) gsap.set(cardR, { y: fallY * 0.7 });
     }
   });
 }
@@ -1197,6 +1250,17 @@ function initHeroEntrance() {
   document.querySelectorAll('.hero-word, .hero-label, .hero-tagline, .scroll-indicator').forEach(el => {
     el.style.animationPlayState = 'running';
   });
+
+  const cardL = document.querySelector('.hero-card-left');
+  const cardR = document.querySelector('.hero-card-right');
+  if (cardL) gsap.fromTo(cardL,
+    { opacity: 0, yPercent: -38, rotation: -11, x: -40 },
+    { opacity: 1, x: 0, duration: 1.3, delay: 0.5, ease: 'power3.out' }
+  );
+  if (cardR) gsap.fromTo(cardR,
+    { opacity: 0, yPercent: -58, rotation: 9, x: 40 },
+    { opacity: 1, x: 0, duration: 1.3, delay: 0.7, ease: 'power3.out' }
+  );
 }
 
 // ── LENIS ─────────────────────────────────────────────────────
@@ -1382,6 +1446,7 @@ async function init() {
   await loaderDone;
   initHeroEntrance();
 
+  initCustomCursor();
   initLenis();
   initFrameScroll();
   initDarkOverlay();
