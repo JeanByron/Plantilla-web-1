@@ -922,6 +922,8 @@ function initGallery() {
   }
 
   function goTo(index, animate = true) {
+    const direction  = index > currentIndex ? 1 : -1;
+    const prevIndex  = currentIndex;
     index = Math.max(0, Math.min(items.length - 1, index));
     currentIndex = index;
     const dur = animate ? 0.72 : 0;
@@ -941,12 +943,32 @@ function initGallery() {
     gsap.to(track, { x: trackX, duration: dur, ease: 'power3.out' });
 
     items.forEach((item, i) => {
-      const dist = Math.abs(i - currentIndex);
+      const dist     = Math.abs(i - currentIndex);
       const isActive = dist === 0;
-      const cfg = dist === 0 ? s.active : dist === 1 ? s.near : dist === 2 ? s.far : s.hidden;
+      const cfg      = dist === 0 ? s.active : dist === 1 ? s.near : dist === 2 ? s.far : s.hidden;
       item.classList.toggle('is-active', isActive);
+
       gsap.to(item, { width: cfg.w, height: cfg.h, opacity: cfg.opacity,
         duration: dur, ease: 'power3.out' });
+
+      // Cinematic reveal for the newly-active image
+      if (animate && isActive && i !== prevIndex) {
+        const inner = item.querySelector('.gallery-item-inner');
+        const img   = item.querySelector('img');
+        const fromClip = direction > 0 ? 'inset(0 100% 0 0)' : 'inset(0 0 0 100%)';
+        if (inner) {
+          gsap.fromTo(inner,
+            { clipPath: fromClip },
+            { clipPath: 'inset(0 0% 0 0%)', duration: 0.68, ease: 'expo.out', clearProps: 'clipPath' }
+          );
+        }
+        if (img) {
+          gsap.fromTo(img,
+            { scale: 1.10 },
+            { scale: 1, duration: 0.85, ease: 'power3.out' }
+          );
+        }
+      }
     });
 
     dots.forEach((d, i) => d.classList.toggle('is-active', i === currentIndex));

@@ -992,6 +992,8 @@ canvas#map-particles {
 .gallery-item-inner {
   width: 100%;
   height: 100%;
+  overflow: hidden;
+  will-change: clip-path;
 }
 
 .gallery-item img {
@@ -1000,6 +1002,8 @@ canvas#map-particles {
   object-fit: cover;
   object-position: center top;
   display: block;
+  transform-origin: center center;
+  will-change: transform;
 }
 
 .gallery-caption {

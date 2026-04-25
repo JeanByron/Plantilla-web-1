@@ -5,7 +5,9 @@
       "Bash(python -m http.server 8080)",
       "Bash(curl -s -o /dev/null -w \"%{http_code}\" http://localhost:8080/)",
       "Bash(node -e ' *)",
-      "Bash(node -e \"const fs=require\\('fs'\\); const js=fs.readFileSync\\('c:/Users/Usuario/Desktop/Manuel_Correa_web/js/app.js','utf8'\\); new Function\\(js\\); console.log\\('JS OK'\\);\")"
+      "Bash(node -e \"const fs=require\\('fs'\\); const js=fs.readFileSync\\('c:/Users/Usuario/Desktop/Manuel_Correa_web/js/app.js','utf8'\\); new Function\\(js\\); console.log\\('JS OK'\\);\")",
+      "Bash(npx --yes serve . --port 3000)",
+      "Bash(npx serve *)"
     ]
   }
 }
