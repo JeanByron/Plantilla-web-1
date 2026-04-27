@@ -335,11 +335,13 @@ function mapInitMouseGlow(container) {
 
 function mapDoRadarSweep(elements, container) {
   const scanLine = container.querySelector('.map-scan-line');
+  const SWEEP_DELAY = 1.1;
   gsap.set(elements, { opacity: 0 });
-  gsap.set(scanLine, { opacity: 1, left: '-4px' });
+  gsap.set(scanLine, { opacity: 0, left: '-4px' });
+  gsap.to(scanLine, { opacity: 1, duration: 0.3, delay: SWEEP_DELAY });
   const sorted = [...elements].sort((a,b) => (a._cx||0) - (b._cx||0));
   gsap.to(scanLine, {
-    left: '104%', duration: 2.0, ease: 'power1.inOut',
+    left: '104%', duration: 2.0, ease: 'power1.inOut', delay: SWEEP_DELAY,
     onComplete: () => {
       gsap.to(scanLine, { opacity: 0, duration: 0.6 });
       mapAnimateCounter();
@@ -347,7 +349,7 @@ function mapDoRadarSweep(elements, container) {
   });
   sorted.forEach(el => {
     const pct = (el._cx || 430) / 860;
-    gsap.to(el, { opacity: 1, duration: 0.5, ease: 'power2.out', delay: pct * 1.55 + 0.08 });
+    gsap.to(el, { opacity: 1, duration: 0.5, ease: 'power2.out', delay: SWEEP_DELAY + pct * 1.55 + 0.08 });
   });
 }
 
@@ -537,12 +539,12 @@ async function mapLoad(section) {
   const headerEls = [...section.querySelectorAll('.map-label,.map-title,.map-desc-top,.mapa-total')];
   gsap.fromTo(headerEls,
     { y: 30, opacity: 0 },
-    { y: 0, opacity: 1, stagger: 0.15, duration: 0.85, ease: 'power3.out' });
+    { y: 0, opacity: 1, stagger: 0.15, duration: 0.85, ease: 'power3.out', delay: 0.3 });
 
   // Animate container border glow
   gsap.fromTo(container,
     { opacity: 0, y: 20 },
-    { opacity: 1, y: 0, duration: 1.0, ease: 'power3.out', delay: 0.4 });
+    { opacity: 1, y: 0, duration: 1.0, ease: 'power3.out', delay: 0.6 });
 
   const URLS = [
     'https://cdn.jsdelivr.net/gh/finiterank/mapa-colombia-js@master/colombia-municipios.json',
