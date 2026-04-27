@@ -8,6 +8,7 @@
 // Forzar que el navegador siempre empiece desde arriba
 if ('scrollRestoration' in history) history.scrollRestoration = 'manual';
 window.scrollTo(0, 0);
+window.addEventListener('load', () => window.scrollTo(0, 0));
 
 // ── CONFIG ────────────────────────────────────────────────────
 const FRAME_SPEED   = 1.0;   // reducido para 2000vh
@@ -288,7 +289,9 @@ function initFrameScroll() {
 }
 
 // ── MAP v1 — REAL GeoJSON + RADAR SWEEP ───────────────────────
-let mapLoaded = false;
+let mapDataReady    = false;  // datos/SVG ya construidos (evita doble carga)
+let mapSvgElements  = [];    // referencias para repetir la animación
+let mapSvgContainer = null;
 let mapAllMuns = [];
 let activePath = null;
 
@@ -336,6 +339,11 @@ function mapInitMouseGlow(container) {
 function mapDoRadarSweep(elements, container) {
   const scanLine = container.querySelector('.map-scan-line');
   const SWEEP_DELAY = 1.1;
+
+  // Matar tweens pendientes para que el replay sea limpio
+  gsap.killTweensOf(elements);
+  gsap.killTweensOf(scanLine);
+
   gsap.set(elements, { opacity: 0 });
   gsap.set(scanLine, { opacity: 0, left: '-4px' });
   gsap.to(scanLine, { opacity: 1, duration: 0.3, delay: SWEEP_DELAY });
@@ -597,7 +605,8 @@ async function mapLoad(section) {
   mapBuildRanking();
   const loading = section.querySelector('#map-loading');
   if (loading) loading.style.display = 'none';
-  mapLoaded = true;
+  mapSvgElements  = elements;
+  mapSvgContainer = container;
   mapDoRadarSweep(elements, container);
 }
 
@@ -648,27 +657,26 @@ function mapRenderFallback(svgEl, container, tooltip, selPanel, section) {
   mapBuildRanking();
   const loading = section.querySelector('#map-loading');
   if (loading) loading.style.display = 'none';
-  mapLoaded = true;
+  mapSvgElements  = elements;
+  mapSvgContainer = container;
   mapDoRadarSweep(elements, container);
 }
 
+function mapPlayEntrance(section) {
+  const headerEls = [...section.querySelectorAll('.map-label,.map-title,.map-desc-top,.mapa-total')];
+  const container = mapSvgContainer || section.querySelector('.mapa-svg-container');
+  gsap.killTweensOf(headerEls);
+  gsap.killTweensOf(container);
+  gsap.fromTo(headerEls,
+    { y: 30, opacity: 0 },
+    { y: 0, opacity: 1, stagger: 0.15, duration: 0.85, ease: 'power3.out', delay: 0.3 });
+  gsap.fromTo(container,
+    { opacity: 0, y: 20 },
+    { opacity: 1, y: 0, duration: 1.0, ease: 'power3.out', delay: 0.6 });
+  mapDoRadarSweep(mapSvgElements, container);
+}
+
 function setupMapAnimation(section, tl) {
-  // The actual map loads once when the section first enters view
-  // tl is kept empty; the map animation plays independently via ScrollTrigger onEnter
-  const sc = document.getElementById('scroll-container');
-  ScrollTrigger.create({
-    trigger: sc,
-    start: 'top top',
-    end: 'bottom bottom',
-    onUpdate: (self) => {
-      const enter = parseFloat(section.dataset.enter) / 100;
-      if (!mapLoaded && self.progress >= enter - 0.05) {
-        mapLoaded = true; // prevent double-trigger
-        mapLoad(section);
-      }
-    }
-  });
-  // Ensure section itself fades in via the standard section system
   tl.fromTo(section, { opacity: 0 }, { opacity: 1, duration: 0.6, ease: 'power2.out' });
 }
 
@@ -773,6 +781,14 @@ function setupSectionAnimation(section) {
       if (shouldShow && !visible) {
         visible = true;
         tl.play();
+        if (type === 'map-reveal') {
+          if (!mapDataReady) {
+            mapDataReady = true;
+            mapLoad(section);
+          } else if (mapSvgElements.length) {
+            mapPlayEntrance(section);
+          }
+        }
       } else if (!shouldShow && visible) {
         visible = false;
         if (tl.progress() > 0) tl.reverse();
@@ -1450,6 +1466,7 @@ async function init() {
 
   initCustomCursor();
   initLenis();
+  window.lenis.scrollTo(0, { immediate: true });
   initFrameScroll();
   initDarkOverlay();
   initBgPhotoOverlay();
