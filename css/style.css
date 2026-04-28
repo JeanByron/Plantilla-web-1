@@ -1056,6 +1056,20 @@ canvas#map-particles {
   visibility: hidden;
 }
 
+/* Background photo behind carousel */
+.gallery-bg {
+  position: absolute;
+  inset: 0;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  filter: blur(32px);
+  opacity: 0;
+  transform: scale(1.12);
+  z-index: 0;
+  pointer-events: none;
+}
+
 /* Children visible by default — section opacity controls everything */
 .section-gallery .gallery-header,
 .section-gallery .gallery-track-outer,
@@ -1616,6 +1630,7 @@ canvas#map-particles {
   line-height: 1.7;
   padding: 1.5rem;
 }
+.muro-empty[hidden] { display: none !important; }
 
 @media (max-width: 768px) {
   .section-muro-wall { display: none; }

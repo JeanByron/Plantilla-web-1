@@ -412,13 +412,14 @@ function mapAttachEvents(el, name, votes, cx, cy, svgEl, container, tooltip, det
     mapCreatePulse(px, py, container);
     if (el !== activePath) {
       el.setAttribute('stroke', '#E8621A');
-      el.setAttribute('stroke-width', '1.5');
-      el.style.filter = 'brightness(1.3) drop-shadow(0 0 8px rgba(232,98,26,.5))';
-      if (!activePath) {
-        document.querySelectorAll('#caldas-map path,#caldas-map polygon').forEach(p => {
-          if (p !== el) gsap.to(p, { opacity: 0.42, duration: 0.25 });
-        });
-      }
+      el.setAttribute('stroke-width', '2.5');
+      el.style.filter = 'brightness(1.25) drop-shadow(0 0 14px rgba(232,98,26,.65))';
+      document.querySelectorAll('#caldas-map path,#caldas-map polygon').forEach(p => {
+        if (p !== el) {
+          gsap.killTweensOf(p, 'opacity');
+          gsap.to(p, { opacity: p === activePath ? 1 : 0.35, duration: 0.15 });
+        }
+      });
     }
   });
 
@@ -439,10 +440,11 @@ function mapAttachEvents(el, name, votes, cx, cy, svgEl, container, tooltip, det
       el.style.filter = '';
       if (!activePath) {
         document.querySelectorAll('#caldas-map path,#caldas-map polygon').forEach(p => {
-          gsap.to(p, { opacity: 1, duration: 0.3 });
+          gsap.killTweensOf(p, 'opacity');
+          gsap.to(p, { opacity: 1, duration: 0.15 });
         });
       } else {
-        gsap.to(el, { opacity: 0.35, duration: 0.25 });
+        gsap.to(el, { opacity: 0.35, duration: 0.15 });
       }
     }
   });
@@ -623,6 +625,16 @@ async function mapLoad(section) {
   mapBuildRanking();
   const loading = section.querySelector('#map-loading');
   if (loading) loading.style.display = 'none';
+
+  svgEl.addEventListener('mouseleave', () => {
+    if (!activePath) {
+      document.querySelectorAll('#caldas-map path,#caldas-map polygon').forEach(p => {
+        gsap.killTweensOf(p, 'opacity');
+        gsap.to(p, { opacity: 1, duration: 0.15 });
+      });
+    }
+  });
+
   mapSvgElements  = elements;
   mapSvgContainer = container;
   mapDoRadarSweep(elements, container);
@@ -675,6 +687,16 @@ function mapRenderFallback(svgEl, container, tooltip, selPanel, section) {
   mapBuildRanking();
   const loading = section.querySelector('#map-loading');
   if (loading) loading.style.display = 'none';
+
+  svgEl.addEventListener('mouseleave', () => {
+    if (!activePath) {
+      document.querySelectorAll('#caldas-map path,#caldas-map polygon').forEach(p => {
+        gsap.killTweensOf(p, 'opacity');
+        gsap.to(p, { opacity: 1, duration: 0.15 });
+      });
+    }
+  });
+
   mapSvgElements  = elements;
   mapSvgContainer = container;
   mapDoRadarSweep(elements, container);
@@ -1032,12 +1054,30 @@ function initGallery() {
     };
   }
 
+  const bgEl = document.getElementById('gallery-bg');
+
+  function updateBg(index, animate) {
+    if (!bgEl) return;
+    const img = items[index] ? items[index].querySelector('img') : null;
+    const src = img ? img.src : '';
+    if (!src) return;
+    if (!animate) {
+      bgEl.style.backgroundImage = `url('${src}')`;
+      gsap.set(bgEl, { opacity: 0.38 });
+      return;
+    }
+    gsap.to(bgEl, { opacity: 0, duration: 0.22, onComplete: () => {
+      bgEl.style.backgroundImage = `url('${src}')`;
+      gsap.to(bgEl, { opacity: 0.38, duration: 0.55 });
+    }});
+  }
+
   function goTo(index, animate = true) {
     const direction  = index > currentIndex ? 1 : -1;
     const prevIndex  = currentIndex;
     index = Math.max(0, Math.min(items.length - 1, index));
     currentIndex = index;
-    const dur = animate ? 0.72 : 0;
+    const dur = animate ? 0.58 : 0;
     const s   = getSizes();
     const gap = 12;
 
@@ -1051,7 +1091,7 @@ function initGallery() {
     let leftEdge = 0;
     for (let i = 0; i < index; i++) leftEdge += widths[i] + gap;
     const trackX = window.innerWidth / 2 - (leftEdge + widths[index] / 2);
-    gsap.to(track, { x: trackX, duration: dur, ease: 'power3.out' });
+    gsap.to(track, { x: trackX, duration: dur, ease: 'expo.out' });
 
     items.forEach((item, i) => {
       const dist     = Math.abs(i - currentIndex);
@@ -1060,7 +1100,7 @@ function initGallery() {
       item.classList.toggle('is-active', isActive);
 
       gsap.to(item, { width: cfg.w, height: cfg.h, opacity: cfg.opacity,
-        duration: dur, ease: 'power3.out' });
+        duration: dur, ease: 'expo.out' });
 
       // Cinematic reveal for the newly-active image
       if (animate && isActive && i !== prevIndex) {
@@ -1070,17 +1110,20 @@ function initGallery() {
         if (inner) {
           gsap.fromTo(inner,
             { clipPath: fromClip },
-            { clipPath: 'inset(0 0% 0 0%)', duration: 0.68, ease: 'expo.out', clearProps: 'clipPath' }
+            { clipPath: 'inset(0 0% 0 0%)', duration: 0.45, ease: 'power4.out', clearProps: 'clipPath' }
           );
         }
         if (img) {
           gsap.fromTo(img,
-            { scale: 1.10 },
-            { scale: 1, duration: 0.85, ease: 'power3.out' }
+            { scale: 1.08 },
+            { scale: 1, duration: 0.58, ease: 'power4.out' }
           );
         }
       }
     });
+
+    if (animate && index !== prevIndex) updateBg(index, true);
+    else if (!animate) updateBg(index, false);
 
     dots.forEach((d, i) => d.classList.toggle('is-active', i === currentIndex));
 
@@ -1310,22 +1353,22 @@ function initHeroEntrance() {
   // Logo container visible — children animate separately
   gsap.set(logo, { opacity: 1 });
 
-  const tl = gsap.timeline({ delay: 0.2 });
+  const tl = gsap.timeline({ delay: 0.4 });
 
-  if (bird)   tl.to(bird,   { opacity: 1, x: 0,       duration: 0.8,  ease: 'power3.out'  }, 0);
-  if (manuel) tl.to(manuel, { opacity: 1, x: 0,       duration: 0.85, ease: 'power3.out'  }, 0.1);
-  if (correa) tl.to(correa, { opacity: 1, y: 0,       duration: 0.95, ease: 'power3.out'  }, 0.26);
-  if (banner) tl.to(banner, { opacity: 1, scaleX: 1,  duration: 0.7,  ease: 'power3.inOut'}, 0.55);
-  if (year)   tl.to(year,   { opacity: 1,             duration: 0.6,  ease: 'power2.out'  }, 0.75);
-  if (tag)    tl.to(tag,    { opacity: 1,             duration: 0.55, ease: 'power2.out'  }, 0.9);
-  if (scroll) tl.to(scroll, { opacity: 1,             duration: 0.5,  ease: 'power2.out'  }, 1.1);
+  if (bird)   tl.to(bird,   { opacity: 1, x: 0,       duration: 1.05, ease: 'power3.out'  }, 0);
+  if (manuel) tl.to(manuel, { opacity: 1, x: 0,       duration: 1.1,  ease: 'power3.out'  }, 0.15);
+  if (correa) tl.to(correa, { opacity: 1, y: 0,       duration: 1.2,  ease: 'power3.out'  }, 0.35);
+  if (banner) tl.to(banner, { opacity: 1, scaleX: 1,  duration: 0.9,  ease: 'power3.inOut'}, 0.65);
+  if (year)   tl.to(year,   { opacity: 1,             duration: 0.75, ease: 'power2.out'  }, 0.88);
+  if (tag)    tl.to(tag,    { opacity: 1,             duration: 0.70, ease: 'power2.out'  }, 1.08);
+  if (scroll) tl.to(scroll, { opacity: 1,             duration: 0.65, ease: 'power2.out'  }, 1.35);
 
   if (cardL) tl.fromTo(cardL,
     { opacity: 0, y: -50, rotation: -8, x: -50 },
-    { opacity: 1, y: 0,   x: 0, duration: 1.2, ease: 'power3.out' }, 0.3);
+    { opacity: 1, y: 0,   x: 0, duration: 1.7, ease: 'power3.out' }, 0.4);
   if (cardR) tl.fromTo(cardR,
     { opacity: 0, y: -60, rotation: 7, x: 50 },
-    { opacity: 1, y: 0,   x: 0, duration: 1.2, ease: 'power3.out' }, 0.45);
+    { opacity: 1, y: 0,   x: 0, duration: 1.7, ease: 'power3.out' }, 0.6);
 }
 
 // ── HERO BG FADE ──────────────────────────────────────────────
@@ -1355,6 +1398,7 @@ function initZoomParallax() {
   gsap.set(items, { opacity: 0, scale: 1 });
 
   let zpEntered = false;
+  let zpPauseTimer = null;
   const sc = document.getElementById('scroll-container');
 
   ScrollTrigger.create({
@@ -1380,21 +1424,41 @@ function initZoomParallax() {
         section.style.visibility = 'hidden';
       }
 
-      // Entrada: stagger items
+      // Entrada: cambio de escena + pausa de 1s antes de activar el zoom
       if (!zpEntered && p >= ZP_ENTER) {
         zpEntered = true;
-        gsap.to(items, { opacity: 1, duration: 0.55, stagger: 0.07, ease: 'power2.out' });
+        gsap.fromTo(items,
+          { opacity: 0, scale: 1.04 },
+          { opacity: 1, scale: 1, duration: 0.18, stagger: 0, ease: 'power4.out' }
+        );
+        // Congela el scroll 1 segundo para que el usuario vea el mosaico
+        if (window.lenis) {
+          window.lenis.stop();
+          zpPauseTimer = setTimeout(() => {
+            if (window.lenis) window.lenis.start();
+            zpPauseTimer = null;
+          }, 1000);
+        }
       } else if (zpEntered && p < ZP_ENTER - FADE) {
         zpEntered = false;
         gsap.set(items, { opacity: 0, scale: 1 });
+        // Si el usuario vuelve antes de que termine la pausa, reactivar scroll
+        if (zpPauseTimer) {
+          clearTimeout(zpPauseTimer);
+          zpPauseTimer = null;
+          if (window.lenis) window.lenis.start();
+        }
       }
 
-      // Zoom scroll-driven: scale 1 → data-scale (4–9) desde el centro del viewport
+      // Zoom scroll-driven: escala 1 → data-scale.
+      // fastP llega a 1 en el 67% del recorrido ZP para que la imagen central
+      // ya sea pantalla completa (100vw×100vh) cuando el carrusel empieza su fade-in.
       if (p >= ZP_ENTER && p <= ZP_LEAVE) {
         const localP = (p - ZP_ENTER) / (ZP_LEAVE - ZP_ENTER);
+        const fastP  = Math.min(1, localP * 1.35);
         items.forEach(item => {
           const depth = parseFloat(item.dataset.scale) || 4;
-          gsap.set(item, { scale: 1 + (depth - 1) * localP });
+          gsap.set(item, { scale: 1 + (depth - 1) * fastP });
         });
       }
     }
