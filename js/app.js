@@ -1420,11 +1420,16 @@ function initLenis() {
   return lenis;
 }
 
-// ── MURO DE IDEAS ─────────────────────────────────────────────
+// ── MURO DE IDEAS (Supabase Realtime) ─────────────────────────
 function initMuro() {
-  const STORAGE_KEY = 'mc_muro_v1';
+  const SUPABASE_URL     = 'https://upopumlywcybfbnevjrq.supabase.co';
+  const SUPABASE_ANON    = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVwb3B1bWx5d2N5YmZibmV2anJxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzcwNTk1MjMsImV4cCI6MjA5MjYzNTUyM30.FltLM26mdV1ZDlM8cbLrw4jNxbWWKU4ePvfPlxKZxO0';
+  const EDGE_FN          = SUPABASE_URL + '/functions/v1/submit-comment';
+
   const form      = document.getElementById('muro-form');
-  const successEl = document.getElementById('muro-success');
+  const toastEl   = document.getElementById('muro-toast');
+  const toastIcon = document.getElementById('muro-toast-icon');
+  const errorEl   = document.getElementById('muro-error');
   const newBtn    = document.getElementById('muro-new-btn');
   const cardsEl   = document.getElementById('muro-cards');
   const emptyEl   = document.getElementById('muro-empty');
@@ -1432,6 +1437,10 @@ function initMuro() {
   const msgEl     = document.getElementById('muro-mensaje');
 
   if (!form || !cardsEl) return;
+  if (!window.supabase) { console.warn('Supabase SDK no cargado.'); return; }
+
+  const db = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON);
+  let totalCount = 0;
 
   function escapeHtml(str) {
     return String(str)
@@ -1439,27 +1448,26 @@ function initMuro() {
       .replace(/"/g,'&quot;').replace(/'/g,'&#039;');
   }
 
-  function formatDate(ts) {
-    const diff = Date.now() - ts;
+  function formatDate(isoStr) {
+    const diff = Date.now() - new Date(isoStr).getTime();
     if (diff < 3600000)  return 'Hace ' + Math.max(1, Math.round(diff / 60000)) + ' min';
     if (diff < 86400000) return 'Hace ' + Math.round(diff / 3600000) + 'h';
-    return new Date(ts).toLocaleDateString('es-CO', { day:'numeric', month:'short' });
+    return new Date(isoStr).toLocaleDateString('es-CO', { day:'numeric', month:'short' });
   }
 
-  function loadPosts() {
-    try { const raw = localStorage.getItem(STORAGE_KEY); return raw ? JSON.parse(raw) : []; }
-    catch { return []; }
+  function updateCount(n) {
+    if (!countEl) return;
+    countEl.textContent = n === 0 ? '' : n === 1 ? '1 propuesta' : n + ' propuestas';
+    countEl.classList.remove('muro-wall-count--bump');
+    void countEl.offsetWidth; // reflow para reiniciar animación
+    countEl.classList.add('muro-wall-count--bump');
   }
 
-  function savePosts(posts) {
-    try { localStorage.setItem(STORAGE_KEY, JSON.stringify(posts.slice(0, 50))); } catch {}
-  }
-
-  function createCard(post, delay = 0) {
+  function createCard(post, delay = 0, realtime = false) {
     const initial = (post.nombre || 'A')[0].toUpperCase();
     const card = document.createElement('div');
-    card.className = 'muro-card';
-    card.style.animationDelay = delay + 'ms';
+    card.className = realtime ? 'muro-card muro-card--realtime' : 'muro-card';
+    if (!realtime) card.style.animationDelay = delay + 'ms';
     card.innerHTML = `
       <div class="muro-card-header">
         <div class="muro-avatar">${initial}</div>
@@ -1467,62 +1475,135 @@ function initMuro() {
           <div class="muro-card-name">${escapeHtml(post.nombre)}</div>
           <div class="muro-card-loc">${escapeHtml(post.municipio)}</div>
         </div>
-        <div class="muro-card-date">${formatDate(post.fecha)}</div>
+        <div class="muro-card-date">${formatDate(post.created_at)}</div>
       </div>
       <div class="muro-card-msg">${escapeHtml(post.mensaje)}</div>`;
     return card;
   }
 
-  function renderPosts(posts) {
+  async function loadPosts() {
+    const { data, error } = await db
+      .from('comentarios')
+      .select('id, nombre, municipio, mensaje, created_at')
+      .order('created_at', { ascending: false })
+      .limit(50);
+
+    if (error) { console.error('Error cargando comentarios:', error); return; }
+
+    totalCount = data.length;
+    updateCount(totalCount);
     cardsEl.innerHTML = '';
-    const sorted = [...posts].sort((a, b) => b.fecha - a.fecha).slice(0, 20);
-    if (sorted.length === 0) {
+
+    if (data.length === 0) {
       if (emptyEl) emptyEl.hidden = false;
     } else {
       if (emptyEl) emptyEl.hidden = true;
-      sorted.forEach((p, i) => cardsEl.appendChild(createCard(p, i * 45)));
-    }
-    if (countEl) {
-      const n = posts.length;
-      countEl.textContent = n === 0 ? '' : n === 1 ? '1 propuesta' : n + ' propuestas';
+      data.forEach((p, i) => cardsEl.appendChild(createCard(p, i * 45)));
     }
   }
 
-  let posts = loadPosts();
-  renderPosts(posts);
+  function subscribeRealtime() {
+    db.channel('muro-inserts')
+      .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'comentarios' }, (payload) => {
+        const post = payload.new;
+        if (emptyEl) emptyEl.hidden = true;
+        const card = createCard(post, 0, true); // realtime=true → animación desde arriba
+        cardsEl.insertBefore(card, cardsEl.firstChild);
+        cardsEl.scrollTo({ top: 0, behavior: 'smooth' });
+        totalCount++;
+        updateCount(totalCount);
+      })
+      .subscribe();
+  }
 
-  form.addEventListener('submit', (e) => {
+  function showError(msg) {
+    if (!errorEl) return;
+    errorEl.textContent = msg;
+    errorEl.hidden = false;
+  }
+
+  function clearError() {
+    if (errorEl) errorEl.hidden = true;
+  }
+
+  form.addEventListener('submit', async (e) => {
     e.preventDefault();
-    const nombre    = document.getElementById('muro-nombre').value.trim();
-    const municipio = document.getElementById('muro-municipio').value.trim();
-    const telefono  = document.getElementById('muro-telefono').value.trim();
-    const mensaje   = msgEl ? msgEl.value.trim() : '';
-    if (!nombre || !municipio || !telefono || !mensaje) return;
+    clearError();
 
-    const newPost = { nombre, municipio, telefono, mensaje, fecha: Date.now() };
-    posts = [newPost, ...posts];
-    savePosts(posts);
+    const nombre          = document.getElementById('muro-nombre').value.trim();
+    const municipio       = document.getElementById('muro-municipio').value.trim();
+    const numero_contacto = document.getElementById('muro-contacto').value.trim();
+    const mensaje         = msgEl ? msgEl.value.trim() : '';
 
-    if (emptyEl) emptyEl.hidden = true;
-    cardsEl.insertBefore(createCard(newPost, 0), cardsEl.firstChild);
-    if (countEl) {
-      const n = posts.length;
-      countEl.textContent = n === 1 ? '1 propuesta' : n + ' propuestas';
-    }
+    if (!nombre || !municipio || !numero_contacto || !mensaje) return;
 
-    form.reset();
-    if (successEl) {
-      successEl.hidden = false;
-      clearTimeout(successEl._timer);
-      successEl._timer = setTimeout(() => { successEl.hidden = true; }, 4000);
+    const btn = form.querySelector('button[type="submit"]');
+    if (btn) { btn.disabled = true; btn.textContent = 'Publicando…'; }
+
+    try {
+      const res = await fetch(EDGE_FN, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'apikey': SUPABASE_ANON,
+          'Authorization': 'Bearer ' + SUPABASE_ANON,
+        },
+        body: JSON.stringify({ nombre, municipio, numero_contacto, mensaje }),
+      });
+
+      const result = await res.json();
+
+      if (!res.ok) {
+        showError(result.error || 'Error al publicar. Intenta de nuevo.');
+        return;
+      }
+
+      form.reset();
+      showToast();
+    } catch (err) {
+      console.error('Error enviando comentario:', err);
+      showError('Error de conexión. Verifica tu internet e intenta de nuevo.');
+    } finally {
+      if (btn) { btn.disabled = false; btn.textContent = 'Publicar en el muro'; }
     }
   });
 
-  if (newBtn) {
-    newBtn.addEventListener('click', () => {
-      if (successEl) { successEl.hidden = true; clearTimeout(successEl._timer); }
+  function showToast() {
+    if (!toastEl) return;
+    clearTimeout(toastEl._timer);
+    toastEl.hidden = false;
+    void toastEl.offsetWidth;
+    toastEl.classList.add('is-visible');
+    if (toastIcon) {
+      toastIcon.style.animation = 'none';
+      void toastIcon.offsetWidth;
+      toastIcon.style.animation = 'checkPop 0.6s cubic-bezier(0.34,1.56,0.64,1) 0.15s both';
+    }
+    toastEl._timer = setTimeout(hideToast, 5000);
+  }
+
+  function hideToast() {
+    if (!toastEl) return;
+    clearTimeout(toastEl._timer);
+    toastEl.classList.remove('is-visible');
+    setTimeout(() => { toastEl.hidden = true; }, 350);
+  }
+
+  if (toastEl) {
+    toastEl.addEventListener('click', (e) => {
+      if (e.target === toastEl) hideToast();
     });
   }
+
+  if (newBtn) {
+    newBtn.addEventListener('click', () => {
+      hideToast();
+      clearError();
+    });
+  }
+
+  loadPosts();
+  subscribeRealtime();
 }
 
 // ── FOOTER REVEAL ─────────────────────────────────────────────
@@ -1530,22 +1611,16 @@ function initFooter() {
   const footer = document.querySelector('.site-footer');
   if (!footer) return;
   const sc = document.getElementById('scroll-container');
-  let footerVisible = false;
 
   ScrollTrigger.create({
     trigger: sc,
     start: 'top top',
     end: 'bottom bottom',
     onUpdate: (self) => {
-      const show = self.progress >= 0.86;
-      if (show && !footerVisible) {
-        footerVisible = true;
-        footer.style.pointerEvents = 'auto';
-        gsap.to(footer, { y: 0, opacity: 1, duration: 0.65, ease: 'power2.out' });
-      } else if (!show && footerVisible) {
-        footerVisible = false;
-        footer.style.pointerEvents = 'none';
-        gsap.to(footer, { y: '100%', opacity: 0, duration: 0.4, ease: 'power2.in' });
+      if (self.progress >= 0.84) {
+        footer.classList.add('is-visible');
+      } else {
+        footer.classList.remove('is-visible');
       }
     }
   });
