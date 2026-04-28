@@ -241,6 +241,24 @@ button { border: none; background: none; cursor: pointer; }
   #cursor-dot, #cursor-ring { display: none; }
 }
 
+/* ── HERO BACKGROUND — fondo plano que se difumina al scrollear ─ */
+#hero-bg {
+  position: fixed;
+  inset: 0;
+  z-index: 3;   /* encima del canvas (z:1), debajo del hero-overlay (z:20) */
+  pointer-events: none;
+  opacity: 1;
+}
+
+.hero-bg-gradient {
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(ellipse 70% 60% at 50% 50%, rgba(27,77,71,0.55) 0%, transparent 70%),
+    radial-gradient(ellipse 120% 80% at 20% 80%, rgba(232,98,26,0.06) 0%, transparent 60%),
+    linear-gradient(160deg, #071210 0%, #0A1A17 40%, #112820 70%, #0A1A17 100%);
+}
+
 /* ── HERO OVERLAY ────────────────────────────────────────────── */
 #hero-overlay {
   position: fixed;
@@ -257,7 +275,7 @@ button { border: none; background: none; cursor: pointer; }
   flex-direction: column;
   align-items: center;
   text-align: center;
-  gap: 1rem;
+  gap: 1.2rem;
   position: relative;
   z-index: 2;
 }
@@ -265,11 +283,11 @@ button { border: none; background: none; cursor: pointer; }
 /* ── HERO FLOATING CARDS ─────────────────────────────────────── */
 .hero-card {
   position: absolute;
-  width: clamp(150px, 17vw, 250px);
+  width: clamp(130px, 15vw, 220px);
   aspect-ratio: 2 / 3;
   overflow: hidden;
   border-radius: 6px;
-  box-shadow: 0 20px 60px rgba(0,0,0,0.6), 0 0 0 1px rgba(232,98,26,0.18);
+  box-shadow: 0 24px 72px rgba(0,0,0,0.7), 0 0 0 1px rgba(232,98,26,0.22);
   will-change: transform;
   opacity: 0;
 }
@@ -282,83 +300,119 @@ button { border: none; background: none; cursor: pointer; }
 }
 
 .hero-card-left {
-  left: 6vw;
+  left: 5vw;
   top: 50%;
+  transform: translateY(-50%) rotate(-6deg);
 }
 
 .hero-card-right {
-  right: 6vw;
+  right: 5vw;
   top: 50%;
+  transform: translateY(-50%) rotate(5deg);
 }
 
-.hero-label {
-  font-family: var(--font-body);
-  font-size: clamp(0.65rem, 1.2vw, 0.85rem);
-  letter-spacing: 0.25em;
-  text-transform: uppercase;
-  color: rgba(245,241,235,0.6);
-  animation: fadeInLabel 0.8s ease forwards;
-  animation-delay: 0.2s;
-  animation-play-state: paused;
-  opacity: 0;
-}
-
-.hero-heading {
+/* ── HERO LOGO (recrea el logo oficial) ─────────────────────── */
+.hero-logo {
   display: flex;
   flex-direction: column;
-  line-height: 0.9;
+  align-items: center;
+  gap: 0;
+  opacity: 0;
+  filter: drop-shadow(0 4px 40px rgba(0,0,0,0.6));
 }
 
-@keyframes wordUp {
-  from { opacity: 0; transform: translateY(60px); }
-  to   { opacity: 1; transform: translateY(0); }
+.hero-logo-top {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.3em;
+  line-height: 1;
 }
 
-@keyframes fadeInLabel {
-  from { opacity: 0; transform: translateY(16px); }
-  to   { opacity: 0.6; transform: translateY(0); }
+.hero-logo-bird {
+  width: clamp(50px, 6.5vw, 100px);
+  color: var(--teal-light);
+  flex-shrink: 0;
+  opacity: 0;
+  transform: translateX(-30px);
+  will-change: transform, opacity;
 }
 
-.hero-word {
+.hero-logo-bird svg { width: 100%; height: auto; display: block; }
+
+.hero-logo-manuel {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: clamp(2.2rem, 6vw, 8rem);
+  color: var(--cream);
+  letter-spacing: 0.04em;
+  text-shadow: 0 2px 30px rgba(0,0,0,0.7);
+  opacity: 0;
+  transform: translateX(-40px);
+  will-change: transform, opacity;
+}
+
+.hero-logo-correa {
   font-family: var(--font-display);
   font-weight: 700;
-  font-size: clamp(5rem, 12vw, 14rem);
-  text-transform: uppercase;
-  color: var(--cream);
-  display: block;
+  font-size: clamp(3.5rem, 11vw, 14rem);
+  color: var(--orange);
+  line-height: 0.88;
+  letter-spacing: -0.01em;
+  text-shadow: 0 4px 60px rgba(232,98,26,0.35), 0 2px 20px rgba(0,0,0,0.8);
   opacity: 0;
-  text-shadow: 0 2px 40px rgba(0,0,0,0.8), 0 0 80px rgba(0,0,0,0.5);
-  animation: wordUp 0.9s cubic-bezier(0.22, 1, 0.36, 1) forwards;
-  animation-play-state: paused;
+  transform: translateY(40px);
+  will-change: transform, opacity;
 }
 
-.hero-word:nth-child(1) { animation-delay: 0.3s; }
-.hero-word:nth-child(2) {
-  animation-delay: 0.5s;
-  color: var(--orange);
+.hero-logo-banner {
+  margin-top: 0.55em;
+  background: var(--teal);
+  padding: 0.28em 1.4em;
+  display: inline-flex;
+  align-items: center;
+  opacity: 0;
+  transform: scaleX(0);
+  transform-origin: left center;
+  will-change: transform, opacity;
+}
+
+.hero-logo-banner span {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: clamp(0.45rem, 1.1vw, 0.95rem);
+  letter-spacing: 0.22em;
+  color: #fff;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.hero-logo-year {
+  font-family: var(--font-display);
+  font-size: clamp(0.55rem, 1vw, 0.85rem);
+  letter-spacing: 0.45em;
+  color: var(--teal-light);
+  margin-top: 0.5em;
+  opacity: 0;
+  will-change: opacity;
 }
 
 .hero-tagline {
   font-family: var(--font-display);
-  font-size: clamp(1rem, 2vw, 1.4rem);
+  font-size: clamp(0.85rem, 1.6vw, 1.3rem);
   font-weight: 300;
-  letter-spacing: 0.1em;
+  letter-spacing: 0.12em;
   color: var(--cream-dim);
-  animation: fadeInLabel 0.8s ease forwards;
-  animation-delay: 0.7s;
-  animation-play-state: paused;
   opacity: 0;
+  will-change: opacity;
 }
 
 .scroll-indicator {
   display: flex;
   align-items: center;
   gap: 0.75rem;
-  margin-top: 0.5rem;
-  animation: fadeInLabel 0.8s ease forwards;
-  animation-delay: 1s;
-  animation-play-state: paused;
   opacity: 0;
+  will-change: opacity;
 }
 
 .scroll-line {
@@ -1461,4 +1515,177 @@ canvas#map-particles {
 
 @media (max-width: 768px) {
   .section-muro-wall { display: none; }
+}
+
+/* ── AGENDA LEGISLATIVA ──────────────────────────────────────── */
+.section-agenda {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: auto;
+}
+
+.agenda-inner {
+  width: 90vw;
+  max-width: 1180px;
+  padding: 2rem 0;
+  position: relative;
+  z-index: 2;
+}
+
+.agenda-header {
+  margin-bottom: 2.2rem;
+}
+
+.agenda-title {
+  font-family: var(--font-display);
+  font-size: clamp(2rem, 4vw, 3.8rem);
+  font-weight: 700;
+  color: var(--cream);
+  line-height: 1.05;
+  margin-top: 0.5rem;
+  opacity: 0;
+  will-change: opacity, transform;
+}
+
+.agenda-title em {
+  color: var(--orange);
+  font-style: normal;
+}
+
+.agenda-desc {
+  font-family: var(--font-body);
+  font-size: 0.88rem;
+  color: var(--cream-dim);
+  line-height: 1.7;
+  max-width: 480px;
+  margin-top: 0.6rem;
+  opacity: 0;
+  will-change: opacity;
+}
+
+.agenda-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1rem;
+}
+
+.agenda-card {
+  background: rgba(5, 13, 11, 0.72);
+  border: 1px solid rgba(27, 77, 71, 0.4);
+  border-radius: 6px;
+  padding: 1.35rem 1.2rem;
+  transition: border-color 0.3s, transform 0.3s;
+  opacity: 0;
+  pointer-events: auto;
+  will-change: opacity, transform;
+}
+
+.agenda-card:hover {
+  border-color: rgba(232, 98, 26, 0.45);
+  transform: translateY(-3px);
+}
+
+.agenda-card-num {
+  font-family: var(--font-display);
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.15em;
+  color: var(--orange);
+  margin-bottom: 0.6rem;
+}
+
+.agenda-card-icon {
+  width: 28px;
+  height: 28px;
+  color: var(--teal-light);
+  margin-bottom: 0.75rem;
+}
+
+.agenda-card-icon svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+.agenda-card-title {
+  font-family: var(--font-display);
+  font-size: clamp(0.82rem, 1.1vw, 1rem);
+  font-weight: 600;
+  color: var(--cream);
+  margin-bottom: 0.45rem;
+  line-height: 1.3;
+}
+
+.agenda-card-body {
+  font-family: var(--font-body);
+  font-size: 0.78rem;
+  line-height: 1.6;
+  color: var(--cream-dim);
+}
+
+/* ── ZOOM PARALLAX GALLERY ───────────────────────────────────── */
+.zp-stage {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+}
+
+/* Wrapper full-viewport: GSAP aplica scale() desde el centro del viewport */
+.zp-item {
+  position: absolute;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  will-change: transform;
+  transform-origin: center center;
+  opacity: 0;
+}
+
+/* Inner: tamaño + offset desde el centro via CSS transform */
+.zp-inner {
+  position: relative;
+  flex-shrink: 0;
+  overflow: hidden;
+  border-radius: 4px;
+  box-shadow: 0 30px 80px rgba(0,0,0,0.6), 0 0 0 1px rgba(27,77,71,0.25);
+}
+
+.zp-inner img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+/* Tamaño + offset desde el centro por índice */
+.zp-item-0 .zp-inner { width: 25vw; height: 25vh; transform: translate(0, 0); }
+.zp-item-1 .zp-inner { width: 35vw; height: 30vh; transform: translate(5vw, -30vh); }
+.zp-item-2 .zp-inner { width: 20vw; height: 45vh; transform: translate(-25vw, -10vh); }
+.zp-item-3 .zp-inner { width: 25vw; height: 25vh; transform: translate(27.5vw, 0); }
+.zp-item-4 .zp-inner { width: 20vw; height: 25vh; transform: translate(5vw, 27.5vh); }
+.zp-item-5 .zp-inner { width: 30vw; height: 25vh; transform: translate(-22.5vw, 27.5vh); }
+.zp-item-6 .zp-inner { width: 15vw; height: 15vh; transform: translate(25vw, 22.5vh); }
+
+@media (max-width: 768px) {
+  /* Agenda — 1 column on mobile */
+  .agenda-grid { grid-template-columns: 1fr; gap: 0.75rem; }
+  .agenda-inner { width: 92vw; }
+  .agenda-title { font-size: clamp(1.8rem, 7vw, 3rem); }
+
+  /* Zoom parallax mobile: offsets reducidos */
+  .zp-item-1 .zp-inner { transform: translate(0, -18vh); }
+  .zp-item-2 .zp-inner { transform: translate(-12vw, -8vh); width: 28vw; height: 36vh; }
+  .zp-item-3 .zp-inner { transform: translate(18vw, 0); width: 22vw; }
+  .zp-item-4 .zp-inner { transform: translate(0, 18vh); }
+  .zp-item-5 .zp-inner { transform: translate(-14vw, 18vh); width: 28vw; }
+  .zp-item-6 .zp-inner { display: none; }
+}
+
+@media (max-width: 480px) {
+  .agenda-grid { gap: 0.6rem; }
+  .agenda-card { padding: 1rem; }
 }

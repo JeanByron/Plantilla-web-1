@@ -16,12 +16,12 @@ const IMAGE_SCALE   = 1.0;   // 1.0 = full-cover sin barras laterales
 const WINDOW        = 0.06;  // ventana de animación por sección
 const FRAME_EXT     = 'jpg';
 
-// Dark overlay: sección stats (62–72% en 2000vh)
-const STATS_ENTER   = 0.62;
-const STATS_LEAVE   = 0.72;
+// Dark overlay: sección stats (77–85% en 2000vh)
+const STATS_ENTER   = 0.77;
+const STATS_LEAVE   = 0.85;
 
-// Hero desaparece al 7% de scroll (antes de que entre la sección 1 al 8%)
-const HERO_FADE_END = 0.07;
+// Hero desaparece al 12% de scroll
+const HERO_FADE_END = 0.12;
 
 // ── MAP DATA (v1 real vote counts) ────────────────────────────
 const MAP_VOTES = {
@@ -77,7 +77,21 @@ const MAP_MUN_DATA = {
 
 function mapVoteColor(v) {
   const t = Math.pow(v / MAP_MAX_V, 0.44);
-  return `rgb(${Math.round(18+(230-18)*t)},${Math.round(58+(95-58)*t)},${Math.round(52+(26-52)*t)})`;
+  let r, g, b;
+  if (t < 0.45) {
+    // dark teal (#0A1A17) → teal (#1B4D47)
+    const s = t / 0.45;
+    r = Math.round(10  + (27  - 10)  * s);
+    g = Math.round(26  + (77  - 26)  * s);
+    b = Math.round(23  + (71  - 23)  * s);
+  } else {
+    // teal (#1B4D47) → orange (#E8621A)
+    const s = (t - 0.45) / 0.55;
+    r = Math.round(27  + (232 - 27)  * s);
+    g = Math.round(77  + (98  - 77)  * s);
+    b = Math.round(71  + (26  - 71)  * s);
+  }
+  return `rgb(${r},${g},${b})`;
 }
 
 // ── FRAME LOADING ─────────────────────────────────────────────
@@ -228,9 +242,13 @@ function drawGenerativeFrame(frameIndex, maxFrames) {
 }
 
 // ── FRAME-TO-SCROLL BINDING ──────────────────────────────────
-const GALLERY_ENTER = 0.32;
-const GALLERY_LEAVE = 0.48;
-const GALLERY_FADE  = 0.058;
+const GALLERY_ENTER  = 0.48;   // flat bg: cubre zoom parallax + carrusel
+const GALLERY_LEAVE  = 0.77;
+const GALLERY_FADE   = 0.035;
+const ZP_ENTER       = 0.48;   // zoom parallax
+const ZP_LEAVE       = 0.62;
+const CAROUSEL_ENTER = 0.62;   // carrusel Oryzo
+const CAROUSEL_LEAVE = 0.77;
 
 function drawFlatBg(cw, ch) {
   ctx.fillStyle = '#0A1A17';
@@ -724,8 +742,19 @@ function setupSectionAnimation(section) {
 
   if (type === 'map-reveal') {
     setupMapAnimation(section, tl);
-  } else if (type === 'gallery-reveal') {
+  } else if (type === 'gallery-reveal' || type === 'zoom-parallax' || type === 'oryzo-carousel') {
     return;
+  } else if (type === 'stagger-cards') {
+    // Agenda Legislativa: header first, then cards staggered
+    const headerEls = section.querySelectorAll('.section-label, .agenda-title, .agenda-desc');
+    const cards     = section.querySelectorAll('.agenda-card');
+    tl
+      .fromTo(headerEls,
+        { y: 28, opacity: 0 },
+        { y: 0, opacity: 1, stagger: 0.1, duration: 0.75, ease: 'power3.out' }, 0)
+      .fromTo(cards,
+        { y: 32, opacity: 0 },
+        { y: 0, opacity: 1, stagger: 0.06, duration: 0.65, ease: 'power2.out' }, 0.35);
   } else {
     const children = section.querySelectorAll(
       '.section-label, .section-heading, .section-body, .section-note, .section-link, ' +
@@ -964,7 +993,7 @@ function initMapTooltip() {
 
 // ── GALLERY CAROUSEL — Oryzo-style pinned, scroll-driven ──────
 function initGallery() {
-  const section = document.querySelector('.section-gallery');
+  const section = document.querySelector('.section-carousel');
   const track   = document.getElementById('gallery-track');
   const counter = document.querySelector('.gallery-counter');
   const dotsEl  = document.getElementById('gallery-dots');
@@ -1143,7 +1172,7 @@ function initGallery() {
 
   // Scroll-driven: section visibility + index advancement
   const sc = document.getElementById('scroll-container');
-  const stepSize = (GALLERY_LEAVE - GALLERY_ENTER) / (items.length * 2);
+  const stepSize = (CAROUSEL_LEAVE - CAROUSEL_ENTER) / (items.length * 2);
 
   ScrollTrigger.create({
     trigger: sc,
@@ -1158,20 +1187,20 @@ function initGallery() {
       onScrollActivity();
 
       // Fade section in/out
-      if (p >= GALLERY_ENTER && p <= GALLERY_LEAVE) {
+      if (p >= CAROUSEL_ENTER && p <= CAROUSEL_LEAVE) {
         section.style.opacity       = '1';
         section.style.visibility    = 'visible';
         section.style.pointerEvents = 'auto';
-      } else if (p > GALLERY_ENTER - FADE && p < GALLERY_ENTER) {
-        const t = (p - (GALLERY_ENTER - FADE)) / FADE;
+      } else if (p > CAROUSEL_ENTER - FADE && p < CAROUSEL_ENTER) {
+        const t = (p - (CAROUSEL_ENTER - FADE)) / FADE;
         section.style.opacity       = Math.max(0, t).toFixed(3);
         section.style.visibility    = 'visible';
         section.style.pointerEvents = 'none';
         clearInterval(autoTimer); autoTimer = null;
         isScrolling = false; clearTimeout(scrollStopTimer);
         galleryScrollBase = -1; // resetear ancla al salir
-      } else if (p > GALLERY_LEAVE && p < GALLERY_LEAVE + FADE) {
-        const t = 1 - (p - GALLERY_LEAVE) / FADE;
+      } else if (p > CAROUSEL_LEAVE && p < CAROUSEL_LEAVE + FADE) {
+        const t = 1 - (p - CAROUSEL_LEAVE) / FADE;
         section.style.opacity       = Math.max(0, t).toFixed(3);
         section.style.visibility    = 'visible';
         section.style.pointerEvents = 'none';
@@ -1188,10 +1217,10 @@ function initGallery() {
       }
 
       // Avance del carrusel por scroll — sistema de ancla relativa
-      if (p >= GALLERY_ENTER && p <= GALLERY_LEAVE) {
+      if (p >= CAROUSEL_ENTER && p <= CAROUSEL_LEAVE) {
         if (galleryScrollBase < 0) {
           // Primera vez que entramos: anclar en imagen 0 desde el inicio
-          galleryScrollBase = GALLERY_ENTER;
+          galleryScrollBase = CAROUSEL_ENTER;
           galleryBaseIdx    = 0;
           if (currentIndex !== 0) { lastIdx = 0; goTo(0, false); }
         }
@@ -1202,7 +1231,7 @@ function initGallery() {
         if (idx !== lastIdx) {
           lastIdx           = idx;
           // Actualizar ancla al paso exacto donde estamos ahora
-          galleryScrollBase = GALLERY_ENTER + idx * stepSize;
+          galleryScrollBase = CAROUSEL_ENTER + idx * stepSize;
           galleryBaseIdx    = idx;
           goTo(idx, true);
         }
@@ -1265,20 +1294,111 @@ function slideOutLoader() {
 }
 
 function initHeroEntrance() {
-  document.querySelectorAll('.hero-word, .hero-label, .hero-tagline, .scroll-indicator').forEach(el => {
-    el.style.animationPlayState = 'running';
-  });
+  const logo   = document.querySelector('.hero-logo');
+  const bird   = document.querySelector('.hero-logo-bird');
+  const manuel = document.querySelector('.hero-logo-manuel');
+  const correa = document.querySelector('.hero-logo-correa');
+  const banner = document.querySelector('.hero-logo-banner');
+  const year   = document.querySelector('.hero-logo-year');
+  const tag    = document.querySelector('.hero-tagline');
+  const scroll = document.querySelector('.scroll-indicator');
+  const cardL  = document.querySelector('.hero-card-left');
+  const cardR  = document.querySelector('.hero-card-right');
 
-  const cardL = document.querySelector('.hero-card-left');
-  const cardR = document.querySelector('.hero-card-right');
-  if (cardL) gsap.fromTo(cardL,
-    { opacity: 0, yPercent: -38, rotation: -11, x: -40 },
-    { opacity: 1, x: 0, duration: 1.3, delay: 0.5, ease: 'power3.out' }
-  );
-  if (cardR) gsap.fromTo(cardR,
-    { opacity: 0, yPercent: -58, rotation: 9, x: 40 },
-    { opacity: 1, x: 0, duration: 1.3, delay: 0.7, ease: 'power3.out' }
-  );
+  if (!logo) return;
+
+  // Logo container visible — children animate separately
+  gsap.set(logo, { opacity: 1 });
+
+  const tl = gsap.timeline({ delay: 0.2 });
+
+  if (bird)   tl.to(bird,   { opacity: 1, x: 0,       duration: 0.8,  ease: 'power3.out'  }, 0);
+  if (manuel) tl.to(manuel, { opacity: 1, x: 0,       duration: 0.85, ease: 'power3.out'  }, 0.1);
+  if (correa) tl.to(correa, { opacity: 1, y: 0,       duration: 0.95, ease: 'power3.out'  }, 0.26);
+  if (banner) tl.to(banner, { opacity: 1, scaleX: 1,  duration: 0.7,  ease: 'power3.inOut'}, 0.55);
+  if (year)   tl.to(year,   { opacity: 1,             duration: 0.6,  ease: 'power2.out'  }, 0.75);
+  if (tag)    tl.to(tag,    { opacity: 1,             duration: 0.55, ease: 'power2.out'  }, 0.9);
+  if (scroll) tl.to(scroll, { opacity: 1,             duration: 0.5,  ease: 'power2.out'  }, 1.1);
+
+  if (cardL) tl.fromTo(cardL,
+    { opacity: 0, y: -50, rotation: -8, x: -50 },
+    { opacity: 1, y: 0,   x: 0, duration: 1.2, ease: 'power3.out' }, 0.3);
+  if (cardR) tl.fromTo(cardR,
+    { opacity: 0, y: -60, rotation: 7, x: 50 },
+    { opacity: 1, y: 0,   x: 0, duration: 1.2, ease: 'power3.out' }, 0.45);
+}
+
+// ── HERO BG FADE ──────────────────────────────────────────────
+function initHeroBg() {
+  const heroBg = document.getElementById('hero-bg');
+  if (!heroBg) return;
+  ScrollTrigger.create({
+    trigger: document.getElementById('scroll-container'),
+    start: 'top top',
+    end: 'bottom bottom',
+    scrub: true,
+    onUpdate: (self) => {
+      const opacity = Math.max(0, 1 - self.progress / HERO_FADE_END);
+      heroBg.style.opacity = opacity;
+    }
+  });
+}
+
+// ── ZOOM PARALLAX GALLERY ──────────────────────────────────────
+function initZoomParallax() {
+  const section = document.querySelector('.section-zp');
+  if (!section) return;
+  const items = [...section.querySelectorAll('.zp-item')];
+  if (!items.length) return;
+
+  const FADE = GALLERY_FADE;
+  gsap.set(items, { opacity: 0, scale: 1 });
+
+  let zpEntered = false;
+  const sc = document.getElementById('scroll-container');
+
+  ScrollTrigger.create({
+    trigger: sc,
+    start: 'top top',
+    end: 'bottom bottom',
+    scrub: true,
+    onUpdate: (self) => {
+      const p = self.progress;
+
+      // Visibilidad
+      if (p >= ZP_ENTER && p <= ZP_LEAVE) {
+        section.style.opacity    = '1';
+        section.style.visibility = 'visible';
+      } else if (p > ZP_ENTER - FADE && p < ZP_ENTER) {
+        section.style.opacity    = Math.max(0, (p - (ZP_ENTER - FADE)) / FADE).toFixed(3);
+        section.style.visibility = 'visible';
+      } else if (p > ZP_LEAVE && p < ZP_LEAVE + FADE) {
+        section.style.opacity    = Math.max(0, 1 - (p - ZP_LEAVE) / FADE).toFixed(3);
+        section.style.visibility = 'visible';
+      } else {
+        section.style.opacity    = '0';
+        section.style.visibility = 'hidden';
+      }
+
+      // Entrada: stagger items
+      if (!zpEntered && p >= ZP_ENTER) {
+        zpEntered = true;
+        gsap.to(items, { opacity: 1, duration: 0.55, stagger: 0.07, ease: 'power2.out' });
+      } else if (zpEntered && p < ZP_ENTER - FADE) {
+        zpEntered = false;
+        gsap.set(items, { opacity: 0, scale: 1 });
+      }
+
+      // Zoom scroll-driven: scale 1 → data-scale (4–9) desde el centro del viewport
+      if (p >= ZP_ENTER && p <= ZP_LEAVE) {
+        const localP = (p - ZP_ENTER) / (ZP_LEAVE - ZP_ENTER);
+        items.forEach(item => {
+          const depth = parseFloat(item.dataset.scale) || 4;
+          gsap.set(item, { scale: 1 + (depth - 1) * localP });
+        });
+      }
+    }
+  });
 }
 
 // ── LENIS ─────────────────────────────────────────────────────
@@ -1471,8 +1591,10 @@ async function init() {
   initDarkOverlay();
   initBgPhotoOverlay();
   initHeroFade();
+  initHeroBg();
   sections.forEach(setupSectionAnimation);
   initCounters();
+  initZoomParallax();
   initGallery();
   initHeader();
   initMuro();

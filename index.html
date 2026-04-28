@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Manuel Correa — Caldas al Congreso 2026</title>
-  <meta name="description" content="Manuel Correa, candidato al Congreso por Caldas. Propuestas reales para los 27 municipios de Caldas." />
+  <title>Manuel Correa — Representante a la Cámara 2026</title>
+  <meta name="description" content="Manuel Correa, candidato a Representante a la Cámara por Caldas. Propuestas reales para los 27 municipios." />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@300;400;500;600;700&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet" />
@@ -15,10 +15,8 @@
   <!-- 1. LOADER -->
   <div id="loader">
     <div class="loader-brand">Manuel<em>Correa</em></div>
-    <div class="loader-tagline">Representante al Congreso</div>
-    <div class="loader-bar-wrap">
-      <div id="loader-bar"></div>
-    </div>
+    <div class="loader-tagline">Representante a la Cámara · Caldas 2026</div>
+    <div class="loader-bar-wrap"><div id="loader-bar"></div></div>
     <div id="loader-percent">0%</div>
   </div>
 
@@ -29,8 +27,8 @@
       <ul class="nav-links">
         <li><a href="#inicio">Inicio</a></li>
         <li><a href="#caldas">Caldas</a></li>
+        <li><a href="#agenda">Agenda</a></li>
         <li><a href="#galeria">Galería</a></li>
-        <li><a href="#propuestas">Propuestas</a></li>
         <li><a href="#contacto" class="nav-cta">Únete</a></li>
       </ul>
       <button class="nav-toggle" aria-label="Menú">
@@ -39,25 +37,78 @@
     </nav>
   </header>
 
-  <!-- 3. CANVAS (fixed, full viewport, SIN clip-path) -->
+  <!-- 3. CANVAS (fixed, full viewport) -->
   <div class="canvas-wrap">
     <canvas id="canvas"></canvas>
   </div>
 
-  <!-- 4. HERO OVERLAY (fixed, fuera del scroll container) -->
+  <!-- 4. HERO BACKGROUND — fondo plano que se difumina al scrollear -->
+  <div id="hero-bg">
+    <div class="hero-bg-gradient"></div>
+  </div>
+
+  <!-- 5. HERO OVERLAY (fixed) -->
   <div id="hero-overlay">
+
+    <!-- Foto flotante izquierda -->
     <div class="hero-card hero-card-left">
       <img src="images/21.jpeg" alt="Manuel Correa" />
     </div>
+    <!-- Foto flotante derecha -->
     <div class="hero-card hero-card-right">
       <img src="images/1.jpeg" alt="Manuel Correa en campaña" />
     </div>
+
+    <!-- Logo principal -->
     <div class="hero-content">
-      <div class="hero-label">Candidato al Congreso · Caldas 2026</div>
-      <h1 class="hero-heading">
-        <span class="hero-word">MANUEL</span>
-        <span class="hero-word">CORREA</span>
-      </h1>
+      <div class="hero-logo">
+
+        <!-- Colibri + "Manuel" en línea -->
+        <div class="hero-logo-top">
+          <div class="hero-logo-bird">
+            <!-- SVG Colibri — recrea fielmente el logo oficial -->
+            <svg viewBox="0 0 340 230" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+              <!-- Ala superior grande -->
+              <path d="M10,105 C25,45 80,15 155,55 C115,58 72,72 60,98 Z" fill="currentColor"/>
+              <!-- Ala superior 2 -->
+              <path d="M28,115 C42,62 95,40 155,68 C118,70 85,82 72,106 Z" fill="currentColor" opacity="0.65"/>
+              <!-- Ala inferior / secundaria -->
+              <path d="M45,122 C58,85 105,68 155,80 C125,82 98,92 88,112 Z" fill="currentColor" opacity="0.4"/>
+              <!-- Cuerpo -->
+              <ellipse cx="175" cy="110" rx="62" ry="24" transform="rotate(-14 175 110)" fill="currentColor"/>
+              <!-- Cabeza -->
+              <circle cx="222" cy="88" r="26" fill="currentColor"/>
+              <!-- Ojo -->
+              <circle cx="231" cy="83" r="7" fill="rgba(255,255,255,0.25)"/>
+              <circle cx="233" cy="82" r="3.5" fill="#071210"/>
+              <!-- Brillo ojo -->
+              <circle cx="235" cy="80" r="1.2" fill="rgba(255,255,255,0.7)"/>
+              <!-- Pico largo -->
+              <path d="M243,83 L335,66 L243,95 Z" fill="currentColor"/>
+              <!-- Cola superior -->
+              <path d="M118,128 C88,152 55,168 28,176 C50,160 76,148 94,136 Z" fill="currentColor"/>
+              <!-- Cola media -->
+              <path d="M112,138 C78,166 42,186 14,196 C40,178 68,162 90,148 Z" fill="currentColor" opacity="0.7"/>
+              <!-- Cola inferior -->
+              <path d="M122,122 C96,142 74,156 52,164 C68,152 90,138 108,126 Z" fill="currentColor" opacity="0.45"/>
+            </svg>
+          </div>
+          <div class="hero-logo-manuel">Manuel</div>
+        </div>
+
+        <!-- CORREA grande -->
+        <div class="hero-logo-correa">CORREA</div>
+
+        <!-- Banner "Representante a la Cámara" -->
+        <div class="hero-logo-banner">
+          <span>REPRESENTANTE A LA CÁMARA</span>
+        </div>
+
+        <!-- Año -->
+        <div class="hero-logo-year">2 0 2 6 &nbsp;&nbsp;—&nbsp;&nbsp; 2 0 3 0</div>
+
+      </div>
+
       <p class="hero-tagline">27 municipios. Una sola voz.</p>
       <div class="scroll-indicator">
         <span class="scroll-line"></span>
@@ -66,22 +117,22 @@
     </div>
   </div>
 
-  <!-- 5. DARK OVERLAY (para sección stats) -->
+  <!-- 6. DARK OVERLAY (stats) -->
   <div id="dark-overlay"></div>
 
-  <!-- 5b. FONDO DIFUMINADO post-galería -->
+  <!-- 6b. FONDO DIFUMINADO post-galería -->
   <div id="bg-photo">
     <img src="images/20.jpeg" alt="" loading="lazy"/>
   </div>
 
-  <!-- 6. SCROLL CONTAINER (2000vh — 600vh dedicados a galería) -->
+  <!-- 7. SCROLL CONTAINER — 2000vh -->
   <div id="scroll-container">
 
-    <!-- SECTION 1: Quién es — align-left, fade-up, 8%–18% -->
+    <!-- SECTION 1: Presentación — 8–19% -->
     <section
       class="scroll-section section-content align-left"
       data-enter="8"
-      data-leave="18"
+      data-leave="19"
       data-animation="fade-up"
       id="inicio"
     >
@@ -100,11 +151,11 @@
       </div>
     </section>
 
-    <!-- SECTION 2: Mapa de Caldas — center, map-reveal, 18%–32% -->
+    <!-- SECTION 2: Mapa de Caldas — 19–33% -->
     <section
       class="scroll-section section-map"
-      data-enter="18"
-      data-leave="32"
+      data-enter="19"
+      data-leave="33"
       data-animation="map-reveal"
       id="caldas"
     >
@@ -113,7 +164,7 @@
           <div>
             <div class="section-label map-label">002 / El Territorio</div>
             <h2 class="map-title">Caldas votó<br><em style="color:var(--orange)">municipio a municipio</em></h2>
-            <p class="map-desc-top">Explora la presencia en cada uno de los 27 municipios. Pasa el cursor para ver el detalle.</p>
+            <p class="map-desc-top">Explora la presencia en cada uno de los 27 municipios.</p>
           </div>
           <div class="mapa-total">
             <div class="mapa-total-num" id="total-counter">0</div>
@@ -149,114 +200,203 @@
       </div>
     </section>
 
-    <!-- SECTION 3: Galería — full-width, gallery-reveal, 32%–62% (600vh = 50vh por imagen) -->
+    <!-- SECTION 3: Agenda Legislativa — 33–48% -->
     <section
-      class="scroll-section section-gallery"
-      data-enter="32"
+      class="scroll-section section-agenda"
+      data-enter="33"
+      data-leave="48"
+      data-animation="stagger-cards"
+      id="agenda"
+    >
+      <div class="agenda-inner">
+        <div class="agenda-header">
+          <span class="section-label">003 / Agenda</span>
+          <h2 class="agenda-title">9 Proyectos<br><em>de Ley</em></h2>
+          <p class="agenda-desc">Compromisos concretos que transformarán Caldas desde el Congreso de la República.</p>
+        </div>
+        <div class="agenda-grid">
+
+          <div class="agenda-card" data-delay="0">
+            <div class="agenda-card-num">01</div>
+            <div class="agenda-card-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M4.5 12.75l6 6 9-13.5"/></svg>
+            </div>
+            <h3 class="agenda-card-title">Ley de Salud Rural Universal</h3>
+            <p class="agenda-card-body">Cobertura total de servicios de salud en las 27 veredas y corregimientos de Caldas.</p>
+          </div>
+
+          <div class="agenda-card" data-delay="1">
+            <div class="agenda-card-num">02</div>
+            <div class="agenda-card-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M8.288 15.038a5.25 5.25 0 017.424 0M5.106 11.856c3.807-3.808 9.98-3.808 13.788 0M1.924 8.674c5.565-5.565 14.587-5.565 20.152 0M12.53 18.22l-.53.53-.53-.53a.75.75 0 011.06 0z"/></svg>
+            </div>
+            <h3 class="agenda-card-title">Fondo Conectividad Digital Caldas</h3>
+            <p class="agenda-card-body">Internet de alta velocidad para escuelas y centros comunitarios en zonas rurales.</p>
+          </div>
+
+          <div class="agenda-card" data-delay="2">
+            <div class="agenda-card-num">03</div>
+            <div class="agenda-card-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M4.26 10.147a60.436 60.436 0 00-.491 6.347A48.627 48.627 0 0112 20.904a48.627 48.627 0 018.232-4.41 60.46 60.46 0 00-.491-6.347m-15.482 0a50.57 50.57 0 00-2.658-.813A59.905 59.905 0 0112 3.493a59.902 59.902 0 0110.399 5.84c-.896.248-1.783.52-2.658.814m-15.482 0A50.697 50.697 0 0112 13.489a50.702 50.702 0 017.74-3.342M6.75 15a.75.75 0 100-1.5.75.75 0 000 1.5zm0 0v-3.675A55.378 55.378 0 0112 8.443m-7.007 11.55A5.981 5.981 0 006.75 15.75v-1.5"/></svg>
+            </div>
+            <h3 class="agenda-card-title">Reforma Educación Técnica Municipal</h3>
+            <p class="agenda-card-body">Formación técnica y tecnológica articulada con las necesidades productivas de cada municipio.</p>
+          </div>
+
+          <div class="agenda-card" data-delay="3">
+            <div class="agenda-card-num">04</div>
+            <div class="agenda-card-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 21a9.004 9.004 0 008.716-6.747M12 21a9.004 9.004 0 01-8.716-6.747M12 21c2.485 0 4.5-4.03 4.5-9S14.485 3 12 3m0 18c-2.485 0-4.5-4.03-4.5-9S9.515 3 12 3m0 0a8.997 8.997 0 017.843 4.582M12 3a8.997 8.997 0 00-7.843 4.582m15.686 0A11.953 11.953 0 0112 10.5c-2.998 0-5.74-1.1-7.843-2.918m15.686 0A8.959 8.959 0 0121 12c0 .778-.099 1.533-.284 2.253m0 0A17.919 17.919 0 0112 16.5c-3.162 0-6.133-.815-8.716-2.247m0 0A9.015 9.015 0 013 12c0-1.605.42-3.113 1.157-4.418"/></svg>
+            </div>
+            <h3 class="agenda-card-title">Plan de Turismo Cafetero</h3>
+            <p class="agenda-card-body">Circuitos turísticos que posicionen el Paisaje Cultural Cafetero como destino mundial.</p>
+          </div>
+
+          <div class="agenda-card" data-delay="4">
+            <div class="agenda-card-num">05</div>
+            <div class="agenda-card-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3.75 6A2.25 2.25 0 016 3.75h2.25A2.25 2.25 0 0110.5 6v2.25a2.25 2.25 0 01-2.25 2.25H6a2.25 2.25 0 01-2.25-2.25V6zM3.75 15.75A2.25 2.25 0 016 13.5h2.25a2.25 2.25 0 012.25 2.25V18a2.25 2.25 0 01-2.25 2.25H6A2.25 2.25 0 013.75 18v-2.25zM13.5 6a2.25 2.25 0 012.25-2.25H18A2.25 2.25 0 0120.25 6v2.25A2.25 2.25 0 0118 10.5h-2.25a2.25 2.25 0 01-2.25-2.25V6zM13.5 15.75a2.25 2.25 0 012.25-2.25H18a2.25 2.25 0 012.25 2.25V18A2.25 2.25 0 0118 20.25h-2.25A2.25 2.25 0 0113.5 18v-2.25z"/></svg>
+            </div>
+            <h3 class="agenda-card-title">Ley Vías Terciarias Caldas</h3>
+            <p class="agenda-card-body">Pavimentación y mantenimiento de vías rurales que conecten productores con mercados.</p>
+          </div>
+
+          <div class="agenda-card" data-delay="5">
+            <div class="agenda-card-num">06</div>
+            <div class="agenda-card-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+            </div>
+            <h3 class="agenda-card-title">Programa Nacional Cafetero</h3>
+            <p class="agenda-card-body">Garantías de precio justo, tecnificación y seguro de cosecha para los caficultores caldenses.</p>
+          </div>
+
+          <div class="agenda-card" data-delay="6">
+            <div class="agenda-card-num">07</div>
+            <div class="agenda-card-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M18 18.72a9.094 9.094 0 003.741-.479 3 3 0 00-4.682-2.72m.94 3.198l.001.031c0 .225-.012.447-.037.666A11.944 11.944 0 0112 21c-2.17 0-4.207-.576-5.963-1.584A6.062 6.062 0 016 18.719m12 0a5.971 5.971 0 00-.941-3.197m0 0A5.995 5.995 0 0012 12.75a5.995 5.995 0 00-5.058 2.772m0 0a3 3 0 00-4.681 2.72 8.986 8.986 0 003.74.477m.94-3.197a5.971 5.971 0 00-.94 3.197M15 6.75a3 3 0 11-6 0 3 3 0 016 0zm6 3a2.25 2.25 0 11-4.5 0 2.25 2.25 0 014.5 0zm-13.5 0a2.25 2.25 0 11-4.5 0 2.25 2.25 0 014.5 0z"/></svg>
+            </div>
+            <h3 class="agenda-card-title">Derechos Étnicos y Territoriales</h3>
+            <p class="agenda-card-body">Protección legislativa de comunidades indígenas Emberá-Chamí y afrodescendientes de Caldas.</p>
+          </div>
+
+          <div class="agenda-card" data-delay="7">
+            <div class="agenda-card-num">08</div>
+            <div class="agenda-card-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 3v2.25m6.364.386l-1.591 1.591M21 12h-2.25m-.386 6.364l-1.591-1.591M12 18.75V21m-4.773-4.227l-1.591 1.591M5.25 12H3m4.227-4.773L5.636 5.636M15.75 12a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0z"/></svg>
+            </div>
+            <h3 class="agenda-card-title">Energías Renovables Rural</h3>
+            <p class="agenda-card-body">Electrificación solar y mini-redes para municipios sin cobertura energética confiable.</p>
+          </div>
+
+          <div class="agenda-card" data-delay="8">
+            <div class="agenda-card-num">09</div>
+            <div class="agenda-card-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M2.25 12l8.954-8.955c.44-.439 1.152-.439 1.591 0L21.75 12M4.5 9.75v10.125c0 .621.504 1.125 1.125 1.125H9.75v-4.875c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21h4.125c.621 0 1.125-.504 1.125-1.125V9.75M8.25 21h8.25"/></svg>
+            </div>
+            <h3 class="agenda-card-title">Seguridad Alimentaria Rural</h3>
+            <p class="agenda-card-body">Bancos de semillas, huertas comunitarias y mercados campesinos en los 27 municipios.</p>
+          </div>
+
+        </div><!-- /agenda-grid -->
+      </div>
+    </section>
+
+    <!-- SECTION 4a: Galería Zoom Parallax — 48–62% -->
+    <section
+      class="scroll-section section-gallery section-zp"
+      data-enter="48"
       data-leave="62"
-      data-animation="gallery-reveal"
+      data-animation="zoom-parallax"
       id="galeria"
     >
+      <!-- Zoom Parallax: 7 wrappers full-viewport, inner posicionado desde el centro -->
+      <div class="zp-stage">
+        <div class="zp-item zp-item-0" data-scale="4">
+          <div class="zp-inner"><img src="images/4.jpeg"  alt="Manuel Correa campaña" loading="lazy"/></div>
+        </div>
+        <div class="zp-item zp-item-1" data-scale="5">
+          <div class="zp-inner"><img src="images/7.jpeg"  alt="Manuel Correa municipios" loading="lazy"/></div>
+        </div>
+        <div class="zp-item zp-item-2" data-scale="6">
+          <div class="zp-inner"><img src="images/3.jpeg"  alt="Manuel Correa comunidad" loading="lazy"/></div>
+        </div>
+        <div class="zp-item zp-item-3" data-scale="5">
+          <div class="zp-inner"><img src="images/9.jpeg"  alt="Manuel Correa acto" loading="lazy"/></div>
+        </div>
+        <div class="zp-item zp-item-4" data-scale="6">
+          <div class="zp-inner"><img src="images/5.jpeg"  alt="Manuel Correa campo" loading="lazy"/></div>
+        </div>
+        <div class="zp-item zp-item-5" data-scale="8">
+          <div class="zp-inner"><img src="images/11.jpeg" alt="Manuel Correa liderazgo" loading="lazy"/></div>
+        </div>
+        <div class="zp-item zp-item-6" data-scale="9">
+          <div class="zp-inner"><img src="images/12.jpeg" alt="Manuel Correa Caldas" loading="lazy"/></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION 4b: Galería Carrusel Oryzo — 62–77% -->
+    <section
+      class="scroll-section section-gallery section-carousel"
+      data-enter="62"
+      data-leave="77"
+      data-animation="oryzo-carousel"
+      id="galeria-carousel"
+    >
       <div class="gallery-header">
-        <span class="section-label gallery-label">003 / Galería</span>
+        <span class="section-label gallery-label">004 / Galería</span>
         <h2 class="gallery-title">En Campo,<br>Con la Gente</h2>
       </div>
-
-      <div class="gallery-track-outer" id="gallery-outer">
+      <div class="gallery-track-outer">
         <div id="gallery-track">
-          <div class="gallery-item" data-index="0">
-            <div class="gallery-item-inner">
-              <img src="images/1.jpeg" alt="Manuel Correa en campaña" loading="lazy"/>
-              <div class="gallery-caption">Recorrido por Caldas</div>
-            </div>
+          <div class="gallery-item">
+            <div class="gallery-item-inner"><img src="images/4.jpeg"  alt="Manuel Correa campaña" loading="lazy"/></div>
+            <div class="gallery-caption">Con la comunidad</div>
           </div>
-          <div class="gallery-item" data-index="1">
-            <div class="gallery-item-inner">
-              <img src="images/2.jpeg" alt="Manuel Correa con la comunidad" loading="lazy"/>
-              <div class="gallery-caption">Con las comunidades</div>
-            </div>
+          <div class="gallery-item">
+            <div class="gallery-item-inner"><img src="images/7.jpeg"  alt="Manuel Correa municipios" loading="lazy"/></div>
+            <div class="gallery-caption">Recorrido municipal</div>
           </div>
-          <div class="gallery-item" data-index="2">
-            <div class="gallery-item-inner">
-              <img src="images/3.jpeg" alt="Manuel Correa acto público" loading="lazy"/>
-              <div class="gallery-caption">Actos de campaña</div>
-            </div>
+          <div class="gallery-item">
+            <div class="gallery-item-inner"><img src="images/3.jpeg"  alt="Manuel Correa comunidad" loading="lazy"/></div>
+            <div class="gallery-caption">Diálogo ciudadano</div>
           </div>
-          <div class="gallery-item" data-index="3">
-            <div class="gallery-item-inner">
-              <img src="images/4.jpeg" alt="Manuel Correa liderazgo" loading="lazy"/>
-              <div class="gallery-caption">Liderazgo comunitario</div>
-            </div>
+          <div class="gallery-item">
+            <div class="gallery-item-inner"><img src="images/9.jpeg"  alt="Manuel Correa acto" loading="lazy"/></div>
+            <div class="gallery-caption">Acto público</div>
           </div>
-          <div class="gallery-item" data-index="4">
-            <div class="gallery-item-inner">
-              <img src="images/5.jpeg" alt="Manuel Correa en el territorio" loading="lazy"/>
-              <div class="gallery-caption">En el territorio</div>
-            </div>
+          <div class="gallery-item">
+            <div class="gallery-item-inner"><img src="images/5.jpeg"  alt="Manuel Correa campo" loading="lazy"/></div>
+            <div class="gallery-caption">Trabajo en campo</div>
           </div>
-          <div class="gallery-item" data-index="5">
-            <div class="gallery-item-inner">
-              <img src="images/6.jpeg" alt="Manuel Correa Caldas 2026" loading="lazy"/>
-              <div class="gallery-caption">Caldas 2026</div>
-            </div>
+          <div class="gallery-item">
+            <div class="gallery-item-inner"><img src="images/11.jpeg" alt="Manuel Correa liderazgo" loading="lazy"/></div>
+            <div class="gallery-caption">Liderazgo regional</div>
           </div>
-          <div class="gallery-item" data-index="6">
-            <div class="gallery-item-inner">
-              <img src="images/7.jpeg" alt="Manuel Correa trabajo de campo" loading="lazy"/>
-              <div class="gallery-caption">Trabajo de campo</div>
-            </div>
-          </div>
-          <div class="gallery-item" data-index="7">
-            <div class="gallery-item-inner">
-              <img src="images/8.jpeg" alt="Manuel Correa con ciudadanos" loading="lazy"/>
-              <div class="gallery-caption">Escuchando al pueblo</div>
-            </div>
-          </div>
-          <div class="gallery-item" data-index="8">
-            <div class="gallery-item-inner">
-              <img src="images/9.jpeg" alt="Manuel Correa visión" loading="lazy"/>
-              <div class="gallery-caption">Visión de futuro</div>
-            </div>
-          </div>
-          <div class="gallery-item" data-index="9">
-            <div class="gallery-item-inner">
-              <img src="images/10.jpeg" alt="Manuel Correa propuestas" loading="lazy"/>
-              <div class="gallery-caption">Propuestas reales</div>
-            </div>
-          </div>
-          <div class="gallery-item" data-index="10">
-            <div class="gallery-item-inner">
-              <img src="images/11.jpeg" alt="Manuel Correa municipios" loading="lazy"/>
-              <div class="gallery-caption">Los 27 municipios</div>
-            </div>
-          </div>
-          <div class="gallery-item" data-index="11">
-            <div class="gallery-item-inner">
-              <img src="images/12.jpeg" alt="Manuel Correa al Congreso" loading="lazy"/>
-              <div class="gallery-caption">Caldas al Congreso</div>
-            </div>
+          <div class="gallery-item">
+            <div class="gallery-item-inner"><img src="images/12.jpeg" alt="Manuel Correa Caldas" loading="lazy"/></div>
+            <div class="gallery-caption">Caldas nos une</div>
           </div>
         </div>
       </div>
-
+      <div id="gallery-dots" class="gallery-dots"></div>
       <div class="gallery-controls">
-        <button class="gallery-prev" aria-label="Foto anterior">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 18l-6-6 6-6"/></svg>
+        <button class="gallery-prev" aria-label="Anterior">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg>
         </button>
-        <span class="gallery-counter">01 / 12</span>
-        <button class="gallery-next" aria-label="Foto siguiente">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
+        <span class="gallery-counter">01 / 07</span>
+        <button class="gallery-next" aria-label="Siguiente">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
         </button>
+        <span class="gallery-drag-hint">Arrastra · Desliza</span>
       </div>
-      <div class="gallery-dots" id="gallery-dots"></div>
-      <div class="gallery-scroll-hint">↓ Scroll para continuar</div>
     </section>
 
-    <!-- SECTION 4: Stats — center, dark overlay, stagger-up, 62%–72% -->
+    <!-- SECTION 5: Stats — 77–85% -->
     <section
       class="scroll-section section-stats"
-      data-enter="62"
-      data-leave="72"
+      data-enter="77"
+      data-leave="85"
       data-animation="stagger-up"
     >
       <div class="stats-grid">
@@ -283,45 +423,15 @@
       </div>
     </section>
 
-    <!-- SECTION 5: Propuestas — align-right, clip-reveal, 72%–84% -->
-    <section
-      class="scroll-section section-content align-right"
-      data-enter="72"
-      data-leave="84"
-      data-animation="clip-reveal"
-      id="propuestas"
-    >
-      <div class="section-photo photo-left">
-        <img src="images/22.jpeg" alt="Manuel Correa propuestas" loading="lazy"/>
-      </div>
-      <div class="section-inner">
-        <span class="section-label">004 / Propuestas</span>
-        <h2 class="section-heading">Salud.<br>Educación.<br>Empleo.</h2>
-        <p class="section-body">
-          Tres ejes que transformarán Caldas. Cobertura total de salud rural,
-          educación técnica en los 27 municipios y generación de empleo
-          a través del turismo y la agroindustria.
-        </p>
-        <ul class="agenda-list">
-          <li>Ley de Salud Rural Universal</li>
-          <li>Fondo de Conectividad Digital Caldas</li>
-          <li>Reforma Educación Técnica Municipal</li>
-          <li>Plan de Turismo Cafetero</li>
-        </ul>
-        <a href="#contacto" class="section-link">Unirme a la campaña →</a>
-      </div>
-    </section>
-
-    <!-- SECTION 6: CTA Contacto + Muro — align-left, blur-up, persist, 84%–100% -->
+    <!-- SECTION 6: Contacto / Backend — 85–100% -->
     <section
       class="scroll-section section-content section-cta align-left"
-      data-enter="84"
+      data-enter="85"
       data-leave="100"
       data-animation="blur-up"
       data-persist="true"
       id="contacto"
     >
-      <!-- Muro comunitario (reemplaza la foto) -->
       <div class="section-muro-wall">
         <div class="muro-wall-header">
           <span class="muro-wall-title">Lo que dice la comunidad</span>
@@ -337,7 +447,7 @@
         <span class="section-label">005 / Únete</span>
         <h2 class="section-heading">Caldas<br>nos necesita.</h2>
         <p class="section-body">
-          Sé parte del cambio. Comparte tu nombre, municipio y una propuesta o idea
+          Sé parte del cambio. Comparte tu nombre, municipio y una propuesta
           con Manuel Correa y toda la comunidad.
         </p>
         <form class="cta-form" id="muro-form">
@@ -362,7 +472,7 @@
 
   </div><!-- /scroll-container -->
 
-  <!-- FOOTER (fixed, animado desde JS cuando scroll ≥ 86%) -->
+  <!-- FOOTER -->
   <footer class="site-footer">
     <a href="#" class="footer-logo">Manuel<em>Correa</em></a>
     <div class="footer-mid">
@@ -376,7 +486,7 @@
     </div>
   </footer>
 
-  <!-- CDN SCRIPTS (este orden es mandatorio) -->
+  <!-- CDN SCRIPTS -->
   <script src="https://cdn.jsdelivr.net/npm/lenis@1/dist/lenis.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/gsap@3/dist/gsap.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/gsap@3/dist/ScrollTrigger.min.js"></script>
