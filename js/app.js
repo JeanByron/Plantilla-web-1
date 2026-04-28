@@ -1441,7 +1441,7 @@ function initZoomParallax() {
         }
       } else if (zpEntered && p < ZP_ENTER - FADE) {
         zpEntered = false;
-        gsap.set(items, { opacity: 0, scale: 1 });
+        gsap.set(items, { opacity: 0, scale: 1, filter: 'none' });
         // Si el usuario vuelve antes de que termine la pausa, reactivar scroll
         if (zpPauseTimer) {
           clearTimeout(zpPauseTimer);
@@ -1456,9 +1456,17 @@ function initZoomParallax() {
       if (p >= ZP_ENTER && p <= ZP_LEAVE) {
         const localP = (p - ZP_ENTER) / (ZP_LEAVE - ZP_ENTER);
         const fastP  = Math.min(1, localP * 1.35);
-        items.forEach(item => {
+        items.forEach((item, i) => {
           const depth = parseFloat(item.dataset.scale) || 4;
-          gsap.set(item, { scale: 1 + (depth - 1) * fastP });
+          const newScale = 1 + (depth - 1) * fastP;
+          gsap.set(item, { scale: newScale });
+          // Mejorar calidad visual de la imagen central conforme crece
+          if (i === 0 && depth === 4) {
+            const scaleRatio = (newScale - 1) / (depth - 1);
+            const contrast = 1 + scaleRatio * 0.14;
+            const saturate = 1 + scaleRatio * 0.25;
+            gsap.set(item, { filter: `contrast(${contrast.toFixed(3)}) saturate(${saturate.toFixed(3)})` });
+          }
         });
       }
     }

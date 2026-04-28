@@ -1778,6 +1778,9 @@ canvas#map-particles {
   height: 100%;
   object-fit: cover;
   display: block;
+  image-rendering: auto;
+  -webkit-backface-visibility: hidden;
+  backface-visibility: hidden;
 }
 
 /* Tamaño + offset desde el centro por índice */
