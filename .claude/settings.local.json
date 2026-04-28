@@ -7,7 +7,14 @@
       "Bash(node -e ' *)",
       "Bash(node -e \"const fs=require\\('fs'\\); const js=fs.readFileSync\\('c:/Users/Usuario/Desktop/Manuel_Correa_web/js/app.js','utf8'\\); new Function\\(js\\); console.log\\('JS OK'\\);\")",
       "Bash(npx --yes serve . --port 3000)",
-      "Bash(npx serve *)"
+      "Bash(npx serve *)",
+      "Bash(cd c:\\\\\\\\Users\\\\\\\\juans\\\\\\\\OneDrive\\\\\\\\Desktop\\\\\\\\Manuel_Correa_web)",
+      "Bash(supabase --version)",
+      "Bash(npm --version)",
+      "Bash(npm install *)",
+      "Bash(scoop --version)",
+      "Bash(choco --version)",
+      "Bash(winget --version)"
     ]
   }
 }

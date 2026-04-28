@@ -334,7 +334,6 @@
       </div>
 
       <div class="section-inner">
-        <span class="section-label">005 / Únete</span>
         <h2 class="section-heading">Caldas<br>nos necesita.</h2>
         <p class="section-body">
           Sé parte del cambio. Comparte tu nombre, municipio y una propuesta o idea
@@ -342,27 +341,51 @@
         </p>
         <form class="cta-form" id="muro-form">
           <input type="text" id="muro-nombre" placeholder="Tu nombre" class="cta-input" required />
-          <input type="text" id="muro-municipio" placeholder="Tu municipio" class="cta-input" required />
-          <input type="tel" id="muro-telefono" placeholder="Tu WhatsApp" class="cta-input" required />
+          <select id="muro-municipio" class="cta-input cta-select" required>
+            <option value="" disabled selected>Tu municipio</option>
+            <option>Aguadas</option>
+            <option>Anserma</option>
+            <option>Aranzazu</option>
+            <option>Belalcázar</option>
+            <option>Chinchiná</option>
+            <option>Filadelfia</option>
+            <option>La Dorada</option>
+            <option>La Merced</option>
+            <option>Manizales</option>
+            <option>Manzanares</option>
+            <option>Marmato</option>
+            <option>Marquetalia</option>
+            <option>Marulanda</option>
+            <option>Neira</option>
+            <option>Norcasia</option>
+            <option>Pácora</option>
+            <option>Palestina</option>
+            <option>Pensilvania</option>
+            <option>Riosucio</option>
+            <option>Risaralda</option>
+            <option>Salamina</option>
+            <option>Samaná</option>
+            <option>San José</option>
+            <option>Supía</option>
+            <option>Victoria</option>
+            <option>Villamaría</option>
+            <option>Viterbo</option>
+          </select>
+          <input type="tel" id="muro-contacto" placeholder="Tu número de contacto" class="cta-input" required />
           <textarea id="muro-mensaje" placeholder="Tu propuesta o idea para Caldas…" class="cta-input cta-textarea" required maxlength="500"></textarea>
           <button type="submit" class="cta-button">Publicar en el muro</button>
         </form>
-        <div id="muro-success" class="muro-success-inline" hidden>
-          <span class="muro-check">✓</span>
-          <span>¡Tu propuesta fue publicada!</span>
-          <button class="muro-new-btn" id="muro-new-btn">Publicar otra</button>
-        </div>
+        <div id="muro-error" class="muro-error-msg" hidden></div>
         <div class="cta-social">
           <a href="#" class="social-link">Instagram</a>
           <a href="#" class="social-link">Facebook</a>
-          <a href="#" class="social-link">WhatsApp</a>
+          <a href="#" class="social-link">Número de contacto</a>
         </div>
       </div>
     </section>
 
   </div><!-- /scroll-container -->
 
-  <!-- FOOTER (fixed, animado desde JS cuando scroll ≥ 86%) -->
   <footer class="site-footer">
     <a href="#" class="footer-logo">Manuel<em>Correa</em></a>
     <div class="footer-mid">
@@ -372,11 +395,21 @@
     <div class="footer-links">
       <a href="#" class="footer-link">Instagram</a>
       <a href="#" class="footer-link">Facebook</a>
-      <a href="#" class="footer-link">WhatsApp</a>
+      <a href="#" class="footer-link">Número de contacto</a>
     </div>
   </footer>
 
+  <!-- Toast de éxito (overlay fijo, centrado) -->
+  <div id="muro-toast" class="muro-toast" hidden>
+    <div class="muro-toast-card">
+      <span class="muro-toast-icon" id="muro-toast-icon">✓</span>
+      <p class="muro-toast-msg">¡Tu propuesta fue publicada!</p>
+      <button class="muro-new-btn" id="muro-new-btn">Publicar otra</button>
+    </div>
+  </div>
+
   <!-- CDN SCRIPTS (este orden es mandatorio) -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/lenis@1/dist/lenis.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/gsap@3/dist/gsap.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/gsap@3/dist/ScrollTrigger.min.js"></script>
