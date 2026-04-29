@@ -11,7 +11,7 @@ window.scrollTo(0, 0);
 window.addEventListener('load', () => window.scrollTo(0, 0));
 
 // ── CONFIG ────────────────────────────────────────────────────
-const FRAME_SPEED   = 1.8;   // mayor: avanza más rápido respecto al scroll
+const FRAME_SPEED   = 3.0;   // mayor: avanza más rápido respecto al scroll
 const IMAGE_SCALE   = 1.0;   // 1.0 = full-cover sin barras laterales
 const WINDOW        = 0.06;  // ventana de animación por sección
 const FRAME_EXT     = 'jpg';
@@ -219,10 +219,9 @@ const ZP_ENTER       = 0.18;   // después de ¿Quien es Manuel Correa?
 const ZP_LEAVE       = 0.36;
 // Ajustados para dar más espacio antes de que aparezca el carrusel
 const CAROUSEL_ENTER = 0.74;   // retrasado ligeramente
-const CAROUSEL_LEAVE = 0.86;
-// Freeze background frames between end of agenda and before carousel intro
-const FRAME_FREEZE_START = 0.66; // end of agenda section
-const FRAME_FREEZE_END   = CAROUSEL_ENTER - 0.02; // just before intro triggers
+// Extender el final del carrusel para que cubra todo el tramo antes de contacto
+const CAROUSEL_LEAVE = 0.94;
+// No frame freeze: background frames should advance during the whole page
 
 function drawFlatBg(cw, ch) {
   ctx.fillStyle = '#0A1A17';
@@ -236,35 +235,44 @@ function drawFlatBg(cw, ch) {
 
 function initFrameScroll() {
   const sc = document.getElementById('scroll-container');
+
+  // Smooth animation: keep a float target and lerp current frame toward it.
+  let targetFrameFloat = currentFrame;
+  let currentFrameFloat = currentFrame;
+  const LERP = 0.22; // how fast the displayed frame follows the target (0-1)
+
   ScrollTrigger.create({
     trigger: sc,
     start: 'top top',
     end: 'bottom bottom',
     scrub: true,
     onUpdate: (self) => {
-      const p    = self.progress;
-        // If we're in the freeze window, do not advance frames (keep currentFrame)
-        if (p >= FRAME_FREEZE_START && p <= FRAME_FREEZE_END) {
-          // redraw current frame to ensure canvas visible but do not change index
-          requestAnimationFrame(() => {
-            const maxF = hasFrames ? totalFrames : 200;
-            if (hasFrames && frames[currentFrame]) drawFrame(currentFrame);
-            else drawGenerativeFrame(currentFrame, maxF);
-          });
-          return;
-        }
+      const p = self.progress;
+      const maxF = hasFrames ? totalFrames : 200;
 
-        const acc  = Math.min(p * FRAME_SPEED, 1);
-        const maxF = hasFrames ? totalFrames : 200;
-        const idx  = Math.min(Math.floor(acc * maxF), maxF - 1);
-        currentFrame = idx;
-
-        requestAnimationFrame(() => {
-          if (hasFrames && frames[currentFrame]) drawFrame(currentFrame);
-          else drawGenerativeFrame(currentFrame, maxF);
-        });
+      const acc = Math.min(p * FRAME_SPEED, 1);
+      // use fractional target for smooth lerp (not floored yet)
+      targetFrameFloat = Math.max(0, Math.min(acc * maxF, maxF - 1));
     }
   });
+
+  // Continuous RAF loop to lerp and draw frames irrespective of ScrollTrigger updates
+  (function tick() {
+    const maxF = hasFrames ? totalFrames : 200;
+    // lerp current toward target
+    currentFrameFloat += (targetFrameFloat - currentFrameFloat) * LERP;
+    // clamp
+    if (currentFrameFloat < 0) currentFrameFloat = 0;
+    if (currentFrameFloat > Math.max(0, maxF - 1)) currentFrameFloat = maxF - 1;
+
+    const idx = Math.min(Math.floor(currentFrameFloat), Math.max(0, maxF - 1));
+    currentFrame = idx;
+
+    if (hasFrames && frames[currentFrame]) drawFrame(currentFrame);
+    else drawGenerativeFrame(currentFrame, maxF);
+
+    requestAnimationFrame(tick);
+  })();
 }
 
 // ── MAP v1 — REAL GeoJSON + RADAR SWEEP ───────────────────────

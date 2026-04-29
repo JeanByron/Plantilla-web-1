@@ -1051,6 +1051,28 @@ canvas#map-particles {
 }
 .carousel-intro .gallery-label { display: block; color: var(--orange); margin-bottom: 0.6rem; }
 
+/* Background boxes for text to improve legibility over the video */
+.text-bg {
+  background: rgba(13,42,36,0.78);
+  color: var(--cream);
+  padding: 0.28rem 0.6rem;
+  border-radius: 6px;
+  display: inline-block;
+}
+
+/* Apply to common headings/labels/captions */
+.section-label, .carousel-intro .gallery-label, .hero-tagline, .carousel-intro-title,
+.gallery-caption, .gallery-counter, .agenda-card-title, .agenda-card-tag,
+.section-heading { background: rgba(13,42,36,0.78); color: var(--cream); padding: 0.25rem 0.6rem; border-radius:6px; display:inline-block; }
+
+/* For longer paragraph bodies, use a softer panel that spans width */
+.section-body { background: rgba(13,42,36,0.6); padding: 0.8rem; border-radius: 8px; display: block; }
+
+@media (max-width: 768px) {
+  .section-body { padding: 0.6rem; }
+  .carousel-intro { top: 46%; }
+}
+
 .gallery-label {
   color: var(--orange);
   font-size: 0.7rem;
