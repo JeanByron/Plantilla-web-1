@@ -38,18 +38,25 @@ button { border: none; background: none; cursor: pointer; }
   inset: 0;
   z-index: 1000;
   background: #0d2a24;
-  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 #loader.hidden { display: none; }
 
 .loader-video {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
+  width: 80vw;
+  max-width: 1200px;
+  max-height: 90vh;
+  height: auto;
+  object-fit: contain;
   display: block;
+  background: #0d2a24;
+}
+
+@media (max-width: 768px) {
+  .loader-video { width: 100vw; max-height: 80vh; }
 }
 
 /* ── HEADER ──────────────────────────────────────────────────── */
@@ -692,8 +699,8 @@ button { border: none; background: none; cursor: pointer; }
 }
 
 .mapa-inner {
-  width: 90vw;
-  max-width: 1180px;
+  width: 92vw;
+  max-width: 1360px;
   padding: 2rem 0;
   position: relative;
   z-index: 2;
@@ -735,8 +742,8 @@ button { border: none; background: none; cursor: pointer; }
 
 .mapa-layout {
   display: grid;
-  grid-template-columns: 1fr 320px;
-  gap: 2rem;
+  grid-template-columns: 1fr clamp(340px, 32vw, 480px);
+  gap: 2.5rem;
   align-items: start;
 }
 
@@ -829,9 +836,9 @@ canvas#map-particles {
 .mapa-selected {
   background: rgba(5,13,11,0.6);
   border: 1px solid rgba(245,241,235,.07);
-  border-radius: 8px; padding: 1.4rem;
-  min-height: 380px;
-  display:flex; flex-direction:column; gap: 0.9rem;
+  border-radius: 8px; padding: 1.8rem;
+  min-height: 480px;
+  display:flex; flex-direction:column; gap: 1.1rem;
   transition: border-color .4s, box-shadow .4s;
   overflow: hidden;
 }
@@ -848,9 +855,9 @@ canvas#map-particles {
 }
 .mapa-selected-img {
   width: 100%;
-  aspect-ratio: 4 / 3;
+  aspect-ratio: 16 / 10;
   object-fit: cover;
-  border-radius: 6px;
+  border-radius: 8px;
   display: block;
   opacity: 0;
   transform: translateX(20px);
@@ -862,7 +869,7 @@ canvas#map-particles {
 }
 .mapa-selected-name {
   font-family: var(--font-display);
-  font-size: 1.4rem;
+  font-size: 1.75rem;
   font-weight: 700;
   color: var(--cream);
   letter-spacing: .02em;
@@ -874,9 +881,9 @@ canvas#map-particles {
 .mapa-selected.is-active .mapa-selected-name { opacity: 1; transform: translateY(0); }
 .mapa-selected-desc {
   font-family: var(--font-body);
-  font-size: .82rem;
-  line-height: 1.6;
-  color: rgba(245,241,235,.7);
+  font-size: .93rem;
+  line-height: 1.7;
+  color: rgba(245,241,235,.75);
   opacity: 0;
   transform: translateY(8px);
   transition: opacity .5s ease .2s, transform .5s ease .2s;
