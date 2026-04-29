@@ -11,7 +11,7 @@ window.scrollTo(0, 0);
 window.addEventListener('load', () => window.scrollTo(0, 0));
 
 // ── CONFIG ────────────────────────────────────────────────────
-const FRAME_SPEED   = 1.0;   // reducido para 2000vh
+const FRAME_SPEED   = 1.8;   // mayor: avanza más rápido respecto al scroll
 const IMAGE_SCALE   = 1.0;   // 1.0 = full-cover sin barras laterales
 const WINDOW        = 0.06;  // ventana de animación por sección
 const FRAME_EXT     = 'jpg';
@@ -217,8 +217,12 @@ const GALLERY_LEAVE  = 0.82;
 const GALLERY_FADE   = 0.035;
 const ZP_ENTER       = 0.18;   // después de ¿Quien es Manuel Correa?
 const ZP_LEAVE       = 0.36;
-const CAROUSEL_ENTER = 0.66;   // después de proyectos de ley
-const CAROUSEL_LEAVE = 0.84;
+// Ajustados para dar más espacio antes de que aparezca el carrusel
+const CAROUSEL_ENTER = 0.74;   // retrasado ligeramente
+const CAROUSEL_LEAVE = 0.86;
+// Freeze background frames between end of agenda and before carousel intro
+const FRAME_FREEZE_START = 0.66; // end of agenda section
+const FRAME_FREEZE_END   = CAROUSEL_ENTER - 0.02; // just before intro triggers
 
 function drawFlatBg(cw, ch) {
   ctx.fillStyle = '#0A1A17';
@@ -239,16 +243,26 @@ function initFrameScroll() {
     scrub: true,
     onUpdate: (self) => {
       const p    = self.progress;
-      const acc  = Math.min(p * FRAME_SPEED, 1);
-      const maxF = hasFrames ? totalFrames : 200;
-      const idx  = Math.min(Math.floor(acc * maxF), maxF - 1);
-      currentFrame = idx;
+        // If we're in the freeze window, do not advance frames (keep currentFrame)
+        if (p >= FRAME_FREEZE_START && p <= FRAME_FREEZE_END) {
+          // redraw current frame to ensure canvas visible but do not change index
+          requestAnimationFrame(() => {
+            const maxF = hasFrames ? totalFrames : 200;
+            if (hasFrames && frames[currentFrame]) drawFrame(currentFrame);
+            else drawGenerativeFrame(currentFrame, maxF);
+          });
+          return;
+        }
 
-      requestAnimationFrame(() => {
-        // Siempre frames de video (sin fondo plano por sección)
-        if (hasFrames && frames[currentFrame]) drawFrame(currentFrame);
-        else drawGenerativeFrame(currentFrame, maxF);
-      });
+        const acc  = Math.min(p * FRAME_SPEED, 1);
+        const maxF = hasFrames ? totalFrames : 200;
+        const idx  = Math.min(Math.floor(acc * maxF), maxF - 1);
+        currentFrame = idx;
+
+        requestAnimationFrame(() => {
+          if (hasFrames && frames[currentFrame]) drawFrame(currentFrame);
+          else drawGenerativeFrame(currentFrame, maxF);
+        });
     }
   });
 }
@@ -940,7 +954,8 @@ function initGallery() {
   const items = [...track.querySelectorAll('.gallery-item')];
   let currentIndex = 0;
   let lastIdx      = -1;
-  const FADE       = 0.048;
+  // Fade window when entering/leaving carousel: reduced to make transition faster
+  const FADE       = 0.02;
 
   // Ancla relativa para el avance scroll-driven.
   // galleryScrollBase: posición de scroll que define el índice galleryBaseIdx.
@@ -971,22 +986,51 @@ function initGallery() {
   }
 
   const bgEl = document.getElementById('gallery-bg');
+  const introEl = document.getElementById('carousel-intro');
+  let introPlayed = false;
+  // Timeline for intro: appear, hold, then disappear
+  const introTl = gsap.timeline({ paused: true });
+  if (introEl) {
+    introTl.fromTo(introEl, { y: 24, opacity: 0 }, { y: 0, opacity: 1, duration: 0.5, ease: 'power2.out' })
+           .to(introEl, { y: -20, opacity: 0, duration: 0.44, ease: 'power2.in' }, '+=0.9');
+  }
+  let bgPendingImg = null; // track preload image to avoid flashes
 
   function updateBg(index, animate) {
     if (!bgEl) return;
     const img = items[index] ? items[index].querySelector('img') : null;
     const src = img ? img.src : '';
-      if (!src) return;
-      if (!animate) {
-        bgEl.style.backgroundImage = `url('${src}')`;
-        gsap.set(bgEl, { opacity: 0 });
-        return;
-      }
-      // Más suave: duración más larga y easing más suave
-      gsap.to(bgEl, { opacity: 0, duration: 0.7, ease: 'power2.inOut', onComplete: () => {
-        bgEl.style.backgroundImage = `url('${src}')`;
-        gsap.to(bgEl, { opacity: 0, duration: 0.35, ease: 'power2.out' });
-      }});
+    if (!src) return;
+
+    const TARGET_OPACITY = 0.92; // opacity to show bg clearly
+    const MIN_FADE_OPACITY = 0.45; // keep enough opacity to avoid showing underlying video
+
+    // If no animation, set immediately (useful for init)
+    if (!animate) {
+      // cancel any pending preload
+      if (bgPendingImg) { bgPendingImg.onload = null; bgPendingImg = null; }
+      bgEl.style.backgroundImage = `url('${src}')`;
+      gsap.set(bgEl, { opacity: TARGET_OPACITY });
+      return;
+    }
+
+    // Animated crossfade with preload: fade to MIN_FADE_OPACITY, preload new image, then swap and fade to TARGET
+    gsap.to(bgEl, { opacity: MIN_FADE_OPACITY, duration: 0.28, ease: 'power2.inOut' });
+
+    // Cancel previous pending image load
+    if (bgPendingImg) { bgPendingImg.onload = null; bgPendingImg = null; }
+    const preload = new Image();
+    bgPendingImg = preload;
+    preload.src = src;
+    preload.onload = () => {
+      // only proceed if this is still the latest preload
+      if (bgPendingImg !== preload) return;
+      bgPendingImg = null;
+      bgEl.style.backgroundImage = `url('${src}')`;
+      gsap.to(bgEl, { opacity: TARGET_OPACITY, duration: 0.45, ease: 'power2.out' });
+    };
+    // If load fails quickly, still ensure we don't reveal video: keep MIN_FADE_OPACITY
+    preload.onerror = () => { bgPendingImg = null; };
   }
 
   function goTo(index, animate = true) {
@@ -994,8 +1038,8 @@ function initGallery() {
     index = Math.max(0, Math.min(items.length - 1, index));
     if (index === prevIndex && animate) return; // ya estamos ahí
     currentIndex = index;
-    // Duración aumentada para movimientos más fluidos
-    const dur = animate ? 1.1 : 0;
+    // Duración más lenta y easing suave para transiciones fluidas entre imágenes
+    const dur = animate ? 0.9 : 0;
     const s   = getSizes();
     const gap = 12;
 
@@ -1009,7 +1053,7 @@ function initGallery() {
     let leftEdge = 0;
     for (let i = 0; i < index; i++) leftEdge += widths[i] + gap;
     const trackX = window.innerWidth / 2 - (leftEdge + widths[index] / 2);
-    gsap.to(track, { x: trackX, duration: dur, ease: 'power2.out', overwrite: 'auto' });
+    gsap.to(track, { x: trackX, duration: dur, ease: 'power3.out', overwrite: 'auto' });
 
     items.forEach((item, i) => {
       const dist     = Math.abs(i - currentIndex);
@@ -1025,14 +1069,14 @@ function initGallery() {
       if (img && !isActive) gsap.set(img, { clearProps: 'scale' });
 
       gsap.to(item, { width: cfg.w, height: cfg.h, opacity: cfg.opacity,
-        duration: dur, ease: 'power2.out', overwrite: 'auto' });
+        duration: dur, ease: 'power3.out', overwrite: 'auto' });
 
       // Solo escala suave en el activo cuando llega; sin clip-path competitivo
       if (animate && isActive && i !== prevIndex && img) {
-        // Escala un poco más lenta y con easing más suave
+        // Escala más lenta y suave para que el cambio sea menos brusco
         gsap.fromTo(img,
           { scale: 1.06 },
-          { scale: 1, duration: 1.2, ease: 'power2.out', overwrite: 'auto' }
+          { scale: 1, duration: 1.0, ease: 'power3.out', overwrite: 'auto' }
         );
       }
     });
@@ -1155,6 +1199,16 @@ function initGallery() {
         clearInterval(autoTimer); autoTimer = null;
         isScrolling = false; clearTimeout(scrollStopTimer);
         galleryScrollBase = -1; // resetear ancla al salir
+        // Play intro animation once while approaching the carousel
+        if (introEl && !introPlayed) {
+          introPlayed = true;
+          pauseAuto(false);
+          introTl.restart();
+          introTl.eventCallback('onComplete', () => {
+            startAuto();
+            goTo(currentIndex);
+          });
+        }
       } else if (p > CAROUSEL_LEAVE && p < CAROUSEL_LEAVE + FADE) {
         const t = 1 - (p - CAROUSEL_LEAVE) / FADE;
         section.style.opacity       = Math.max(0, t).toFixed(3);
@@ -1170,6 +1224,12 @@ function initGallery() {
         clearInterval(autoTimer); autoTimer = null;
         isScrolling = false; clearTimeout(scrollStopTimer);
         galleryScrollBase = -1;
+        // Reset intro so it can animate again on re-entry
+        if (introEl) {
+          introPlayed = false;
+          introTl.pause(0);
+          gsap.set(introEl, { y: 24, opacity: 0 });
+        }
       }
 
       // Avance del carrusel por scroll — determinístico y sin saltos de ancla
