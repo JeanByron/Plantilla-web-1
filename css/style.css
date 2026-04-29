@@ -997,15 +997,18 @@ canvas#map-particles {
 
 /* Background photo behind carousel */
 .gallery-bg {
-  display: none;
+  /* Mostrar siempre pero con opacity 0; JS controla la visibilidad para crossfade */
+  display: block;
   position: absolute;
   inset: 0;
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
-  filter: blur(32px);
+  background-color: #0A1A17; /* evita flash del video al hacer crossfade */
+  /* Menos blur para que se note que es la misma imagen del carrusel */
+  filter: blur(12px);
   opacity: 0;
-  transform: scale(1.12);
+  transform: scale(1.06);
   z-index: 0;
   pointer-events: none;
 }
@@ -1025,6 +1028,28 @@ canvas#map-particles {
   z-index: 2;
   pointer-events: none;
 }
+
+/* Intro animated title (positioned above carousel) */
+.carousel-intro {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 6;
+  pointer-events: none;
+  opacity: 0;
+  text-align: center;
+}
+.carousel-intro-title {
+  font-family: var(--font-display);
+  font-size: clamp(2rem, 4vw, 3.4rem);
+  font-weight: 700;
+  color: var(--cream);
+  text-transform: uppercase;
+  line-height: 1.0;
+  margin: 0;
+}
+.carousel-intro .gallery-label { display: block; color: var(--orange); margin-bottom: 0.6rem; }
 
 .gallery-label {
   color: var(--orange);
@@ -1102,6 +1127,11 @@ canvas#map-particles {
   will-change: clip-path;
 }
 
+.gallery-item-inner img {
+  backface-visibility: hidden;
+  transform: translateZ(0);
+}
+
 .gallery-item img {
   width: 100%;
   height: 100%;
@@ -1111,6 +1141,9 @@ canvas#map-particles {
   transform-origin: center center;
   will-change: transform;
 }
+
+/* Add extra spacing before contacto section so phone mockup has breathing room */
+#contacto .section-inner { padding-top: 6vh; }
 
 .gallery-caption {
   position: absolute;
