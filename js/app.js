@@ -249,16 +249,32 @@ function initFrameScroll() {
     onUpdate: (self) => {
       const p = self.progress;
       const maxF = hasFrames ? totalFrames : 200;
-
       const acc = Math.min(p * FRAME_SPEED, 1);
       // use fractional target for smooth lerp (not floored yet)
       targetFrameFloat = Math.max(0, Math.min(acc * maxF, maxF - 1));
+      // record last update time so the RAF fallback knows ScrollTrigger is active
+      lastScrollUpdate = performance.now();
     }
   });
 
   // Continuous RAF loop to lerp and draw frames irrespective of ScrollTrigger updates
+  // Keep a timestamp of last ScrollTrigger update. If ScrollTrigger stops
+  // emitting (due to pinning or other reasons), fallback to reading the
+  // window scroll position so frames continue advancing.
+  let lastScrollUpdate = performance.now();
+
   (function tick() {
     const maxF = hasFrames ? totalFrames : 200;
+    const now = performance.now();
+    // If no recent ScrollTrigger update, compute progress from scrollY as a fallback
+    if (now - lastScrollUpdate > 120) {
+      const docH = document.documentElement.scrollHeight - window.innerHeight;
+      const p = docH > 0 ? (window.scrollY / docH) : 0;
+      const acc = Math.min(p * FRAME_SPEED, 1);
+      targetFrameFloat = Math.max(0, Math.min(acc * maxF, maxF - 1));
+      // update the timestamp so we don't continuously recompute on every RAF
+      lastScrollUpdate = now;
+    }
     // lerp current toward target
     currentFrameFloat += (targetFrameFloat - currentFrameFloat) * LERP;
     // clamp
@@ -1508,6 +1524,17 @@ function initLenis() {
   // Fallback for programmatic scroll (Playwright testing)
   window.addEventListener('scroll', () => ScrollTrigger.update(), { passive: true });
   window.lenis = lenis;
+
+  // Activate solid background overlay from #caldas onward to hide canvas frames
+  const solidBg = document.getElementById('solid-bg');
+  if (solidBg) {
+    ScrollTrigger.create({
+      trigger: '#caldas',
+      start: 'top top',
+      onEnter: () => solidBg.classList.add('is-active'),
+      onLeaveBack: () => solidBg.classList.remove('is-active')
+    });
+  }
 
   return lenis;
 }

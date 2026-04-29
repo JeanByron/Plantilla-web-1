@@ -246,6 +246,18 @@ button { border: none; background: none; cursor: pointer; }
   opacity: 1;
 }
 
+/* Solid background overlay that covers the canvas when active */
+#solid-bg {
+  position: fixed;
+  inset: 0;
+  z-index: 4; /* above hero-bg, below hero-overlay and sections */
+  background: #0d2a24;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.45s cubic-bezier(0.22,1,0.36,1);
+}
+#solid-bg.is-active { opacity: 1; }
+
 /* From #caldas onward use a flat, plain background color until the end of the page */
 #caldas, #caldas ~ .scroll-section {
   background-color: #0d2a24 !important;
@@ -427,6 +439,7 @@ button { border: none; background: none; cursor: pointer; }
   align-items: center;
   pointer-events: none;
   opacity: 0;
+  z-index: 80; /* ensure pinned sections sit above the footer */
 }
 .scroll-section.section-pinned.is-visible { pointer-events: auto; }
 
@@ -451,11 +464,18 @@ button { border: none; background: none; cursor: pointer; }
   z-index: 1;
 }
 
+/* Hide the small numeric label in the contacto section */
+#contacto .section-label { display: none; }
+
 /* Contact specific: reduce left column to fit content on screen */
 #contacto .section-inner {
   max-width: 34vw;
   padding-bottom: 8rem; /* espacio para footer y botones */
 }
+
+/* Force left alignment of all contact inner children so heading, text and form align */
+#contacto .section-inner { align-items: flex-start; }
+#contacto .section-inner > * { align-self: flex-start; }
 
 /* Contact heading smaller to fit vertically */
 #contacto .section-heading {
@@ -1392,6 +1412,42 @@ canvas#map-particles {
   .phone-frame { width: 100%; max-width: 420px; }
   .section-inner .cta-button { max-width: 420px; }
 }
+
+/* Desktop & tablet: vertically center contact inner block to align heading with phone mockup */
+@media (min-width: 901px) {
+  #contacto .section-inner {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start; /* start lower on the page */
+    align-items: flex-start;
+    text-align: left;
+    height: 100vh;
+    padding-top: 14vh; /* push heading down to align with phone mockup */
+    padding-bottom: 0; /* rely on footer spacing elsewhere */
+    max-width: 30vw; /* slightly narrower so form fields fit */
+  }
+  /* Make the form inputs slightly smaller to fit neatly */
+  #contacto .cta-form { max-width: 320px; }
+  #contacto .cta-input,
+  #contacto .cta-select,
+  #contacto .cta-textarea {
+    padding: 0.7rem 0.9rem;
+    font-size: 0.88rem;
+  }
+  #contacto .cta-textarea { min-height: 84px; }
+}
+
+/* Make the contact submit button sit to the left and not full-width */
+#contacto .cta-form { display: flex; flex-direction: column; gap: 0.72rem; }
+#contacto .cta-button {
+  width: auto;
+  align-self: flex-start;
+  padding: 0.8rem 1.4rem;
+  font-size: 0.9rem;
+}
+
+/* Ensure form appears above footer when pinned */
+#contacto .cta-form, #contacto .contact-success { z-index: 90; position: relative; }
 
 @media (max-width: 768px) {
   #contacto .section-heading { font-size: clamp(1.6rem, 6.5vw, 2.6rem); }
