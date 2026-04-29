@@ -1277,7 +1277,7 @@ canvas#map-particles {
 /* ── PHONE MOCKUP (sección contacto, lado derecho) ────────────── */
 .phone-mockup {
   position: absolute;
-  right: 8vw;
+  right: 20vw;
   top: 50%;
   transform: translateY(-50%);
   width: 260px;
@@ -1318,18 +1318,6 @@ canvas#map-particles {
   height: 100%;
   object-fit: cover;
   display: block;
-}
-
-.phone-notch {
-  position: absolute;
-  top: 8px;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 88px;
-  height: 22px;
-  background: #000;
-  border-radius: 14px;
-  z-index: 5;
 }
 
 .phone-vol,
