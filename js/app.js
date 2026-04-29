@@ -832,7 +832,13 @@ function setupSectionAnimation(section) {
     end: 'bottom bottom',
     onUpdate: (self) => {
       const p = self.progress;
-      const shouldShow = p >= enter - 0.04 && p <= (persist ? 1 : leave + 0.04);
+      // Allow sections flagged with data-after-carousel to appear only after the carousel has finished
+      let showEnter = enter - 0.04;
+      const showLeave = persist ? 1 : leave + 0.04;
+      if (section.dataset.afterCarousel === 'true') {
+        showEnter = Math.max(showEnter, CAROUSEL_LEAVE + 0.01);
+      }
+      const shouldShow = p >= showEnter && p <= showLeave;
 
       if (shouldShow && !visible) {
         visible = true;
@@ -1010,8 +1016,9 @@ function initGallery() {
     const src = img ? img.src : '';
     if (!src) return;
 
-    const TARGET_OPACITY = 0.92; // opacity to show bg clearly
-    const MIN_FADE_OPACITY = 0.45; // keep enough opacity to avoid showing underlying video
+    // Make gallery background semi-transparent so the page canvas/hero shows through
+    const TARGET_OPACITY = 0.62; // visible but allows underlying hero frames
+    const MIN_FADE_OPACITY = 0.18; // keep some opacity while preloading to avoid flash
 
     // If no animation, set immediately (useful for init)
     if (!animate) {

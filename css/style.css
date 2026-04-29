@@ -246,6 +246,12 @@ button { border: none; background: none; cursor: pointer; }
   opacity: 1;
 }
 
+/* From #caldas onward use a flat, plain background color until the end of the page */
+#caldas, #caldas ~ .scroll-section {
+  background-color: #0d2a24 !important;
+  background-image: none !important;
+}
+
 .hero-bg-gradient {
   position: absolute;
   inset: 0;
