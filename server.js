@@ -24,7 +24,11 @@ const MIME = {
 };
 
 http.createServer((req, res) => {
-  let filePath = path.join(ROOT, req.url === '/' ? 'index.html' : req.url);
+  // Decodificar URI para soportar nombres con espacios y acentos
+  let urlPath;
+  try { urlPath = decodeURIComponent(req.url.split('?')[0]); }
+  catch (_) { urlPath = req.url; }
+  let filePath = path.join(ROOT, urlPath === '/' ? 'index.html' : urlPath);
   const ext = path.extname(filePath).toLowerCase();
   const contentType = MIME[ext] || 'application/octet-stream';
 

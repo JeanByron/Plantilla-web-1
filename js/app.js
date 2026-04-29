@@ -16,15 +16,12 @@ const IMAGE_SCALE   = 1.0;   // 1.0 = full-cover sin barras laterales
 const WINDOW        = 0.06;  // ventana de animación por sección
 const FRAME_EXT     = 'jpg';
 
-// Dark overlay: sección stats (77–85% en 2000vh)
-const STATS_ENTER   = 0.77;
-const STATS_LEAVE   = 0.85;
-
 // Hero desaparece al 12% de scroll
 const HERO_FADE_END = 0.12;
 
-// ── MAP DATA (v1 real vote counts) ────────────────────────────
-const MAP_VOTES = {
+// ── MAP DATA (post-elecciones: hover corto + click largo + imagen) ──
+// Mapeo código DANE → nombre municipio (los 27 de Caldas)
+const MAP_MUN_NAME = {
   17001:'Manizales',  17013:'Aguadas',    17042:'Anserma',
   17050:'Aranzazu',   17088:'Belalcázar', 17174:'Chinchiná',
   17272:'Filadelfia', 17380:'La Dorada',  17388:'La Merced',
@@ -35,63 +32,42 @@ const MAP_VOTES = {
   17662:'Samaná',     17665:'San José',   17777:'Supía',
   17867:'Victoria',   17873:'Villamaría', 17877:'Viterbo'
 };
-const MAP_VOTE_COUNT = {
-  17001:13500, 17013:800,  17042:1500, 17050:480,  17088:680,
-  17174:1900,  17272:400,  17380:2800, 17388:360,  17433:760,
-  17442:400,   17444:640,  17446:280,  17486:1200, 17495:240,
-  17513:560,   17524:680,  17541:880,  17614:1700, 17616:440,
-  17653:680,   17662:840,  17665:280,  17777:840,  17867:400,
-  17873:2100,  17877:560
-};
-const MAP_TOTAL  = 35946;
-const MAP_MAX_V  = Math.max(...Object.values(MAP_VOTE_COUNT));
+
+// Datos de cada municipio: hover (frase corta), click (texto largo), img (foto referencial).
+// TODO: reemplazar las imágenes genéricas (1-25.jpeg) por fotos específicas del municipio cuando estén disponibles.
 const MAP_MUN_DATA = {
-  'Manizales':   { desc:'Capital de Caldas · Hub universitario y cultural', eje:'Conectividad Digital y Educación', propuesta:'Ampliación del Fondo de Conectividad Digital Caldas y fortalecimiento de los institutos de educación técnica articulados con las universidades de la capital.' },
-  'Aguadas':     { desc:'Norte de Caldas · Patrimonio del sombrero aguadeño', eje:'Turismo Cultural y Artesanías', propuesta:'Plan de Turismo Cafetero con rutas culturales que posicionen el sombrero aguadeño —declarado Patrimonio Cultural de la Nación— como atractivo turístico del norte caldense.' },
-  'Anserma':     { desc:'Occidente de Caldas · Economía cafetera y panelera', eje:'Salud Rural y Vías Terciarias', propuesta:'Ley de Salud Rural Universal para garantizar acceso médico en las veredas del occidente cafetero; inversión en vías terciarias para conectar los cultivos con los centros de acopio.' },
-  'Aranzazu':    { desc:'Centro de Caldas · Municipio cafetero de mediana escala', eje:'Salud Rural y Conectividad', propuesta:'Puestos de salud operativos en cada corregimiento mediante la Ley de Salud Rural Universal; Fondo de Conectividad Digital para mejorar el acceso a servicios digitales en zonas rurales.' },
-  'Belalcázar':  { desc:'Occidente de Caldas · Turismo religioso y paisaje cafetero', eje:'Turismo y Desarrollo Rural', propuesta:'Plan de Turismo Cafetero que potencie el turismo religioso y paisajístico del occidente caldense como motor económico, complementado con mejoras en infraestructura rural.' },
-  'Chinchiná':   { desc:'Sur de Caldas · Epicentro de la industria cafetera colombiana', eje:'Turismo Cafetero y Educación Técnica', propuesta:'Plan de Turismo Cafetero para posicionar Chinchiná en las rutas del Eje Cafetero; Reforma de Educación Técnica Municipal con formación en barismo, agroindustria y exportación local.' },
-  'Filadelfia':  { desc:'Norte de Caldas · Municipio rural con alta dispersión poblacional', eje:'Salud Rural Universal', propuesta:'Ley de Salud Rural Universal: equipos médicos móviles y telesalud para llegar a las veredas más alejadas del norte de Caldas sin centro hospitalario propio.' },
-  'La Dorada':   { desc:'Magdalena Centro · Puerto fluvial y centro económico del oriente', eje:'Empleo y Reactivación Económica', propuesta:'Proyecto legislativo para la reactivación del Puerto de La Dorada como nodo logístico del río Magdalena, con generación de empleo formal y mejora de la conectividad vial regional.' },
-  'La Merced':   { desc:'Occidente de Caldas · Municipio de economía campesina', eje:'Conectividad Digital y Salud Rural', propuesta:'Fondo de Conectividad Digital Caldas para llevar internet a las escuelas rurales; Ley de Salud Rural Universal para municipios sin hospital en el occidente caldense.' },
-  'Manzanares':  { desc:'Oriente de Caldas · Cuna del aguardiente amarillo caldense', eje:'Educación Técnica y Agroindustria', propuesta:'Reforma de Educación Técnica Municipal para crear oferta de formación en agroindustria y procesamiento de alimentos, aprovechando la vocación productiva del oriente caldense.' },
-  'Marmato':     { desc:'Occidente de Caldas · Minería aurífera ancestral desde el siglo XVI', eje:'Derechos Mineros y Patrimonio Cultural', propuesta:'Defensa legislativa de los mineros artesanales ante megaproyectos mineros; reconocimiento del Paisaje Cultural Minero de Marmato y garantía de derechos para las comunidades históricas.' },
-  'Marquetalia': { desc:'Oriente de Caldas · Zona en proceso de reconciliación post-conflicto', eje:'Reconciliación, Salud y Empleo Rural', propuesta:'Agenda de salud rural y empleabilidad para comunidades del oriente caldense afectadas por el conflicto armado; apoyo a proyectos productivos en zonas de sustitución.' },
-  'Marulanda':   { desc:'Centro-oriente de Caldas · Municipio más frío, zona de páramo andino', eje:'Medio Ambiente y Desarrollo Sostenible', propuesta:'Protección legislativa de los páramos del oriente caldense; fomento de la economía de la lana de oveja como producto artesanal identitario y sostenible de Marulanda.' },
-  'Neira':       { desc:'Centro de Caldas · Municipio histórico sobre el Camino Real', eje:'Educación Técnica y Empleo', propuesta:'Reforma de Educación Técnica Municipal con oferta de formación laboral en el centro de Caldas, con énfasis en caficultura tecnificada y turismo patrimonial.' },
-  'Norcasia':    { desc:'Oriente de Caldas · Zona de la represa La Miel · Turismo ecológico', eje:'Turismo Ecológico y Recursos Hídricos', propuesta:'Plan de Turismo Cafetero con circuitos ecológicos en la represa La Miel; defensa de los recursos hídricos del oriente caldense y distribución justa de regalías energéticas.' },
-  'Pácora':      { desc:'Norte de Caldas · Tradición cultural de las matracas', eje:'Turismo Cultural y Conectividad', propuesta:'Plan de Turismo Cafetero con énfasis en la identidad cultural del norte caldense; Fondo de Conectividad Digital para mejorar el acceso a servicios en municipios rurales como Pácora.' },
-  'Palestina':   { desc:'Sur de Caldas · Sede del Aeropuerto Internacional del Café', eje:'Conectividad Aérea y Turismo Cafetero', propuesta:'Gestión legislativa para la operación sostenida del Aeropuerto Internacional del Café y su articulación con rutas turísticas del Eje Cafetero, dinamizando la economía regional.' },
-  'Pensilvania': { desc:'Oriente de Caldas · Vocación maderera y forestal', eje:'Educación Técnica y Empleo Forestal', propuesta:'Reforma de Educación Técnica Municipal con énfasis en silvicultura, manejo forestal sostenible y carpintería, aprovechando la vocación productiva del municipio.' },
-  'Riosucio':    { desc:'Occidente de Caldas · Mayor concentración indígena del departamento · Carnaval del Diablo', eje:'Derechos Étnicos y Salud Intercultural', propuesta:'Defensa de los derechos de los resguardos indígenas Emberá y Chamí; salud intercultural mediante la Ley de Salud Rural Universal; protección del Carnaval del Diablo como Bien de Interés Cultural Nacional.' },
-  'Risaralda':   { desc:'Occidente de Caldas · Municipio cafetero de pequeña escala', eje:'Salud Rural y Agricultura', propuesta:'Ley de Salud Rural Universal para municipios pequeños del occidente caldense; asistencia técnica agropecuaria para caficultores independientes y mejora de vías rurales.' },
-  'Salamina':    { desc:'Norte de Caldas · Patrimonio Histórico Nacional · Paisaje Cultural Cafetero UNESCO', eje:'Turismo Patrimonial y Cultura', propuesta:'Plan de Turismo Cafetero con Salamina como nodo del Paisaje Cultural Cafetero UNESCO; recursos para conservación del patrimonio arquitectónico y promoción turística nacional e internacional.' },
-  'Samaná':      { desc:'Oriente de Caldas · Municipio históricamente afectado por el conflicto armado', eje:'Salud Rural y Reconciliación', propuesta:'Ley de Salud Rural Universal para municipios que fueron escenario del conflicto; programas de empleo rural y acceso a servicios básicos para las comunidades víctimas del oriente.' },
-  'San José':    { desc:'Occidente de Caldas · Municipio de economía campesina', eje:'Salud Rural y Vías', propuesta:'Garantía de servicios de salud básicos mediante la Ley de Salud Rural Universal e inversión en vías terciarias para corregimientos del occidente caldense.' },
-  'Supía':       { desc:'Occidente de Caldas · Minería artesanal y comunidades indígenas', eje:'Derechos Étnicos y Desarrollo Local', propuesta:'Defensa de los derechos de las comunidades indígenas del occidente caldense y de los mineros artesanales; promoción de la gastronomía y el turismo local como alternativas económicas sostenibles.' },
-  'Victoria':    { desc:'Oriente de Caldas · Municipio ganadero sobre el río Magdalena', eje:'Infraestructura Vial y Conectividad', propuesta:'Proyecto de mejora vial para conectar municipios del oriente caldense con la red nacional; Fondo de Conectividad Digital para llevar servicios digitales al sector rural.' },
-  'Villamaría':  { desc:'Sur de Caldas · Puerta al Parque Nacional Natural Los Nevados', eje:'Medio Ambiente y Ecoturismo', propuesta:'Protección legislativa del Parque Nacional Natural Los Nevados; circuito de ecoturismo andino que posicione a Villamaría como destino de turismo de naturaleza y referente ambiental.' },
-  'Viterbo':     { desc:'Occidente de Caldas · Destino turístico con Lago Distracción', eje:'Turismo y Desarrollo Local', propuesta:'Plan de Turismo Cafetero con rutas en el occidente caldense que incorporen a Viterbo como destino de turismo rural y ecoturismo lacustre.' }
+  'Manizales':   { hover:'Centro de oportunidades, educación y desarrollo regional.',           click:'Manizales es el eje administrativo y académico del departamento, donde convergen la educación, la innovación y el crecimiento económico, impulsando oportunidades para todos los sectores.', img:'images/1.jpeg'  },
+  'Villamaría':  { hover:'Riqueza natural y compromiso ambiental.',                              click:'Villamaría se destaca por su biodiversidad y cercanía a ecosistemas estratégicos, promoviendo el turismo sostenible y la protección ambiental como base de su desarrollo.',                  img:'images/2.jpeg'  },
+  'Chinchiná':   { hover:'Tradición cafetera que impulsa desarrollo.',                           click:'Chinchiná es clave en la economía cafetera, donde tradición e innovación se articulan para fortalecer el campo y generar oportunidades.',                                                  img:'images/3.jpeg'  },
+  'Neira':       { hover:'Identidad cafetera y tradición rural.',                                click:'Neira es un municipio con fuerte vocación agrícola, donde se promueven iniciativas para fortalecer el campo y mejorar la calidad de vida rural.',                                          img:'images/4.jpeg'  },
+  'Palestina':   { hover:'Territorio de proyección y conectividad.',                             click:'Palestina se proyecta como un punto estratégico para el desarrollo logístico y económico, impulsando proyectos que fortalecen la conectividad regional.',                                 img:'images/5.jpeg'  },
+  'Aguadas':     { hover:'Tradición, cultura y emprendimiento artesanal.',                       click:'Aguadas es referente cultural y artesanal, impulsando la economía local a través de sus tradiciones y el talento de su gente.',                                                              img:'images/6.jpeg'  },
+  'Pácora':      { hover:'Historia y tradición que construyen territorio.',                      click:'Pácora conserva su identidad histórica mientras fortalece procesos comunitarios y productivos que dinamizan su desarrollo.',                                                                  img:'images/7.jpeg'  },
+  'Salamina':    { hover:'Patrimonio y arquitectura emblemática.',                               click:'Salamina destaca por su riqueza patrimonial y turística, promoviendo el desarrollo sostenible desde su identidad cultural.',                                                                  img:'images/8.jpeg'  },
+  'Aranzazu':    { hover:'Trabajo rural y compromiso comunitario.',                              click:'Aranzazu impulsa el desarrollo desde el campo, fortaleciendo la producción agrícola y la organización comunitaria.',                                                                          img:'images/9.jpeg'  },
+  'Filadelfia':  { hover:'Campo, tradición y progreso local.',                                   click:'Filadelfia es un municipio que crece desde su vocación rural, promoviendo iniciativas que fortalecen la economía local.',                                                                       img:'images/10.jpeg' },
+  'La Merced':   { hover:'Pequeño territorio con gran identidad.',                               click:'La Merced se caracteriza por su cohesión social y su trabajo comunitario, impulsando procesos de desarrollo local.',                                                                          img:'images/11.jpeg' },
+  'Riosucio':    { hover:'Cultura, diversidad y tradición.',                                     click:'Riosucio es un referente cultural, donde la diversidad y las tradiciones fortalecen el tejido social y el desarrollo comunitario.',                                                          img:'images/12.jpeg' },
+  'Supía':       { hover:'Diversidad cultural y dinamismo social.',                              click:'Supía es un territorio diverso que promueve la inclusión, la participación y el crecimiento social.',                                                                                          img:'images/13.jpeg' },
+  'Marmato':     { hover:'Historia minera y resiliencia territorial.',                           click:'Marmato es reconocido por su tradición minera, impulsando procesos que buscan el desarrollo sostenible y la formalización del sector.',                                                        img:'images/14.jpeg' },
+  'Belalcázar':  { hover:'Tradición y desarrollo en el occidente caldense.',                     click:'Belalcázar promueve el desarrollo desde su identidad cultural y el trabajo comunitario.',                                                                                                       img:'images/15.jpeg' },
+  'San José':    { hover:'Territorio joven con vocación productiva.',                            click:'San José es uno de los municipios más jóvenes del departamento, con un gran potencial en el desarrollo agrícola y social.',                                                                  img:'images/16.jpeg' },
+  'Viterbo':     { hover:'Turismo, cultura y crecimiento regional.',                              click:'Viterbo impulsa el turismo y el desarrollo económico, consolidándose como un destino atractivo en el occidente.',                                                                              img:'images/17.jpeg' },
+  'Risaralda':   { hover:'Tradición agrícola y dinamismo local.',                                click:'Risaralda fortalece su economía desde el campo, promoviendo iniciativas productivas y comunitarias.',                                                                                        img:'images/18.jpeg' },
+  'Anserma':     { hover:'Historia y vocación agrícola.',                                        click:'Anserma combina su legado histórico con el impulso al desarrollo rural y la productividad agrícola.',                                                                                          img:'images/19.jpeg' },
+  'Pensilvania': { hover:'Progreso desde el campo y el territorio.',                             click:'Pensilvania impulsa su desarrollo desde la ruralidad, fortaleciendo el campo y mejorando la calidad de vida de sus habitantes.',                                                            img:'images/20.jpeg' },
+  'Marquetalia': { hover:'Tradición agrícola y cultura campesina.',                              click:'Marquetalia impulsa el desarrollo desde el campo, fortaleciendo su identidad campesina y productiva.',                                                                                       img:'images/21.jpeg' },
+  'Manzanares':  { hover:'Historia, tradición y desarrollo local.',                              click:'Manzanares combina su legado histórico con procesos de crecimiento social y económico.',                                                                                                       img:'images/22.jpeg' },
+  'Marulanda':   { hover:'Territorio rural de tradición y esfuerzo.',                            click:'Marulanda se caracteriza por su trabajo ganadero y rural, promoviendo el desarrollo sostenible desde el campo.',                                                                            img:'images/23.jpeg' },
+  'La Dorada':   { hover:'Eje logístico y puerta del Magdalena.',                                click:'La Dorada es un punto estratégico para el comercio y la conectividad, impulsando el desarrollo económico regional.',                                                                          img:'images/24.jpeg' },
+  'Victoria':    { hover:'Progreso desde la cercanía y el territorio.',                          click:'Victoria promueve el desarrollo local mediante el fortalecimiento comunitario y productivo.',                                                                                                  img:'images/25.jpeg' },
+  'Norcasia':    { hover:'Energía, naturaleza y desarrollo.',                                    click:'Norcasia es clave en la generación energética y la protección ambiental, impulsando el desarrollo sostenible.',                                                                                img:'images/15.jpeg' },
+  'Samaná':      { hover:'Territorio de resiliencia y transformación.',                          click:'Samaná es un ejemplo de reconstrucción social, donde se promueven iniciativas de paz y desarrollo territorial.',                                                                              img:'images/22.jpeg' }
 };
 
-function mapVoteColor(v) {
-  const t = Math.pow(v / MAP_MAX_V, 0.44);
-  let r, g, b;
-  if (t < 0.45) {
-    // dark teal (#0A1A17) → teal (#1B4D47)
-    const s = t / 0.45;
-    r = Math.round(10  + (27  - 10)  * s);
-    g = Math.round(26  + (77  - 26)  * s);
-    b = Math.round(23  + (71  - 23)  * s);
-  } else {
-    // teal (#1B4D47) → orange (#E8621A)
-    const s = (t - 0.45) / 0.55;
-    r = Math.round(27  + (232 - 27)  * s);
-    g = Math.round(77  + (98  - 77)  * s);
-    b = Math.round(71  + (26  - 71)  * s);
-  }
-  return `rgb(${r},${g},${b})`;
+// Color base unificado para todos los municipios (no hay gradiente por votos).
+function mapBaseColor() {
+  return 'rgb(27,77,71)'; // teal
 }
 
 // ── FRAME LOADING ─────────────────────────────────────────────
@@ -157,13 +133,7 @@ function loadRestInBackground(from, total) {
   }
 }
 
-function updateLoader(loaded, total) {
-  const pct = total > 0 ? Math.round((loaded / total) * 100) : 100;
-  const bar = document.getElementById('loader-bar');
-  const txt = document.getElementById('loader-percent');
-  if (bar) bar.style.width = pct + '%';
-  if (txt) txt.textContent = pct + '%';
-}
+function updateLoader() { /* loader es ahora un video; no requiere progreso */ }
 
 // ── CANVAS RENDERER ──────────────────────────────────────────
 const canvas = document.getElementById('canvas');
@@ -242,13 +212,13 @@ function drawGenerativeFrame(frameIndex, maxFrames) {
 }
 
 // ── FRAME-TO-SCROLL BINDING ──────────────────────────────────
-const GALLERY_ENTER  = 0.48;   // flat bg: cubre zoom parallax + carrusel
-const GALLERY_LEAVE  = 0.77;
+const GALLERY_ENTER  = 0.50;   // flat bg: cubre zoom parallax + carrusel
+const GALLERY_LEAVE  = 0.80;
 const GALLERY_FADE   = 0.035;
-const ZP_ENTER       = 0.48;   // zoom parallax
-const ZP_LEAVE       = 0.62;
-const CAROUSEL_ENTER = 0.62;   // carrusel Oryzo
-const CAROUSEL_LEAVE = 0.77;
+const ZP_ENTER       = 0.50;   // zoom parallax
+const ZP_LEAVE       = 0.64;
+const CAROUSEL_ENTER = 0.64;   // carrusel Oryzo
+const CAROUSEL_LEAVE = 0.80;
 
 function drawFlatBg(cw, ch) {
   ctx.fillStyle = '#0A1A17';
@@ -370,7 +340,6 @@ function mapDoRadarSweep(elements, container) {
     left: '104%', duration: 2.0, ease: 'power1.inOut', delay: SWEEP_DELAY,
     onComplete: () => {
       gsap.to(scanLine, { opacity: 0, duration: 0.6 });
-      mapAnimateCounter();
     }
   });
   sorted.forEach(el => {
@@ -389,7 +358,7 @@ function mapCreatePulse(px, py, container) {
   });
 }
 
-function mapAttachEvents(el, name, votes, cx, cy, svgEl, container, tooltip, detailPanel) {
+function mapAttachEvents(el, name, cx, cy, svgEl, container, tooltip, detailPanel) {
   el._cx = cx; el._cy = cy;
 
   function getMapPos() {
@@ -401,12 +370,12 @@ function mapAttachEvents(el, name, votes, cx, cy, svgEl, container, tooltip, det
     };
   }
 
-  const pct = ((votes / MAP_TOTAL) * 100).toFixed(1);
+  const data = MAP_MUN_DATA[name] || { hover: name, click: name + ', municipio de Caldas.', img: 'images/1.jpeg' };
 
   el.addEventListener('mouseenter', () => {
     tooltip.innerHTML = `
       <div class="map-tooltip-name">${name}</div>
-      <div class="map-tooltip-stats">${votes.toLocaleString()} votos &nbsp;·&nbsp; ${pct}%</div>`;
+      <div class="map-tooltip-hover">${data.hover}</div>`;
     tooltip.classList.add('visible');
     const { px, py } = getMapPos();
     mapCreatePulse(px, py, container);
@@ -427,7 +396,7 @@ function mapAttachEvents(el, name, votes, cx, cy, svgEl, container, tooltip, det
     const rc = container.getBoundingClientRect();
     let left = e.clientX - rc.left + 18;
     let top  = Math.max(e.clientY - rc.top - 56, 8);
-    if (left + 190 > rc.width) left = e.clientX - rc.left - 208;
+    if (left + 200 > rc.width) left = e.clientX - rc.left - 220;
     tooltip.style.left = left + 'px';
     tooltip.style.top  = top  + 'px';
   });
@@ -471,92 +440,41 @@ function mapAttachEvents(el, name, votes, cx, cy, svgEl, container, tooltip, det
       el.setAttribute('stroke-width', '2.5');
       el.style.filter = 'brightness(1.25) drop-shadow(0 0 14px rgba(232,98,26,.65))';
       allPaths.forEach(p => gsap.to(p, { opacity: p === el ? 1 : 0.35, duration: 0.3 }));
-      mapShowDetail(name, votes, detailPanel);
+      mapShowDetail(name, detailPanel);
     }
   });
 }
 
-function mapShowDetail(name, votes, detailPanel) {
+function mapShowDetail(name, detailPanel) {
   if (!detailPanel) return;
-  const data   = MAP_MUN_DATA[name] || { desc:'Caldas', eje:'Propuestas Generales', propuesta:'Manuel Correa trabaja por los 27 municipios de Caldas con propuestas de salud rural, conectividad digital, educación técnica y turismo cafetero.' };
-  const sorted = [...mapAllMuns].sort((a, b) => b.votes - a.votes);
-  const rank   = sorted.findIndex(x => x.name === name) + 1;
-  const pct    = ((votes / MAP_TOTAL) * 100).toFixed(1);
+  const data = MAP_MUN_DATA[name] || { hover: name, click: name + ', municipio de Caldas.', img: 'images/1.jpeg' };
 
-  detailPanel.classList.add('has-data');
-  detailPanel.querySelector('#detail-name').textContent      = name;
-  detailPanel.querySelector('#detail-desc').textContent      = data.desc;
-  detailPanel.querySelector('#detail-votes').textContent     = votes.toLocaleString();
-  detailPanel.querySelector('#detail-pct').textContent       = pct + '% del total';
-  detailPanel.querySelector('#detail-rank').textContent      = '#' + rank + ' en Caldas';
-  detailPanel.querySelector('#detail-eje').textContent       = data.eje;
-  detailPanel.querySelector('#detail-propuesta').textContent = data.propuesta;
-
-  const emptyEl   = document.getElementById('mapa-detail-empty');
-  const contentEl = document.getElementById('mapa-detail-content');
-
-  if (contentEl && contentEl.hidden) {
-    contentEl.hidden = false;
-    if (emptyEl) gsap.to(emptyEl, { opacity: 0, duration: 0.2, onComplete: () => { emptyEl.style.display = 'none'; } });
-    gsap.fromTo(contentEl, { opacity: 0, y: 14 }, { opacity: 1, y: 0, duration: 0.45, ease: 'power2.out' });
-  } else if (contentEl) {
-    gsap.fromTo(contentEl, { opacity: 0.5, y: 8 }, { opacity: 1, y: 0, duration: 0.3, ease: 'power2.out' });
-  }
-
-  setTimeout(() => {
-    const barFill = document.getElementById('detail-bar-fill');
-    if (barFill) barFill.style.width = (votes / MAP_MAX_V * 100).toFixed(1) + '%';
-  }, 80);
+  // Reset clase para reiniciar la transición
+  detailPanel.classList.remove('is-active');
+  detailPanel.innerHTML = `
+    <img src="${data.img}" alt="${name}" class="mapa-selected-img" loading="lazy"/>
+    <h3 class="mapa-selected-name">${name}</h3>
+    <p class="mapa-selected-desc">${data.click}</p>
+  `;
+  // Forzar reflow y activar
+  void detailPanel.offsetWidth;
+  detailPanel.classList.add('is-active');
 }
 
 function mapClearDetail(detailPanel) {
   if (!detailPanel) return;
-  detailPanel.classList.remove('has-data');
-  const emptyEl   = document.getElementById('mapa-detail-empty');
-  const contentEl = document.getElementById('mapa-detail-content');
-  if (!emptyEl || !contentEl) return;
-  gsap.to(contentEl, { opacity: 0, y: -8, duration: 0.25, onComplete: () => {
-    contentEl.hidden = true;
-    emptyEl.style.display = '';
-    gsap.fromTo(emptyEl, { opacity: 0 }, { opacity: 1, duration: 0.3 });
-    const barFill = document.getElementById('detail-bar-fill');
-    if (barFill) barFill.style.width = '0%';
-  }});
-}
-
-let mapCounterTimer;
-function mapAnimateCounter() {
-  const el = document.getElementById('total-counter');
-  if (!el) return;
-  let cur = 0; const step = MAP_TOTAL / 80;
-  clearInterval(mapCounterTimer);
-  mapCounterTimer = setInterval(() => {
-    cur = Math.min(cur + step, MAP_TOTAL);
-    el.textContent = Math.round(cur).toLocaleString();
-    if (cur >= MAP_TOTAL) clearInterval(mapCounterTimer);
-  }, 20);
-}
-
-function mapBuildRanking() {
-  const rankList = document.getElementById('ranking-list');
-  if (!rankList) return;
-  const sorted = [...mapAllMuns].sort((a,b) => b.votes - a.votes);
-  rankList.innerHTML = '';
-  sorted.slice(0, 7).forEach((m, i) => {
-    const d = document.createElement('div'); d.className = 'rank-item';
-    d.innerHTML = `<span class="rank-n">${i+1}</span>
-      <span class="rank-name">${m.name}</span>
-      <div class="rank-bar-wrap"><div class="rank-bar" style="width:0%"></div></div>
-      <span class="rank-votes">${m.votes.toLocaleString()}</span>`;
-    rankList.appendChild(d);
-    setTimeout(() => { d.querySelector('.rank-bar').style.width = (m.votes/MAP_MAX_V*100).toFixed(0)+'%'; }, 200 + i * 90);
-  });
+  detailPanel.classList.remove('is-active');
+  setTimeout(() => {
+    if (!detailPanel.classList.contains('is-active')) {
+      detailPanel.innerHTML = `<div class="mapa-selected-hint">Pasa el cursor sobre<br>un municipio<br><span style="color:var(--orange);font-size:.7rem;letter-spacing:.15em;display:block;margin-top:.6rem">— o haz clic para ver más —</span></div>`;
+    }
+  }, 350);
 }
 
 async function mapLoad(section) {
   const svgEl     = section.querySelector('#caldas-map');
   const tooltip   = section.querySelector('#map-tooltip');
-  const detailPanel = section.querySelector('#mapa-detail');
+  const detailPanel = section.querySelector('#mapa-selected');
   const container = section.querySelector('.mapa-svg-container');
   if (!svgEl || !container) return;
 
@@ -564,12 +482,11 @@ async function mapLoad(section) {
   mapInitMouseGlow(container);
 
   // Animate header in
-  const headerEls = [...section.querySelectorAll('.map-label,.map-title,.map-desc-top,.mapa-total')];
+  const headerEls = [...section.querySelectorAll('.map-label,.map-title,.map-desc-top')];
   gsap.fromTo(headerEls,
     { y: 30, opacity: 0 },
     { y: 0, opacity: 1, stagger: 0.15, duration: 0.85, ease: 'power3.out', delay: 0.3 });
 
-  // Animate container border glow
   gsap.fromTo(container,
     { opacity: 0, y: 20 },
     { opacity: 1, y: 0, duration: 1.0, ease: 'power3.out', delay: 0.6 });
@@ -592,13 +509,13 @@ async function mapLoad(section) {
     const key = Object.keys(topo.objects)[0];
     features = topojson.feature(topo, topo.objects[key]).features;
   } else if (topo.features) { features = topo.features; }
-  else { mapRenderFallback(svgEl, container, tooltip, selPanel, section); return; }
+  else { mapRenderFallback(svgEl, container, tooltip, detailPanel, section); return; }
 
   const caldas = features.filter(f => {
     const id = String(f.id || f.properties?.MPIO_CDPMP || f.properties?.DPTO || '');
     return id.startsWith('17') && id.length >= 4;
   });
-  if (caldas.length < 10) { mapRenderFallback(svgEl, container, tooltip, selPanel, section); return; }
+  if (caldas.length < 10) { mapRenderFallback(svgEl, container, tooltip, detailPanel, section); return; }
 
   const W = 860, H = 520;
   svgEl.setAttribute('viewBox', `0 0 ${W} ${H}`);
@@ -607,22 +524,20 @@ async function mapLoad(section) {
   const elements = [];
 
   caldas.forEach(feat => {
-    const code  = parseInt(String(feat.id || feat.properties?.MPIO_CDPMP || 0));
-    const name  = MAP_VOTES[code] || feat.properties?.MPIO_CNMBR || `Mun ${code}`;
-    const votes = MAP_VOTE_COUNT[code] || 300;
-    mapAllMuns.push({ name, votes });
+    const code = parseInt(String(feat.id || feat.properties?.MPIO_CDPMP || 0));
+    const name = MAP_MUN_NAME[code] || feat.properties?.MPIO_CNMBR || `Mun ${code}`;
+    mapAllMuns.push({ name });
     const el = document.createElementNS('http://www.w3.org/2000/svg', 'path');
     el.setAttribute('d', pathGen(feat));
-    el.setAttribute('fill', mapVoteColor(votes));
+    el.setAttribute('fill', mapBaseColor());
     el.setAttribute('stroke', 'rgba(5,13,11,0.85)');
     el.setAttribute('stroke-width', '1');
     const c = pathGen.centroid(feat);
-    mapAttachEvents(el, name, votes, c[0]||W/2, c[1]||H/2, svgEl, container, tooltip, detailPanel);
+    mapAttachEvents(el, name, c[0]||W/2, c[1]||H/2, svgEl, container, tooltip, detailPanel);
     svgEl.appendChild(el);
     elements.push(el);
   });
 
-  mapBuildRanking();
   const loading = section.querySelector('#map-loading');
   if (loading) loading.style.display = 'none';
 
@@ -640,7 +555,7 @@ async function mapLoad(section) {
   mapDoRadarSweep(elements, container);
 }
 
-function mapRenderFallback(svgEl, container, tooltip, selPanel, section) {
+function mapRenderFallback(svgEl, container, tooltip, detailPanel, section) {
   svgEl.setAttribute('viewBox', '0 0 860 520');
   const MUNS = [
     {c:17614,p:'16,175 112,158 124,195 120,272 82,298 46,296 20,272 16,224',   cx:68, cy:228},
@@ -673,18 +588,17 @@ function mapRenderFallback(svgEl, container, tooltip, selPanel, section) {
   ];
   const elements = [];
   MUNS.forEach(m => {
-    const name = MAP_VOTES[m.c] || '?', votes = MAP_VOTE_COUNT[m.c] || 300;
-    mapAllMuns.push({ name, votes });
+    const name = MAP_MUN_NAME[m.c] || '?';
+    mapAllMuns.push({ name });
     const el = document.createElementNS('http://www.w3.org/2000/svg', 'polygon');
     el.setAttribute('points', m.p);
-    el.setAttribute('fill', mapVoteColor(votes));
+    el.setAttribute('fill', mapBaseColor());
     el.setAttribute('stroke', 'rgba(5,13,11,0.85)');
     el.setAttribute('stroke-width', '1.5');
-    mapAttachEvents(el, name, votes, m.cx, m.cy, svgEl, container, tooltip, selPanel);
+    mapAttachEvents(el, name, m.cx, m.cy, svgEl, container, tooltip, detailPanel);
     svgEl.appendChild(el);
     elements.push(el);
   });
-  mapBuildRanking();
   const loading = section.querySelector('#map-loading');
   if (loading) loading.style.display = 'none';
 
@@ -703,7 +617,7 @@ function mapRenderFallback(svgEl, container, tooltip, selPanel, section) {
 }
 
 function mapPlayEntrance(section) {
-  const headerEls = [...section.querySelectorAll('.map-label,.map-title,.map-desc-top,.mapa-total')];
+  const headerEls = [...section.querySelectorAll('.map-label,.map-title,.map-desc-top')];
   const container = mapSvgContainer || section.querySelector('.mapa-svg-container');
   gsap.killTweensOf(headerEls);
   gsap.killTweensOf(container);
@@ -743,6 +657,7 @@ function setupGalleryAnimation(section, tl) {
 // ── SECTION ANIMATION SYSTEM ─────────────────────────────────
 function positionSection(section) {
   if (section.classList.contains('section-gallery')) return; // fixed, no absolute positioning
+  if (section.classList.contains('section-pinned'))  return; // también fixed
   const enter    = parseFloat(section.dataset.enter);
   const leave    = parseFloat(section.dataset.leave);
   const mid      = (enter + leave) / 2;
@@ -780,9 +695,18 @@ function setupSectionAnimation(section) {
   } else {
     const children = section.querySelectorAll(
       '.section-label, .section-heading, .section-body, .section-note, .section-link, ' +
-      '.cta-button, .cta-input, .cta-social, .cta-form, .agenda-list, .stat, .section-photo, .section-muro-wall'
+      '.cta-button, .cta-input, .cta-social, .cta-form, .agenda-list, .section-photo, .phone-mockup'
     );
     gsap.set(children, { visibility: 'visible' });
+
+    // Si la sección está pinned (fixed), también hay que controlar la opacidad de la sección
+    if (section.classList.contains('section-pinned')) {
+      tl.fromTo(section,
+        { opacity: 0 },
+        { opacity: 1, duration: 0.6, ease: 'power2.out',
+          onStart: () => section.classList.add('is-visible'),
+          onReverseComplete: () => section.classList.remove('is-visible') }, 0);
+    }
 
     switch (type) {
       case 'fade-up':
@@ -848,67 +772,13 @@ function setupSectionAnimation(section) {
   });
 }
 
-// ── COUNTER ANIMATIONS ───────────────────────────────────────
-function initCounters() {
-  document.querySelectorAll('.stat-number').forEach(el => {
-    const target   = parseFloat(el.dataset.value);
-    const decimals = parseInt(el.dataset.decimals || '0');
-    const proxy    = { val: 0 };
-
-    gsap.fromTo(proxy,
-      { val: 0 },
-      {
-        val: target,
-        duration: 2.2,
-        ease: 'power2.out',
-        onUpdate() {
-          el.textContent = decimals > 0 ? proxy.val.toFixed(decimals) : Math.round(proxy.val);
-        },
-        onComplete() {
-          el.textContent = decimals > 0 ? target.toFixed(decimals) : target;
-        },
-        scrollTrigger: {
-          trigger: el.closest('.scroll-section'),
-          start: 'top 80%',
-          toggleActions: 'play none none reset'
-        }
-      }
-    );
-  });
-}
-
-// ── DARK OVERLAY ─────────────────────────────────────────────
-function initDarkOverlay() {
-  const overlay   = document.getElementById('dark-overlay');
-  const fadeRange = 0.03;
-
-  ScrollTrigger.create({
-    trigger: document.getElementById('scroll-container'),
-    start: 'top top',
-    end: 'bottom bottom',
-    scrub: true,
-    onUpdate: (self) => {
-      const p = self.progress;
-      let opacity = 0;
-      if (p >= STATS_ENTER - fadeRange && p <= STATS_ENTER) {
-        opacity = (p - (STATS_ENTER - fadeRange)) / fadeRange;
-      } else if (p > STATS_ENTER && p < STATS_LEAVE) {
-        opacity = 0.92;
-      } else if (p >= STATS_LEAVE && p <= STATS_LEAVE + fadeRange) {
-        opacity = 0.92 * (1 - (p - STATS_LEAVE) / fadeRange);
-      }
-      overlay.style.opacity = opacity;
-    }
-  });
-}
-
 // ── FONDO DIFUMINADO (post-galería) ───────────────────────────
 function initBgPhotoOverlay() {
   const el = document.getElementById('bg-photo');
   if (!el) return;
-  const ENTER = GALLERY_LEAVE + 0.01; // entra justo al salir de galería
-  const LEAVE = 0.83;
-  const FADE  = 0.018;
+  const ENTER = GALLERY_LEAVE + 0.005; // entra justo al salir de galería
+  const LEAVE = 1.0;
+  const FADE  = 0.02;
   ScrollTrigger.create({
     trigger: document.getElementById('scroll-container'),
     start: 'top top', end: 'bottom bottom',
@@ -1299,27 +1169,53 @@ function initHeader() {
   toggle?.addEventListener('click', () => navLinks.classList.toggle('open'));
 }
 
-// ── LOADER (v1-style fake progress + slide-out) ───────────────
+// ── LOADER (video colibrí — ~3s o reproducción completa) ──────
+// Muestrea el color de borde del video y lo aplica al fondo del loader
+// para que el video se integre sin caja visible.
+function sampleVideoBgColor(video) {
+  try {
+    const c = document.createElement('canvas');
+    c.width = 16; c.height = 16;
+    const ctx = c.getContext('2d');
+    ctx.drawImage(video, 0, 0, 16, 16);
+    // Promedio de las esquinas (donde casi siempre va el fondo)
+    const corners = [[0,0],[15,0],[0,15],[15,15],[1,1],[14,1],[1,14],[14,14]];
+    let r=0,g=0,b=0;
+    corners.forEach(([x,y]) => {
+      const d = ctx.getImageData(x,y,1,1).data;
+      r += d[0]; g += d[1]; b += d[2];
+    });
+    r = Math.round(r/corners.length);
+    g = Math.round(g/corners.length);
+    b = Math.round(b/corners.length);
+    const loader = document.getElementById('loader');
+    if (loader) loader.style.background = `rgb(${r},${g},${b})`;
+    if (video) video.style.background = `rgb(${r},${g},${b})`;
+  } catch(_) { /* CORS u otro fallo: ignorar */ }
+}
+
 function runFakeLoader() {
   return new Promise(resolve => {
-    const bar   = document.getElementById('loader-bar');
-    const txt   = document.getElementById('loader-percent');
-    const proxy = { v: 0 };
-    gsap.to(proxy, {
-      v: 100,
-      duration: 2.0,
-      ease: 'power1.inOut',
-      onUpdate() {
-        const v = Math.round(proxy.v);
-        if (bar) bar.style.width = proxy.v.toFixed(2) + '%';
-        if (txt) txt.textContent = v + '%';
-      },
-      onComplete() {
-        if (bar) bar.style.width = '100%';
-        if (txt) txt.textContent = '100%';
-        setTimeout(resolve, 80);
-      }
+    const video = document.querySelector('.loader-video');
+    if (!video) { setTimeout(resolve, 600); return; }
+
+    const MAX_SECONDS = 3;
+    let resolved = false;
+    const finish = () => { if (resolved) return; resolved = true; try { video.pause(); } catch(_) {} resolve(); };
+
+    // Apenas haya frame, capturar el color
+    video.addEventListener('loadeddata', () => sampleVideoBgColor(video), { once: true });
+
+    video.addEventListener('timeupdate', () => {
+      if (video.currentTime >= MAX_SECONDS) finish();
     });
+    video.addEventListener('ended', finish);
+    setTimeout(finish, 4000);
+
+    const tryPlay = video.play();
+    if (tryPlay && typeof tryPlay.catch === 'function') {
+      tryPlay.catch(() => setTimeout(finish, 800));
+    }
   });
 }
 
@@ -1328,9 +1224,9 @@ function slideOutLoader() {
     const loader = document.getElementById('loader');
     if (!loader) { resolve(); return; }
     gsap.to(loader, {
-      yPercent: -100,
-      duration: 0.65,
-      ease: 'power3.inOut',
+      opacity: 0,
+      duration: 0.6,
+      ease: 'power2.inOut',
       onComplete: () => { loader.style.display = 'none'; resolve(); }
     });
   });
@@ -1338,11 +1234,6 @@ function slideOutLoader() {
 
 function initHeroEntrance() {
   const logo   = document.querySelector('.hero-logo');
-  const bird   = document.querySelector('.hero-logo-bird');
-  const manuel = document.querySelector('.hero-logo-manuel');
-  const correa = document.querySelector('.hero-logo-correa');
-  const banner = document.querySelector('.hero-logo-banner');
-  const year   = document.querySelector('.hero-logo-year');
   const tag    = document.querySelector('.hero-tagline');
   const scroll = document.querySelector('.scroll-indicator');
   const cardL  = document.querySelector('.hero-card-left');
@@ -1350,25 +1241,20 @@ function initHeroEntrance() {
 
   if (!logo) return;
 
-  // Logo container visible — children animate separately
-  gsap.set(logo, { opacity: 1 });
+  const tl = gsap.timeline({ delay: 0.3 });
 
-  const tl = gsap.timeline({ delay: 0.4 });
-
-  if (bird)   tl.to(bird,   { opacity: 1, x: 0,       duration: 1.05, ease: 'power3.out'  }, 0);
-  if (manuel) tl.to(manuel, { opacity: 1, x: 0,       duration: 1.1,  ease: 'power3.out'  }, 0.15);
-  if (correa) tl.to(correa, { opacity: 1, y: 0,       duration: 1.2,  ease: 'power3.out'  }, 0.35);
-  if (banner) tl.to(banner, { opacity: 1, scaleX: 1,  duration: 0.9,  ease: 'power3.inOut'}, 0.65);
-  if (year)   tl.to(year,   { opacity: 1,             duration: 0.75, ease: 'power2.out'  }, 0.88);
-  if (tag)    tl.to(tag,    { opacity: 1,             duration: 0.70, ease: 'power2.out'  }, 1.08);
-  if (scroll) tl.to(scroll, { opacity: 1,             duration: 0.65, ease: 'power2.out'  }, 1.35);
+  tl.fromTo(logo,
+    { opacity: 0, y: 30, scale: 0.92 },
+    { opacity: 1, y: 0,  scale: 1, duration: 1.2, ease: 'power3.out' }, 0);
+  if (tag)    tl.to(tag,    { opacity: 1, duration: 0.7, ease: 'power2.out' }, 0.55);
+  if (scroll) tl.to(scroll, { opacity: 1, duration: 0.6, ease: 'power2.out' }, 0.85);
 
   if (cardL) tl.fromTo(cardL,
     { opacity: 0, y: -50, rotation: -8, x: -50 },
-    { opacity: 1, y: 0,   x: 0, duration: 1.7, ease: 'power3.out' }, 0.4);
+    { opacity: 1, y: 0,   x: 0, duration: 1.7, ease: 'power3.out' }, 0.2);
   if (cardR) tl.fromTo(cardR,
     { opacity: 0, y: -60, rotation: 7, x: 50 },
-    { opacity: 1, y: 0,   x: 0, duration: 1.7, ease: 'power3.out' }, 0.6);
+    { opacity: 1, y: 0,   x: 0, duration: 1.7, ease: 'power3.out' }, 0.4);
 }
 
 // ── HERO BG FADE ──────────────────────────────────────────────
@@ -1492,190 +1378,30 @@ function initLenis() {
   return lenis;
 }
 
-// ── MURO DE IDEAS (Supabase Realtime) ─────────────────────────
-function initMuro() {
-  const SUPABASE_URL     = 'https://upopumlywcybfbnevjrq.supabase.co';
-  const SUPABASE_ANON    = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVwb3B1bWx5d2N5YmZibmV2anJxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzcwNTk1MjMsImV4cCI6MjA5MjYzNTUyM30.FltLM26mdV1ZDlM8cbLrw4jNxbWWKU4ePvfPlxKZxO0';
-  const EDGE_FN          = SUPABASE_URL + '/functions/v1/submit-comment';
+// ── FORMULARIO DE CONTACTO (envío local, sin backend) ────────
+function initContactForm() {
+  const form    = document.getElementById('contact-form');
+  const success = document.getElementById('contact-success');
+  if (!form) return;
 
-  const form      = document.getElementById('muro-form');
-  const toastEl   = document.getElementById('muro-toast');
-  const toastIcon = document.getElementById('muro-toast-icon');
-  const errorEl   = document.getElementById('muro-error');
-  const newBtn    = document.getElementById('muro-new-btn');
-  const cardsEl   = document.getElementById('muro-cards');
-  const emptyEl   = document.getElementById('muro-empty');
-  const countEl   = document.getElementById('muro-count');
-  const msgEl     = document.getElementById('muro-mensaje');
-
-  if (!form || !cardsEl) return;
-  if (!window.supabase) { console.warn('Supabase SDK no cargado.'); return; }
-
-  const db = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON);
-  let totalCount = 0;
-
-  function escapeHtml(str) {
-    return String(str)
-      .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
-      .replace(/"/g,'&quot;').replace(/'/g,'&#039;');
-  }
-
-  function formatDate(isoStr) {
-    const diff = Date.now() - new Date(isoStr).getTime();
-    if (diff < 3600000)  return 'Hace ' + Math.max(1, Math.round(diff / 60000)) + ' min';
-    if (diff < 86400000) return 'Hace ' + Math.round(diff / 3600000) + 'h';
-    return new Date(isoStr).toLocaleDateString('es-CO', { day:'numeric', month:'short' });
-  }
-
-  function updateCount(n) {
-    if (!countEl) return;
-    countEl.textContent = n === 0 ? '' : n === 1 ? '1 propuesta' : n + ' propuestas';
-    countEl.classList.remove('muro-wall-count--bump');
-    void countEl.offsetWidth; // reflow para reiniciar animación
-    countEl.classList.add('muro-wall-count--bump');
-  }
-
-  function createCard(post, delay = 0, realtime = false) {
-    const initial = (post.nombre || 'A')[0].toUpperCase();
-    const card = document.createElement('div');
-    card.className = realtime ? 'muro-card muro-card--realtime' : 'muro-card';
-    if (!realtime) card.style.animationDelay = delay + 'ms';
-    card.innerHTML = `
-      <div class="muro-card-header">
-        <div class="muro-avatar">${initial}</div>
-        <div class="muro-card-meta">
-          <div class="muro-card-name">${escapeHtml(post.nombre)}</div>
-          <div class="muro-card-loc">${escapeHtml(post.municipio)}</div>
-        </div>
-        <div class="muro-card-date">${formatDate(post.created_at)}</div>
-      </div>
-      <div class="muro-card-msg">${escapeHtml(post.mensaje)}</div>`;
-    return card;
-  }
-
-  async function loadPosts() {
-    const { data, error } = await db
-      .from('comentarios')
-      .select('id, nombre, municipio, mensaje, created_at')
-      .order('created_at', { ascending: false })
-      .limit(50);
-
-    if (error) { console.error('Error cargando comentarios:', error); return; }
-
-    totalCount = data.length;
-    updateCount(totalCount);
-    cardsEl.innerHTML = '';
-
-    if (data.length === 0) {
-      if (emptyEl) emptyEl.hidden = false;
-    } else {
-      if (emptyEl) emptyEl.hidden = true;
-      data.forEach((p, i) => cardsEl.appendChild(createCard(p, i * 45)));
-    }
-  }
-
-  function subscribeRealtime() {
-    db.channel('muro-inserts')
-      .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'comentarios' }, (payload) => {
-        const post = payload.new;
-        if (emptyEl) emptyEl.hidden = true;
-        const card = createCard(post, 0, true); // realtime=true → animación desde arriba
-        cardsEl.insertBefore(card, cardsEl.firstChild);
-        cardsEl.scrollTo({ top: 0, behavior: 'smooth' });
-        totalCount++;
-        updateCount(totalCount);
-      })
-      .subscribe();
-  }
-
-  function showError(msg) {
-    if (!errorEl) return;
-    errorEl.textContent = msg;
-    errorEl.hidden = false;
-  }
-
-  function clearError() {
-    if (errorEl) errorEl.hidden = true;
-  }
-
-  form.addEventListener('submit', async (e) => {
+  form.addEventListener('submit', (e) => {
     e.preventDefault();
-    clearError();
 
-    const nombre          = document.getElementById('muro-nombre').value.trim();
-    const municipio       = document.getElementById('muro-municipio').value.trim();
-    const numero_contacto = document.getElementById('muro-contacto').value.trim();
-    const mensaje         = msgEl ? msgEl.value.trim() : '';
+    const nombre    = (document.getElementById('contact-nombre')   || {}).value || '';
+    const municipio = (document.getElementById('contact-municipio')|| {}).value || '';
+    const numero    = (document.getElementById('contact-numero')   || {}).value || '';
+    const mensaje   = (document.getElementById('contact-mensaje')  || {}).value || '';
 
-    if (!nombre || !municipio || !numero_contacto || !mensaje) return;
+    if (!nombre.trim() || !municipio.trim() || !numero.trim() || !mensaje.trim()) return;
 
-    const btn = form.querySelector('button[type="submit"]');
-    if (btn) { btn.disabled = true; btn.textContent = 'Publicando…'; }
-
-    try {
-      const res = await fetch(EDGE_FN, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'apikey': SUPABASE_ANON,
-          'Authorization': 'Bearer ' + SUPABASE_ANON,
-        },
-        body: JSON.stringify({ nombre, municipio, numero_contacto, mensaje }),
-      });
-
-      const result = await res.json();
-
-      if (!res.ok) {
-        showError(result.error || 'Error al publicar. Intenta de nuevo.');
-        return;
-      }
-
-      form.reset();
-      showToast();
-    } catch (err) {
-      console.error('Error enviando comentario:', err);
-      showError('Error de conexión. Verifica tu internet e intenta de nuevo.');
-    } finally {
-      if (btn) { btn.disabled = false; btn.textContent = 'Publicar en el muro'; }
+    // TODO: integrar el envío real (email, formspree, supabase, etc.)
+    // De momento solo confirmamos al usuario que recibimos su mensaje.
+    form.reset();
+    if (success) {
+      success.hidden = false;
+      setTimeout(() => { success.hidden = true; }, 6000);
     }
   });
-
-  function showToast() {
-    if (!toastEl) return;
-    clearTimeout(toastEl._timer);
-    toastEl.hidden = false;
-    void toastEl.offsetWidth;
-    toastEl.classList.add('is-visible');
-    if (toastIcon) {
-      toastIcon.style.animation = 'none';
-      void toastIcon.offsetWidth;
-      toastIcon.style.animation = 'checkPop 0.6s cubic-bezier(0.34,1.56,0.64,1) 0.15s both';
-    }
-    toastEl._timer = setTimeout(hideToast, 5000);
-  }
-
-  function hideToast() {
-    if (!toastEl) return;
-    clearTimeout(toastEl._timer);
-    toastEl.classList.remove('is-visible');
-    setTimeout(() => { toastEl.hidden = true; }, 350);
-  }
-
-  if (toastEl) {
-    toastEl.addEventListener('click', (e) => {
-      if (e.target === toastEl) hideToast();
-    });
-  }
-
-  if (newBtn) {
-    newBtn.addEventListener('click', () => {
-      hideToast();
-      clearError();
-    });
-  }
-
-  loadPosts();
-  subscribeRealtime();
 }
 
 // ── FOOTER REVEAL ─────────────────────────────────────────────
@@ -1689,7 +1415,7 @@ function initFooter() {
     start: 'top top',
     end: 'bottom bottom',
     onUpdate: (self) => {
-      if (self.progress >= 0.84) {
+      if (self.progress >= 0.88) {
         footer.classList.add('is-visible');
       } else {
         footer.classList.remove('is-visible');
@@ -1735,16 +1461,14 @@ async function init() {
   initLenis();
   window.lenis.scrollTo(0, { immediate: true });
   initFrameScroll();
-  initDarkOverlay();
   initBgPhotoOverlay();
   initHeroFade();
   initHeroBg();
   sections.forEach(setupSectionAnimation);
-  initCounters();
   initZoomParallax();
   initGallery();
   initHeader();
-  initMuro();
+  initContactForm();
   initFooter();
 
   requestAnimationFrame(() => {
