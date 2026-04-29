@@ -92,8 +92,9 @@ button { border: none; background: none; cursor: pointer; }
 }
 
 .site-header.scrolled {
-  background: rgba(13,42,36,0.92);
-  backdrop-filter: blur(12px);
+  /* Mantener transparente aunque la clase exista */
+  background: transparent;
+  backdrop-filter: none;
   padding-top: 1rem;
   padding-bottom: 1rem;
 }

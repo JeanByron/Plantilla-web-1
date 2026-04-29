@@ -976,16 +976,17 @@ function initGallery() {
     if (!bgEl) return;
     const img = items[index] ? items[index].querySelector('img') : null;
     const src = img ? img.src : '';
-    if (!src) return;
-    if (!animate) {
-      bgEl.style.backgroundImage = `url('${src}')`;
-      gsap.set(bgEl, { opacity: 0 });
-      return;
-    }
-    gsap.to(bgEl, { opacity: 0, duration: 0.55, ease: 'power2.inOut', onComplete: () => {
-      bgEl.style.backgroundImage = `url('${src}')`;
-      gsap.to(bgEl, { opacity: 0, duration: 0.2, ease: 'power2.out' });
-    }});
+      if (!src) return;
+      if (!animate) {
+        bgEl.style.backgroundImage = `url('${src}')`;
+        gsap.set(bgEl, { opacity: 0 });
+        return;
+      }
+      // Más suave: duración más larga y easing más suave
+      gsap.to(bgEl, { opacity: 0, duration: 0.7, ease: 'power2.inOut', onComplete: () => {
+        bgEl.style.backgroundImage = `url('${src}')`;
+        gsap.to(bgEl, { opacity: 0, duration: 0.35, ease: 'power2.out' });
+      }});
   }
 
   function goTo(index, animate = true) {
@@ -993,7 +994,8 @@ function initGallery() {
     index = Math.max(0, Math.min(items.length - 1, index));
     if (index === prevIndex && animate) return; // ya estamos ahí
     currentIndex = index;
-    const dur = animate ? 0.85 : 0;
+    // Duración aumentada para movimientos más fluidos
+    const dur = animate ? 1.1 : 0;
     const s   = getSizes();
     const gap = 12;
 
@@ -1007,7 +1009,7 @@ function initGallery() {
     let leftEdge = 0;
     for (let i = 0; i < index; i++) leftEdge += widths[i] + gap;
     const trackX = window.innerWidth / 2 - (leftEdge + widths[index] / 2);
-    gsap.to(track, { x: trackX, duration: dur, ease: 'power3.out', overwrite: 'auto' });
+    gsap.to(track, { x: trackX, duration: dur, ease: 'power2.out', overwrite: 'auto' });
 
     items.forEach((item, i) => {
       const dist     = Math.abs(i - currentIndex);
@@ -1023,13 +1025,14 @@ function initGallery() {
       if (img && !isActive) gsap.set(img, { clearProps: 'scale' });
 
       gsap.to(item, { width: cfg.w, height: cfg.h, opacity: cfg.opacity,
-        duration: dur, ease: 'power3.out', overwrite: 'auto' });
+        duration: dur, ease: 'power2.out', overwrite: 'auto' });
 
       // Solo escala suave en el activo cuando llega; sin clip-path competitivo
       if (animate && isActive && i !== prevIndex && img) {
+        // Escala un poco más lenta y con easing más suave
         gsap.fromTo(img,
           { scale: 1.06 },
-          { scale: 1, duration: 1.0, ease: 'power3.out', overwrite: 'auto' }
+          { scale: 1, duration: 1.2, ease: 'power2.out', overwrite: 'auto' }
         );
       }
     });
@@ -1045,7 +1048,8 @@ function initGallery() {
   }
 
   // ── Autoplay ──────────────────────────────────────────────────
-  const AUTOPLAY_MS   = 5500;
+  // Intervalo aumentado para que el carrusel cambie más despacio
+  const AUTOPLAY_MS   = 8000;
   let autoTimer       = null;
   let userPaused      = false;
   let isScrolling     = false;
@@ -1191,9 +1195,8 @@ function initHeader() {
   const toggle   = document.querySelector('.nav-toggle');
   const navLinks = document.querySelector('.nav-links');
 
-  window.addEventListener('scroll', () => {
-    header.classList.toggle('scrolled', window.scrollY > 80);
-  }, { passive: true });
+  // Header should remain transparent at all times — no scroll toggling
+  header.classList.remove('scrolled');
 
   toggle?.addEventListener('click', () => navLinks.classList.toggle('open'));
 }
