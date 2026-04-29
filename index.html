@@ -12,11 +12,15 @@
 </head>
 <body>
 
-  <!-- 1. LOADER — video colibrí -->
+  <!-- 1. LOADER — video colibrí + cortina de revelado -->
   <div id="loader">
     <video class="loader-video" muted autoplay playsinline preload="auto">
       <source src="elementos_graficos/video colibri inicio.mp4" type="video/mp4">
     </video>
+  </div>
+  <div id="curtain" aria-hidden="true">
+    <div class="curtain-panel curtain-top"></div>
+    <div class="curtain-panel curtain-bottom"></div>
   </div>
 
   <!-- 2. FIXED HEADER -->
@@ -79,11 +83,11 @@
   <!-- 7. SCROLL CONTAINER -->
   <div id="scroll-container">
 
-    <!-- SECTION 1: Presentación — 6–18% -->
+    <!-- SECTION 1: Presentación — 6–17% -->
     <section
       class="scroll-section section-content align-left"
       data-enter="6"
-      data-leave="18"
+      data-leave="17"
       data-animation="fade-up"
       id="inicio"
     >
@@ -106,11 +110,44 @@
       </div>
     </section>
 
-    <!-- SECTION 2: Mapa de Caldas — 18–34% -->
+    <!-- SECTION 2: Galería Zoom Parallax — 17–32% (después de quién soy) -->
+    <section
+      class="scroll-section section-gallery section-zp"
+      data-enter="17"
+      data-leave="32"
+      data-animation="zoom-parallax"
+      id="galeria"
+    >
+      <div class="zp-stage">
+        <div class="zp-item zp-item-0" data-scale="4">
+          <div class="zp-inner"><img src="images/13.jpeg" alt="Manuel Correa con la gente" loading="lazy"/></div>
+        </div>
+        <div class="zp-item zp-item-1" data-scale="5">
+          <div class="zp-inner"><img src="images/8.jpeg" alt="Recorrido por Caldas" loading="lazy"/></div>
+        </div>
+        <div class="zp-item zp-item-2" data-scale="6">
+          <div class="zp-inner"><img src="images/17.jpeg" alt="Encuentro ciudadano" loading="lazy"/></div>
+        </div>
+        <div class="zp-item zp-item-3" data-scale="5">
+          <div class="zp-inner"><img src="images/1.jpeg" alt="Acto público" loading="lazy"/></div>
+        </div>
+        <div class="zp-item zp-item-4" data-scale="6">
+          <div class="zp-inner"><img src="images/20.jpeg" alt="Trabajo en territorio" loading="lazy"/></div>
+        </div>
+        <div class="zp-item zp-item-5" data-scale="8">
+          <div class="zp-inner"><img src="images/23.jpeg" alt="Caldas unida" loading="lazy"/></div>
+        </div>
+        <div class="zp-item zp-item-6" data-scale="9">
+          <div class="zp-inner"><img src="images/25.jpeg" alt="Manuel Correa Representante" loading="lazy"/></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION 3: Mapa de Caldas — 32–48% -->
     <section
       class="scroll-section section-map"
-      data-enter="18"
-      data-leave="34"
+      data-enter="32"
+      data-leave="48"
       data-animation="map-reveal"
       id="caldas"
     >
@@ -142,11 +179,11 @@
       </div>
     </section>
 
-    <!-- SECTION 3: Agenda Legislativa — 34–50% -->
+    <!-- SECTION 4: Agenda Legislativa — 48–66% -->
     <section
       class="scroll-section section-agenda"
-      data-enter="34"
-      data-leave="50"
+      data-enter="48"
+      data-leave="66"
       data-animation="stagger-cards"
       id="agenda"
     >
@@ -252,44 +289,11 @@
       </div>
     </section>
 
-    <!-- SECTION 4a: Galería Zoom Parallax — 50–64% -->
-    <section
-      class="scroll-section section-gallery section-zp"
-      data-enter="50"
-      data-leave="64"
-      data-animation="zoom-parallax"
-      id="galeria"
-    >
-      <div class="zp-stage">
-        <div class="zp-item zp-item-0" data-scale="4">
-          <div class="zp-inner"><img src="images/13.jpeg" alt="Manuel Correa con la gente" loading="lazy"/></div>
-        </div>
-        <div class="zp-item zp-item-1" data-scale="5">
-          <div class="zp-inner"><img src="images/8.jpeg" alt="Recorrido por Caldas" loading="lazy"/></div>
-        </div>
-        <div class="zp-item zp-item-2" data-scale="6">
-          <div class="zp-inner"><img src="images/17.jpeg" alt="Encuentro ciudadano" loading="lazy"/></div>
-        </div>
-        <div class="zp-item zp-item-3" data-scale="5">
-          <div class="zp-inner"><img src="images/1.jpeg" alt="Acto público" loading="lazy"/></div>
-        </div>
-        <div class="zp-item zp-item-4" data-scale="6">
-          <div class="zp-inner"><img src="images/20.jpeg" alt="Trabajo en territorio" loading="lazy"/></div>
-        </div>
-        <div class="zp-item zp-item-5" data-scale="8">
-          <div class="zp-inner"><img src="images/23.jpeg" alt="Caldas unida" loading="lazy"/></div>
-        </div>
-        <div class="zp-item zp-item-6" data-scale="9">
-          <div class="zp-inner"><img src="images/25.jpeg" alt="Manuel Correa Representante" loading="lazy"/></div>
-        </div>
-      </div>
-    </section>
-
-    <!-- SECTION 4b: Galería Carrusel — 64–80% -->
+    <!-- SECTION 5: Galería Carrusel — 66–82% (después de proyectos de ley) -->
     <section
       class="scroll-section section-gallery section-carousel"
-      data-enter="64"
-      data-leave="80"
+      data-enter="66"
+      data-leave="82"
       data-animation="oryzo-carousel"
       id="galeria-carousel"
     >

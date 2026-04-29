@@ -212,13 +212,13 @@ function drawGenerativeFrame(frameIndex, maxFrames) {
 }
 
 // ── FRAME-TO-SCROLL BINDING ──────────────────────────────────
-const GALLERY_ENTER  = 0.50;   // flat bg: cubre zoom parallax + carrusel
-const GALLERY_LEAVE  = 0.80;
+const GALLERY_ENTER  = 0.17;   // flat bg desactivado (siempre frames de video)
+const GALLERY_LEAVE  = 0.82;
 const GALLERY_FADE   = 0.035;
-const ZP_ENTER       = 0.50;   // zoom parallax
-const ZP_LEAVE       = 0.64;
-const CAROUSEL_ENTER = 0.64;   // carrusel Oryzo
-const CAROUSEL_LEAVE = 0.80;
+const ZP_ENTER       = 0.17;   // zoom parallax — justo después de quién soy
+const ZP_LEAVE       = 0.32;
+const CAROUSEL_ENTER = 0.66;   // carrusel Oryzo — después de proyectos de ley
+const CAROUSEL_LEAVE = 0.82;
 
 function drawFlatBg(cw, ch) {
   ctx.fillStyle = '#0A1A17';
@@ -245,32 +245,9 @@ function initFrameScroll() {
       currentFrame = idx;
 
       requestAnimationFrame(() => {
-        const cw = canvas.width  / (window.devicePixelRatio || 1);
-        const ch = canvas.height / (window.devicePixelRatio || 1);
-
-        if (p >= GALLERY_ENTER && p <= GALLERY_LEAVE) {
-          // Fondo plano puro durante galería
-          drawFlatBg(cw, ch);
-        } else if (p >= GALLERY_ENTER - GALLERY_FADE && p < GALLERY_ENTER) {
-          // Transición entrada: video → plano (con ease-in-out suave)
-          if (hasFrames && frames[currentFrame]) drawFrame(currentFrame);
-          else drawGenerativeFrame(currentFrame, maxF);
-          const t = (p - (GALLERY_ENTER - GALLERY_FADE)) / GALLERY_FADE;
-          const te = t < 0.5 ? 2 * t * t : -1 + (4 - 2 * t) * t;
-          ctx.fillStyle = `rgba(10,26,23,${(te * 0.97).toFixed(3)})`;
-          ctx.fillRect(0, 0, cw, ch);
-        } else if (p > GALLERY_LEAVE && p < GALLERY_LEAVE + GALLERY_FADE) {
-          // Transición salida: plano → video (con ease-in-out suave)
-          if (hasFrames && frames[currentFrame]) drawFrame(currentFrame);
-          else drawGenerativeFrame(currentFrame, maxF);
-          const t = (p - GALLERY_LEAVE) / GALLERY_FADE;
-          const te = t < 0.5 ? 2 * t * t : -1 + (4 - 2 * t) * t;
-          ctx.fillStyle = `rgba(10,26,23,${((1 - te) * 0.97).toFixed(3)})`;
-          ctx.fillRect(0, 0, cw, ch);
-        } else {
-          if (hasFrames && frames[currentFrame]) drawFrame(currentFrame);
-          else drawGenerativeFrame(currentFrame, maxF);
-        }
+        // Siempre frames de video (sin fondo plano por sección)
+        if (hasFrames && frames[currentFrame]) drawFrame(currentFrame);
+        else drawGenerativeFrame(currentFrame, maxF);
       });
     }
   });
@@ -389,6 +366,10 @@ function mapAttachEvents(el, name, cx, cy, svgEl, container, tooltip, detailPane
           gsap.to(p, { opacity: p === activePath ? 1 : 0.35, duration: 0.15 });
         }
       });
+      // Preview en sidebar SOLO si no hay un municipio bloqueado
+      if (!activePath) {
+        mapShowDetail(name, detailPanel, /*locked=*/false);
+      }
     }
   });
 
@@ -412,6 +393,8 @@ function mapAttachEvents(el, name, cx, cy, svgEl, container, tooltip, detailPane
           gsap.killTweensOf(p, 'opacity');
           gsap.to(p, { opacity: 1, duration: 0.15 });
         });
+        // Si no hay municipio bloqueado, limpiar el preview del sidebar
+        mapClearDetail(detailPanel);
       } else {
         gsap.to(el, { opacity: 0.35, duration: 0.15 });
       }
@@ -423,6 +406,7 @@ function mapAttachEvents(el, name, cx, cy, svgEl, container, tooltip, detailPane
     const { px, py } = getMapPos();
     mapCreatePulse(px, py, container);
     if (activePath === el) {
+      // Click en el mismo municipio bloqueado → desbloquear
       activePath = null;
       el.setAttribute('stroke', 'rgba(5,13,11,0.85)');
       el.setAttribute('stroke-width', '1');
@@ -430,6 +414,7 @@ function mapAttachEvents(el, name, cx, cy, svgEl, container, tooltip, detailPane
       allPaths.forEach(p => gsap.to(p, { opacity: 1, duration: 0.3 }));
       mapClearDetail(detailPanel);
     } else {
+      // Cambio de bloqueo a otro municipio
       if (activePath) {
         activePath.setAttribute('stroke', 'rgba(5,13,11,0.85)');
         activePath.setAttribute('stroke-width', '1');
@@ -440,30 +425,38 @@ function mapAttachEvents(el, name, cx, cy, svgEl, container, tooltip, detailPane
       el.setAttribute('stroke-width', '2.5');
       el.style.filter = 'brightness(1.25) drop-shadow(0 0 14px rgba(232,98,26,.65))';
       allPaths.forEach(p => gsap.to(p, { opacity: p === el ? 1 : 0.35, duration: 0.3 }));
-      mapShowDetail(name, detailPanel);
+      mapShowDetail(name, detailPanel, /*locked=*/true);
     }
   });
 }
 
-function mapShowDetail(name, detailPanel) {
+function mapShowDetail(name, detailPanel, locked) {
   if (!detailPanel) return;
   const data = MAP_MUN_DATA[name] || { hover: name, click: name + ', municipio de Caldas.', img: 'images/1.jpeg' };
 
-  // Reset clase para reiniciar la transición
-  detailPanel.classList.remove('is-active');
+  // Si ya está mostrando el mismo municipio en el mismo modo, no resetear
+  if (detailPanel.dataset.currentMun === name && (detailPanel.classList.contains('is-locked') === !!locked)) {
+    return;
+  }
+
+  // Reset clase para reiniciar la transición de aparición
+  detailPanel.classList.remove('is-active', 'is-locked');
   detailPanel.innerHTML = `
     <img src="${data.img}" alt="${name}" class="mapa-selected-img" loading="lazy"/>
     <h3 class="mapa-selected-name">${name}</h3>
     <p class="mapa-selected-desc">${data.click}</p>
   `;
+  detailPanel.dataset.currentMun = name;
   // Forzar reflow y activar
   void detailPanel.offsetWidth;
   detailPanel.classList.add('is-active');
+  if (locked) detailPanel.classList.add('is-locked');
 }
 
 function mapClearDetail(detailPanel) {
   if (!detailPanel) return;
-  detailPanel.classList.remove('is-active');
+  detailPanel.classList.remove('is-active', 'is-locked');
+  detailPanel.dataset.currentMun = '';
   setTimeout(() => {
     if (!detailPanel.classList.contains('is-active')) {
       detailPanel.innerHTML = `<div class="mapa-selected-hint">Pasa el cursor sobre<br>un municipio<br><span style="color:var(--orange);font-size:.7rem;letter-spacing:.15em;display:block;margin-top:.6rem">— o haz clic para ver más —</span></div>`;
@@ -668,12 +661,31 @@ function positionSection(section) {
   section.style.transform = 'translateY(-50%)';
 }
 
+// Envolver cada palabra del heading con span anidado para revelado por palabras
+function wrapHeadingWords(heading) {
+  if (!heading || heading.dataset.wrapped === 'true') return;
+  const html = heading.innerHTML;
+  // Separar por etiquetas <br> y solo envolver palabras en los segmentos de texto
+  const parts = html.split(/(<br\s*\/?\s*>|<[^>]+>)/i);
+  const wrapped = parts.map(part => {
+    if (!part) return '';
+    if (part.startsWith('<')) return part; // tag intacto
+    return part.replace(/(\S+)/g, '<span class="word-reveal"><span>$1</span></span>');
+  }).join('');
+  heading.innerHTML = wrapped;
+  heading.dataset.wrapped = 'true';
+}
+
 function setupSectionAnimation(section) {
   const type    = section.dataset.animation;
   const persist = section.dataset.persist === 'true';
   const enter   = parseFloat(section.dataset.enter) / 100;
   const leave   = parseFloat(section.dataset.leave) / 100;
   const sc      = document.getElementById('scroll-container');
+
+  // Pre-procesar headings para revelado por palabras
+  const heading = section.querySelector('.section-heading');
+  if (heading) wrapHeadingWords(heading);
 
   const tl = gsap.timeline({ paused: true });
 
@@ -682,16 +694,18 @@ function setupSectionAnimation(section) {
   } else if (type === 'gallery-reveal' || type === 'zoom-parallax' || type === 'oryzo-carousel') {
     return;
   } else if (type === 'stagger-cards') {
-    // Agenda Legislativa: header first, then cards staggered
+    // Agenda Legislativa: header first, then cards en cascada cinematográfica
     const headerEls = section.querySelectorAll('.section-label, .agenda-title, .agenda-desc');
     const cards     = section.querySelectorAll('.agenda-card');
     tl
       .fromTo(headerEls,
-        { y: 28, opacity: 0 },
-        { y: 0, opacity: 1, stagger: 0.1, duration: 0.75, ease: 'power3.out' }, 0)
+        { y: 36, opacity: 0, filter: 'blur(6px)' },
+        { y: 0, opacity: 1, filter: 'blur(0px)', stagger: 0.12, duration: 0.95, ease: 'power3.out' }, 0)
       .fromTo(cards,
-        { y: 32, opacity: 0 },
-        { y: 0, opacity: 1, stagger: 0.06, duration: 0.65, ease: 'power2.out' }, 0.35);
+        { y: 50, opacity: 0, scale: 0.94, rotateX: -8 },
+        { y: 0, opacity: 1, scale: 1, rotateX: 0,
+          stagger: { each: 0.09, from: 'start' },
+          duration: 0.95, ease: 'power3.out' }, 0.45);
   } else {
     const children = section.querySelectorAll(
       '.section-label, .section-heading, .section-body, .section-note, .section-link, ' +
@@ -709,11 +723,39 @@ function setupSectionAnimation(section) {
     }
 
     switch (type) {
-      case 'fade-up':
-        tl.fromTo(children,
-          { y: 28, opacity: 0 },
-          { y: 0, opacity: 1, stagger: 0.08, duration: 0.75, ease: 'power2.out' });
+      case 'fade-up': {
+        // Revelado cinematográfico para "quién soy" (y secciones similares)
+        const photo     = section.querySelector('.section-photo');
+        const headingEl = section.querySelector('.section-heading');
+        const wordSpans = section.querySelectorAll('.section-heading .word-reveal > span');
+        const otherChildren = [...children].filter(c => c !== photo && c !== headingEl);
+
+        tl.fromTo(otherChildren,
+          { y: 32, opacity: 0 },
+          { y: 0, opacity: 1, stagger: 0.1, duration: 0.95, ease: 'power3.out' }, 0.2);
+
+        if (headingEl && wordSpans.length) {
+          // Asegurar que el heading sea visible (CSS pone opacity:0)
+          tl.set(headingEl, { opacity: 1 }, 0);
+          tl.fromTo(wordSpans,
+            { yPercent: 110 },
+            { yPercent: 0, stagger: 0.09, duration: 1.0, ease: 'power3.out' }, 0);
+        } else if (headingEl) {
+          tl.fromTo(headingEl,
+            { opacity: 0, y: 30 },
+            { opacity: 1, y: 0, duration: 0.9, ease: 'power3.out' }, 0);
+        }
+
+        if (photo) {
+          tl.fromTo(photo,
+            { opacity: 0, clipPath: 'inset(0 0 0 100%)' },
+            { opacity: 1, clipPath: 'inset(0 0 0 0%)',
+              duration: 1.4, ease: 'power3.out',
+              onStart: () => photo.classList.add('is-revealed'),
+              onReverseComplete: () => photo.classList.remove('is-revealed') }, 0.25);
+        }
         break;
+      }
       case 'clip-reveal':
         tl.fromTo(children,
           { y: 30, opacity: 0 },
@@ -776,22 +818,9 @@ function setupSectionAnimation(section) {
 function initBgPhotoOverlay() {
   const el = document.getElementById('bg-photo');
   if (!el) return;
-  const ENTER = GALLERY_LEAVE + 0.005; // entra justo al salir de galería
-  const LEAVE = 1.0;
-  const FADE  = 0.02;
-  ScrollTrigger.create({
-    trigger: document.getElementById('scroll-container'),
-    start: 'top top', end: 'bottom bottom',
-    scrub: true,
-    onUpdate: (self) => {
-      const p = self.progress;
-      let op  = 0;
-      if (p >= ENTER && p <= LEAVE)                          op = 1;
-      else if (p > ENTER - FADE && p < ENTER)               op = (p - (ENTER - FADE)) / FADE;
-      else if (p > LEAVE && p < LEAVE + FADE)               op = 1 - (p - LEAVE) / FADE;
-      el.style.opacity = op;
-    }
-  });
+  // Desactivado: dejamos solo los frames del video de fondo en toda la página
+  el.style.opacity = '0';
+  el.style.display = 'none';
 }
 
 // ── CUSTOM CURSOR ─────────────────────────────────────────────
@@ -936,9 +965,9 @@ function initGallery() {
       gsap.set(bgEl, { opacity: 0.38 });
       return;
     }
-    gsap.to(bgEl, { opacity: 0, duration: 0.22, onComplete: () => {
+    gsap.to(bgEl, { opacity: 0, duration: 0.55, ease: 'power2.inOut', onComplete: () => {
       bgEl.style.backgroundImage = `url('${src}')`;
-      gsap.to(bgEl, { opacity: 0.38, duration: 0.55 });
+      gsap.to(bgEl, { opacity: 0.38, duration: 1.2, ease: 'power2.out' });
     }});
   }
 
@@ -947,7 +976,7 @@ function initGallery() {
     const prevIndex  = currentIndex;
     index = Math.max(0, Math.min(items.length - 1, index));
     currentIndex = index;
-    const dur = animate ? 0.58 : 0;
+    const dur = animate ? 1.15 : 0;
     const s   = getSizes();
     const gap = 12;
 
@@ -961,7 +990,7 @@ function initGallery() {
     let leftEdge = 0;
     for (let i = 0; i < index; i++) leftEdge += widths[i] + gap;
     const trackX = window.innerWidth / 2 - (leftEdge + widths[index] / 2);
-    gsap.to(track, { x: trackX, duration: dur, ease: 'expo.out' });
+    gsap.to(track, { x: trackX, duration: dur, ease: 'power3.inOut' });
 
     items.forEach((item, i) => {
       const dist     = Math.abs(i - currentIndex);
@@ -970,9 +999,9 @@ function initGallery() {
       item.classList.toggle('is-active', isActive);
 
       gsap.to(item, { width: cfg.w, height: cfg.h, opacity: cfg.opacity,
-        duration: dur, ease: 'expo.out' });
+        duration: dur, ease: 'power3.inOut' });
 
-      // Cinematic reveal for the newly-active image
+      // Cinematic reveal for the newly-active image — más lento y elegante
       if (animate && isActive && i !== prevIndex) {
         const inner = item.querySelector('.gallery-item-inner');
         const img   = item.querySelector('img');
@@ -980,13 +1009,13 @@ function initGallery() {
         if (inner) {
           gsap.fromTo(inner,
             { clipPath: fromClip },
-            { clipPath: 'inset(0 0% 0 0%)', duration: 0.45, ease: 'power4.out', clearProps: 'clipPath' }
+            { clipPath: 'inset(0 0% 0 0%)', duration: 0.95, ease: 'power3.inOut', clearProps: 'clipPath' }
           );
         }
         if (img) {
           gsap.fromTo(img,
-            { scale: 1.08 },
-            { scale: 1, duration: 0.58, ease: 'power4.out' }
+            { scale: 1.12 },
+            { scale: 1, duration: 1.4, ease: 'power3.out' }
           );
         }
       }
@@ -1003,7 +1032,7 @@ function initGallery() {
   }
 
   // ── Autoplay ──────────────────────────────────────────────────
-  const AUTOPLAY_MS   = 3000;
+  const AUTOPLAY_MS   = 5500;
   let autoTimer       = null;
   let userPaused      = false;
   let isScrolling     = false;
@@ -1221,14 +1250,39 @@ function runFakeLoader() {
 
 function slideOutLoader() {
   return new Promise(resolve => {
-    const loader = document.getElementById('loader');
+    const loader  = document.getElementById('loader');
+    const curtain = document.getElementById('curtain');
+
     if (!loader) { resolve(); return; }
-    gsap.to(loader, {
-      opacity: 0,
-      duration: 0.6,
-      ease: 'power2.inOut',
-      onComplete: () => { loader.style.display = 'none'; resolve(); }
-    });
+
+    // Activar la cortina justo cuando el video termina de "cubrir"
+    if (curtain) {
+      curtain.classList.add('is-active');
+      // Fade del loader rápido para ceder a la cortina
+      gsap.to(loader, {
+        opacity: 0,
+        duration: 0.45,
+        ease: 'power2.inOut',
+        onComplete: () => { loader.style.display = 'none'; }
+      });
+      // Disparar la cortina con un pequeño retardo para que sienta cinematográfico
+      setTimeout(() => {
+        const top    = curtain.querySelector('.curtain-top');
+        const bottom = curtain.querySelector('.curtain-bottom');
+        if (top)    top.classList.add('is-open');
+        if (bottom) bottom.classList.add('is-open');
+        setTimeout(() => {
+          curtain.classList.remove('is-active');
+          curtain.style.display = 'none';
+          resolve();
+        }, 1100);
+      }, 180);
+    } else {
+      gsap.to(loader, {
+        opacity: 0, duration: 0.6, ease: 'power2.inOut',
+        onComplete: () => { loader.style.display = 'none'; resolve(); }
+      });
+    }
   });
 }
 
@@ -1362,9 +1416,11 @@ function initZoomParallax() {
 // ── LENIS ─────────────────────────────────────────────────────
 function initLenis() {
   const lenis = new Lenis({
-    duration: 1.2,
+    duration: 1.65,
     easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
-    smoothWheel: true
+    smoothWheel: true,
+    wheelMultiplier: 0.95,
+    touchMultiplier: 1.4
   });
 
   lenis.on('scroll', ScrollTrigger.update);
@@ -1404,7 +1460,7 @@ function initContactForm() {
   });
 }
 
-// ── FOOTER REVEAL ─────────────────────────────────────────────
+// ── FOOTER REVEAL — entra suave al final, no flotando ────────
 function initFooter() {
   const footer = document.querySelector('.site-footer');
   if (!footer) return;
@@ -1415,7 +1471,8 @@ function initFooter() {
     start: 'top top',
     end: 'bottom bottom',
     onUpdate: (self) => {
-      if (self.progress >= 0.88) {
+      // Aparece con la sección final + se queda integrado al cierre
+      if (self.progress >= 0.96) {
         footer.classList.add('is-visible');
       } else {
         footer.classList.remove('is-visible');
