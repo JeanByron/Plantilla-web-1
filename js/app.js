@@ -215,10 +215,10 @@ function drawGenerativeFrame(frameIndex, maxFrames) {
 const GALLERY_ENTER  = 0.17;   // flat bg desactivado (siempre frames de video)
 const GALLERY_LEAVE  = 0.82;
 const GALLERY_FADE   = 0.035;
-const ZP_ENTER       = 0.17;   // zoom parallax — justo después de quién soy
-const ZP_LEAVE       = 0.32;
-const CAROUSEL_ENTER = 0.66;   // carrusel Oryzo — después de proyectos de ley
-const CAROUSEL_LEAVE = 0.82;
+const ZP_ENTER       = 0.18;   // después de ¿Quien es Manuel Correa?
+const ZP_LEAVE       = 0.36;
+const CAROUSEL_ENTER = 0.66;   // después de proyectos de ley
+const CAROUSEL_LEAVE = 0.84;
 
 function drawFlatBg(cw, ch) {
   ctx.fillStyle = '#0A1A17';
@@ -647,9 +647,26 @@ function setupGalleryAnimation(section, tl) {
       { y: 0, opacity: 1, duration: 0.65, ease: 'power2.out' }, 0.65);
 }
 
+// ── TEXT CORRECTIONS ───────────────────────────────────────
+function initTextCorrections() {
+  const wanted = '¿Quien es Manuel Correa?';
+  document.querySelectorAll('.section-heading, h1, h2').forEach(el => {
+    const normalized = (el.textContent || '')
+      .replace(/\s+/g, ' ')
+      .trim()
+      .toLowerCase();
+
+    if (/qu[ií]e?n\s+es\s+manuel\s+correa\??/.test(normalized) ||
+        /manuel\s+correa/.test(normalized) && /qu[ií]e?n/.test(normalized)) {
+      el.textContent = wanted;
+      el.dataset.wrapped = 'false';
+    }
+  });
+}
+
 // ── SECTION ANIMATION SYSTEM ─────────────────────────────────
 function positionSection(section) {
-  if (section.classList.contains('section-gallery')) return; // fixed, no absolute positioning
+  if (section.classList.contains('section-gallery') || section.classList.contains('section-carousel') || section.classList.contains('section-zp')) return; // fixed, no absolute positioning
   if (section.classList.contains('section-pinned'))  return; // también fixed
   const enter    = parseFloat(section.dataset.enter);
   const leave    = parseFloat(section.dataset.leave);
@@ -962,21 +979,21 @@ function initGallery() {
     if (!src) return;
     if (!animate) {
       bgEl.style.backgroundImage = `url('${src}')`;
-      gsap.set(bgEl, { opacity: 0.38 });
+      gsap.set(bgEl, { opacity: 0 });
       return;
     }
     gsap.to(bgEl, { opacity: 0, duration: 0.55, ease: 'power2.inOut', onComplete: () => {
       bgEl.style.backgroundImage = `url('${src}')`;
-      gsap.to(bgEl, { opacity: 0.38, duration: 1.2, ease: 'power2.out' });
+      gsap.to(bgEl, { opacity: 0, duration: 0.2, ease: 'power2.out' });
     }});
   }
 
   function goTo(index, animate = true) {
-    const direction  = index > currentIndex ? 1 : -1;
     const prevIndex  = currentIndex;
     index = Math.max(0, Math.min(items.length - 1, index));
+    if (index === prevIndex && animate) return; // ya estamos ahí
     currentIndex = index;
-    const dur = animate ? 1.15 : 0;
+    const dur = animate ? 0.85 : 0;
     const s   = getSizes();
     const gap = 12;
 
@@ -990,7 +1007,7 @@ function initGallery() {
     let leftEdge = 0;
     for (let i = 0; i < index; i++) leftEdge += widths[i] + gap;
     const trackX = window.innerWidth / 2 - (leftEdge + widths[index] / 2);
-    gsap.to(track, { x: trackX, duration: dur, ease: 'power3.inOut' });
+    gsap.to(track, { x: trackX, duration: dur, ease: 'power3.out', overwrite: 'auto' });
 
     items.forEach((item, i) => {
       const dist     = Math.abs(i - currentIndex);
@@ -998,26 +1015,22 @@ function initGallery() {
       const cfg      = dist === 0 ? s.active : dist === 1 ? s.near : dist === 2 ? s.far : s.hidden;
       item.classList.toggle('is-active', isActive);
 
-      gsap.to(item, { width: cfg.w, height: cfg.h, opacity: cfg.opacity,
-        duration: dur, ease: 'power3.inOut' });
+      const inner = item.querySelector('.gallery-item-inner');
+      const img   = item.querySelector('img');
 
-      // Cinematic reveal for the newly-active image — más lento y elegante
-      if (animate && isActive && i !== prevIndex) {
-        const inner = item.querySelector('.gallery-item-inner');
-        const img   = item.querySelector('img');
-        const fromClip = direction > 0 ? 'inset(0 100% 0 0)' : 'inset(0 0 0 100%)';
-        if (inner) {
-          gsap.fromTo(inner,
-            { clipPath: fromClip },
-            { clipPath: 'inset(0 0% 0 0%)', duration: 0.95, ease: 'power3.inOut', clearProps: 'clipPath' }
-          );
-        }
-        if (img) {
-          gsap.fromTo(img,
-            { scale: 1.12 },
-            { scale: 1, duration: 1.4, ease: 'power3.out' }
-          );
-        }
+      // limpiar transformaciones previas que provocan stutter
+      if (inner) gsap.set(inner, { clearProps: 'clipPath' });
+      if (img && !isActive) gsap.set(img, { clearProps: 'scale' });
+
+      gsap.to(item, { width: cfg.w, height: cfg.h, opacity: cfg.opacity,
+        duration: dur, ease: 'power3.out', overwrite: 'auto' });
+
+      // Solo escala suave en el activo cuando llega; sin clip-path competitivo
+      if (animate && isActive && i !== prevIndex && img) {
+        gsap.fromTo(img,
+          { scale: 1.06 },
+          { scale: 1, duration: 1.0, ease: 'power3.out', overwrite: 'auto' }
+        );
       }
     });
 
@@ -1114,7 +1127,7 @@ function initGallery() {
 
   // Scroll-driven: section visibility + index advancement
   const sc = document.getElementById('scroll-container');
-  const stepSize = (CAROUSEL_LEAVE - CAROUSEL_ENTER) / (items.length * 2);
+  const stepSize = (CAROUSEL_LEAVE - CAROUSEL_ENTER) / Math.max(1, items.length - 1);
 
   ScrollTrigger.create({
     trigger: sc,
@@ -1124,9 +1137,6 @@ function initGallery() {
     onUpdate: (self) => {
       const p = self.progress;
       currentScrollP = p; // siempre actualizado para que autoNext lo pueda leer
-
-      // Detectar actividad de scroll para gestionar el autoplay
-      onScrollActivity();
 
       // Fade section in/out
       if (p >= CAROUSEL_ENTER && p <= CAROUSEL_LEAVE) {
@@ -1158,23 +1168,13 @@ function initGallery() {
         galleryScrollBase = -1;
       }
 
-      // Avance del carrusel por scroll — sistema de ancla relativa
+      // Avance del carrusel por scroll — determinístico y sin saltos de ancla
       if (p >= CAROUSEL_ENTER && p <= CAROUSEL_LEAVE) {
-        if (galleryScrollBase < 0) {
-          // Primera vez que entramos: anclar en imagen 0 desde el inicio
-          galleryScrollBase = CAROUSEL_ENTER;
-          galleryBaseIdx    = 0;
-          if (currentIndex !== 0) { lastIdx = 0; goTo(0, false); }
-        }
-
-        const relSteps = Math.floor((p - galleryScrollBase) / stepSize);
-        const idx = Math.max(0, Math.min(items.length - 1, galleryBaseIdx + relSteps));
+        const local = (p - CAROUSEL_ENTER) / (CAROUSEL_LEAVE - CAROUSEL_ENTER);
+        const idx = Math.max(0, Math.min(items.length - 1, Math.round(local * (items.length - 1))));
 
         if (idx !== lastIdx) {
-          lastIdx           = idx;
-          // Actualizar ancla al paso exacto donde estamos ahora
-          galleryScrollBase = CAROUSEL_ENTER + idx * stepSize;
-          galleryBaseIdx    = idx;
+          lastIdx = idx;
           goTo(idx, true);
         }
       }
@@ -1521,6 +1521,7 @@ async function init() {
   initBgPhotoOverlay();
   initHeroFade();
   initHeroBg();
+  initTextCorrections();
   sections.forEach(setupSectionAnimation);
   initZoomParallax();
   initGallery();
