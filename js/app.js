@@ -1282,14 +1282,193 @@ function initGallery() {
 
 // ── HEADER ────────────────────────────────────────────────────
 function initHeader() {
-  const header   = document.querySelector('.site-header');
-  const toggle   = document.querySelector('.nav-toggle');
+  const header = document.getElementById('site-header') || document.querySelector('.site-header');
+  const toggle = document.querySelector('.nav-toggle');
   const navLinks = document.querySelector('.nav-links');
 
-  // Header should remain transparent at all times — no scroll toggling
+  if (!header) return;
+
+  // Keep original visual state
   header.classList.remove('scrolled');
 
-  toggle?.addEventListener('click', () => navLinks.classList.toggle('open'));
+  // Build navigation dynamically from `.scroll-section` elements so every section
+  // in the page is reachable from the header. Preserve `nav-cta` for contacto.
+  if (navLinks) {
+    const sections = Array.from(document.querySelectorAll('.scroll-section[id]'));
+    if (sections.length) {
+      navLinks.innerHTML = '';
+      const frag = document.createDocumentFragment();
+      const getNavLabel = (sec) => {
+        const prefer = ['.section-heading', '.map-title', '.agenda-title', '.gallery-label', '.carousel-intro-title', '.section-label'];
+        for (const sel of prefer) {
+          const el = sec.querySelector(sel);
+          if (el && el.textContent && el.textContent.trim()) return el.textContent.trim().replace(/\s+/g, ' ').split('\n')[0];
+        }
+        return sec.id.replace(/[-_]/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
+      };
+
+      sections.forEach(sec => {
+        const id = sec.id;
+        const label = getNavLabel(sec);
+        const li = document.createElement('li');
+        const a = document.createElement('a');
+        a.href = `#${id}`;
+        a.textContent = label;
+        if (id === 'contacto') a.classList.add('nav-cta');
+        li.appendChild(a);
+        frag.appendChild(li);
+      });
+      navLinks.appendChild(frag);
+    }
+  }
+
+  // Thresholds and delays
+  const TOP_THRESHOLD = 8;    // px considered "at top"
+  const HOVER_THRESHOLD = 60; // px from viewport top to reveal header on hover
+  const HIDE_DELAY = 220;     // ms delay before hiding after pointer leaves
+
+  // Detect coarse pointers (touch). Do not attach hover handlers for those devices.
+  const isCoarse = window.matchMedia && window.matchMedia('(pointer: coarse)').matches;
+
+  let lastY = window.scrollY;
+  let lastPointerY = Infinity;
+  let hideTimer = null;
+
+  function clearHideTimer() { if (hideTimer) { clearTimeout(hideTimer); hideTimer = null; } }
+
+  function showHeader() {
+    if (header.classList.contains('visible')) return;
+    clearHideTimer();
+    header.classList.add('visible');
+    header.classList.remove('hidden');
+  }
+
+  function hideHeader() {
+    if (header.classList.contains('hidden')) return;
+    clearHideTimer();
+    header.classList.add('hidden');
+    header.classList.remove('visible');
+  }
+
+  // Initial state: start hidden. The header will appear only when the pointer
+  // moves to the top area (hover), or when the mobile menu is opened.
+  hideHeader();
+
+  // Scroll: hide when scrolling down (only if pointer not near top).
+  // Do NOT auto-show the header when the page is at the top — user asked
+  // that it should appear only on mouse hover.
+  window.addEventListener('scroll', () => {
+    const y = window.scrollY;
+    if (y > lastY && lastPointerY > HOVER_THRESHOLD) {
+      hideHeader();
+    }
+    lastY = y;
+  }, { passive: true });
+
+  // Pointer: reveal when near top, hide shortly after leaving (only for fine pointers)
+  if (!isCoarse) {
+    window.addEventListener('mousemove', (e) => {
+      lastPointerY = e.clientY;
+      if (e.clientY <= HOVER_THRESHOLD) {
+        showHeader();
+      } else {
+        if (window.scrollY > TOP_THRESHOLD) {
+          clearHideTimer();
+          hideTimer = setTimeout(() => {
+            if (lastPointerY > HOVER_THRESHOLD && window.scrollY > TOP_THRESHOLD) {
+              hideHeader();
+            }
+          }, HIDE_DELAY);
+        }
+      }
+    }, { passive: true });
+  }
+
+  // Smooth scrolling: intercept header links and animate to section.
+  if (navLinks) {
+    navLinks.querySelectorAll('a').forEach(a => {
+      a.addEventListener('click', (ev) => {
+        ev.preventDefault();
+        const href = a.getAttribute('href') || '';
+        if (!href.startsWith('#')) return;
+        const id = href.slice(1);
+        const target = document.getElementById(id) || document.querySelector(`[name="${id}"]`);
+        if (!target) return;
+
+        // Handle special case: sections that require assets (map) to be ready.
+        (async () => {
+          try {
+            if (target.dataset.animation === 'map-reveal' && !mapDataReady && typeof mapLoad === 'function') {
+              await mapLoad(target);
+            } else if (target.dataset.animation === 'map-reveal' && mapSvgElements && mapSvgElements.length) {
+              mapPlayEntrance(target);
+            }
+
+            // Recalculate layout and section positions after any potential DOM changes.
+            // Run positionSection for all sections and refresh ScrollTrigger so
+            // subsequent calculations match the real layout. Then wait a frame
+            // to allow layout to stabilise.
+            try {
+              const allSecs = document.querySelectorAll('.scroll-section');
+              allSecs.forEach(positionSection);
+            } catch (_) {}
+            if (typeof ScrollTrigger !== 'undefined' && ScrollTrigger.refresh) ScrollTrigger.refresh();
+            await new Promise(resolve => requestAnimationFrame(() => setTimeout(resolve, 40)));
+
+            const sc = document.getElementById('scroll-container');
+            const totalH = sc ? sc.offsetHeight : document.documentElement.scrollHeight;
+            const maxScroll = Math.max(0, totalH - window.innerHeight);
+
+            // Prefer using the section's data-enter / data-leave midpoint (this matches positionSection()).
+            const enterVal = parseFloat(target.dataset.enter);
+            const leaveVal = parseFloat(target.dataset.leave);
+            let midPct = NaN;
+            if (!isNaN(enterVal) && !isNaN(leaveVal)) midPct = (enterVal + leaveVal) / 2;
+            else if (!isNaN(enterVal)) midPct = enterVal;
+            else if (!isNaN(leaveVal)) midPct = leaveVal;
+
+            if (!isNaN(midPct)) {
+              const scrollTo = Math.max(0, Math.min(maxScroll, Math.round((midPct / 100) * maxScroll)));
+              if (window.lenis && typeof window.lenis.scrollTo === 'function') {
+                window.lenis.scrollTo(scrollTo, { immediate: false });
+              } else {
+                window.scrollTo({ top: scrollTo, behavior: 'smooth' });
+              }
+            } else {
+              // Fallback: center the section in viewport
+              const rect = target.getBoundingClientRect();
+              const sectionCenter = rect.top + window.scrollY + rect.height / 2;
+              const scrollTo = Math.max(0, Math.min(maxScroll, Math.round(sectionCenter - window.innerHeight / 2)));
+              if (window.lenis && typeof window.lenis.scrollTo === 'function') {
+                window.lenis.scrollTo(scrollTo, { immediate: false });
+              } else {
+                window.scrollTo({ top: scrollTo, behavior: 'smooth' });
+              }
+            }
+          } catch (e) {
+            // fallback simple scroll to element top
+            const rect = target.getBoundingClientRect();
+            const fallbackTop = Math.max(0, window.scrollY + rect.top - (header ? header.offsetHeight : 0));
+            if (window.lenis && typeof window.lenis.scrollTo === 'function') window.lenis.scrollTo(fallbackTop, { immediate: false });
+            else window.scrollTo({ top: fallbackTop, behavior: 'smooth' });
+          } finally {
+            if (navLinks.classList.contains('open')) navLinks.classList.remove('open');
+          }
+        })();
+      });
+    });
+  }
+
+  // Ensure hamburger toggle still works and opens header
+  toggle?.addEventListener('click', () => {
+    navLinks?.classList.toggle('open');
+    showHeader();
+  });
+
+  if (navLinks) {
+    const mo = new MutationObserver(() => { if (navLinks.classList.contains('open')) showHeader(); });
+    mo.observe(navLinks, { attributes: true, attributeFilter: ['class'] });
+  }
 }
 
 // ── LOADER (video colibrí — ~3s o reproducción completa) ──────
@@ -1510,11 +1689,11 @@ function initZoomParallax() {
 // ── LENIS ─────────────────────────────────────────────────────
 function initLenis() {
   const lenis = new Lenis({
-    duration: 1.65,
+    duration: 2.4,
     easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
     smoothWheel: true,
-    wheelMultiplier: 0.95,
-    touchMultiplier: 1.4
+    wheelMultiplier: 0.7,
+    touchMultiplier: 1.1
   });
 
   lenis.on('scroll', ScrollTrigger.update);
