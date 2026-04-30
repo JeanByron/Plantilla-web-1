@@ -1576,8 +1576,9 @@ function initFooter() {
     start: 'top top',
     end: 'bottom bottom',
     onUpdate: (self) => {
-      // Aparece con la sección final + se queda integrado al cierre
-      if (self.progress >= 0.96) {
+      const shouldShow = self.progress >= 0.96;
+
+      if (shouldShow) {
         footer.classList.add('is-visible');
       } else {
         footer.classList.remove('is-visible');
