@@ -523,9 +523,9 @@ button { border: none; background: none; cursor: pointer; }
 /* Foto de Manuel al lado del texto */
 .section-photo {
   position: absolute;
-  width: 38vw;
+  width: 40vw;
   max-width: 560px;
-  height: 72vh;
+  height: 85vh;
   top: 0;
   bottom: 0;
   margin-top: auto;
@@ -611,7 +611,8 @@ button { border: none; background: none; cursor: pointer; }
   font-size: clamp(0.9rem, 1.2vw, 1rem);
   line-height: 1.7;
   color: var(--cream-dim);
-  max-width: 38ch;
+  max-width: 45ch;
+
 }
 
 .section-link {
@@ -1142,7 +1143,7 @@ canvas#map-particles {
 .section-heading { background: rgba(13,42,36,0.78); color: var(--cream); padding: 0.25rem 0.6rem; border-radius:6px; display:inline-block; }
 
 /* For longer paragraph bodies, use a softer panel that spans width */
-.section-body { background: rgba(13,42,36,0.6); padding: 0.8rem; border-radius: 8px; display: block; }
+.section-body { background: rgba(0, 0, 0, 0.6); padding: 0.8rem; border-radius: 8px; display: block; }
 
 @media (max-width: 768px) {
   .section-body { padding: 0.6rem; }
