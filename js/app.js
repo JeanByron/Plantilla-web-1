@@ -1629,10 +1629,13 @@ function initZoomParallax() {
   if (!items.length) return;
 
   const FADE = GALLERY_FADE;
-  gsap.set(items, { opacity: 0, scale: 1 });
+  // Fase 1 (localP 0 → REVEAL_END): mosaico aparece, stagger uniforme, sin zoom
+  // Fase 2 (localP REVEAL_END → 1): zoom scroll-driven a escala original
+  const REVEAL_WINDOW = 0.18; // ventana de opacidad por item (misma duración para todos)
+  const MAX_STAGGER   = 0.10; // offset máximo del último item respecto al primero
+  const REVEAL_END    = REVEAL_WINDOW + MAX_STAGGER; // 0.28 — zoom empieza aquí
 
-  let zpEntered = false;
-  let zpPauseTimer = null;
+  gsap.set(items, { opacity: 0, scale: 1 });
   const sc = document.getElementById('scroll-container');
 
   ScrollTrigger.create({
@@ -1643,7 +1646,7 @@ function initZoomParallax() {
     onUpdate: (self) => {
       const p = self.progress;
 
-      // Visibilidad
+      // Visibilidad de la sección
       if (p >= ZP_ENTER && p <= ZP_LEAVE) {
         section.style.opacity    = '1';
         section.style.visibility = 'visible';
@@ -1658,50 +1661,39 @@ function initZoomParallax() {
         section.style.visibility = 'hidden';
       }
 
-      // Entrada: cambio de escena + pausa de 1s antes de activar el zoom
-      if (!zpEntered && p >= ZP_ENTER) {
-        zpEntered = true;
-        gsap.fromTo(items,
-          { opacity: 0, scale: 1.04 },
-          { opacity: 1, scale: 1, duration: 0.18, stagger: 0, ease: 'power4.out' }
-        );
-        // Congela el scroll 1 segundo para que el usuario vea el mosaico
-        if (window.lenis) {
-          window.lenis.stop();
-          zpPauseTimer = setTimeout(() => {
-            if (window.lenis) window.lenis.start();
-            zpPauseTimer = null;
-          }, 1000);
-        }
-      } else if (zpEntered && p < ZP_ENTER - FADE) {
-        zpEntered = false;
-        gsap.set(items, { opacity: 0, scale: 1, filter: 'none' });
-        // Si el usuario vuelve antes de que termine la pausa, reactivar scroll
-        if (zpPauseTimer) {
-          clearTimeout(zpPauseTimer);
-          zpPauseTimer = null;
-          if (window.lenis) window.lenis.start();
-        }
-      }
-
-      // Zoom scroll-driven: escala 1 → data-scale.
-      // fastP llega a 1 en el 67% del recorrido ZP para que la imagen central
-      // ya sea pantalla completa (100vw×100vh) cuando el carrusel empieza su fade-in.
       if (p >= ZP_ENTER && p <= ZP_LEAVE) {
         const localP = (p - ZP_ENTER) / (ZP_LEAVE - ZP_ENTER);
-        const fastP  = Math.min(1, localP * 1.35);
+
+        // Zoom completa al 50% del rango disponible → hold en pantalla completa los últimos ~36%
+        const zoomP = Math.max(0, (localP - REVEAL_END) / (1 - REVEAL_END));
+        const fastP = Math.min(1, zoomP * 2.0);
+
         items.forEach((item, i) => {
-          const depth = parseFloat(item.dataset.scale) || 4;
+          const itemStart = (i / Math.max(1, items.length - 1)) * MAX_STAGGER;
+          const opacity   = Math.max(0, Math.min(1, (localP - itemStart) / REVEAL_WINDOW));
+
+          const depth    = parseFloat(item.dataset.scale) || 4;
           const newScale = 1 + (depth - 1) * fastP;
-          gsap.set(item, { scale: newScale });
-          // Mejorar calidad visual de la imagen central conforme crece
-          if (i === 0 && depth === 4) {
-            const scaleRatio = (newScale - 1) / (depth - 1);
-            const contrast = 1 + scaleRatio * 0.14;
-            const saturate = 1 + scaleRatio * 0.25;
-            gsap.set(item, { filter: `contrast(${contrast.toFixed(3)}) saturate(${saturate.toFixed(3)})` });
+
+          const props = { opacity, scale: newScale };
+          if (i === 0) {
+            props.filter = `contrast(${(1 + fastP * 0.14).toFixed(3)}) saturate(${(1 + fastP * 0.25).toFixed(3)})`;
+            // Eliminar border-radius y sombra conforme la imagen llena la pantalla
+            const inner = item.querySelector('.zp-inner');
+            if (inner) {
+              inner.style.borderRadius = `${(4 * (1 - fastP)).toFixed(2)}px`;
+              const s = 1 - fastP;
+              inner.style.boxShadow = s > 0.02
+                ? `0 ${(30*s).toFixed(0)}px ${(80*s).toFixed(0)}px rgba(0,0,0,${(0.6*s).toFixed(3)})`
+                : 'none';
+            }
           }
+          gsap.set(item, props);
         });
+      } else if (p < ZP_ENTER - FADE) {
+        gsap.set(items, { opacity: 0, scale: 1, filter: 'none' });
+        const inner0 = items[0]?.querySelector('.zp-inner');
+        if (inner0) { inner0.style.borderRadius = ''; inner0.style.boxShadow = ''; }
       }
     }
   });
