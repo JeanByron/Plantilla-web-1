@@ -973,6 +973,27 @@ function initMapTooltip() {
   });
 }
 
+function initAgendaCards() {
+  const cards = [...document.querySelectorAll('.agenda-card')];
+  if (!cards.length) return;
+
+  cards.forEach(card => {
+    // Eliminar cualquier handler inline existente para manejar la apertura aquí.
+    card.onclick = null;
+    card.addEventListener('click', () => {
+      const isActive = card.classList.contains('show-tech');
+      cards.forEach(c => c.classList.remove('show-tech'));
+      if (!isActive) card.classList.add('show-tech');
+    });
+  });
+
+  document.addEventListener('click', (event) => {
+    if (!event.target.closest('.agenda-card')) {
+      cards.forEach(c => c.classList.remove('show-tech'));
+    }
+  });
+}
+
 // ── GALLERY CAROUSEL — Oryzo-style pinned, scroll-driven ──────
 function initGallery() {
   const section = document.querySelector('.section-carousel');
@@ -1808,6 +1829,7 @@ async function init() {
   initHeroBg();
   initTextCorrections();
   sections.forEach(setupSectionAnimation);
+  initAgendaCards();
   initZoomParallax();
   initGallery();
   initHeader();
