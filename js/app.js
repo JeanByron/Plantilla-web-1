@@ -218,7 +218,7 @@ const GALLERY_FADE   = 0.055;
 const ZP_ENTER       = 0.18;   // después de ¿Quien es Manuel Correa?
 const ZP_LEAVE       = 0.36;
 // Ajustados para dar más espacio antes de que aparezca el carrusel
-const CAROUSEL_ENTER = 0.74;   // retrasado ligeramente
+const CAROUSEL_ENTER = 0.72;   // despues del mensaje "En el campo"
 // Extender el final del carrusel para que cubra todo el tramo antes de contacto
 const CAROUSEL_LEAVE = 0.94;
 // No frame freeze: background frames should advance during the whole page
@@ -731,16 +731,37 @@ function wrapHeadingWords(heading) {
   heading.dataset.wrapped = 'true';
 }
 
+// Envolver cada letra del heading (respetando <br>)
+function wrapHeadingChars(heading) {
+  if (!heading || heading.dataset.charsWrapped === 'true') return;
+  const html = heading.innerHTML;
+  const parts = html.split(/(<br\s*\/?\s*>|<[^>]+>)/i);
+  const wrapped = parts.map(part => {
+    if (!part) return '';
+    if (part.startsWith('<')) return part;
+    return part.split('').map(ch => {
+      if (ch === ' ') return '<span class="char space">&nbsp;</span>';
+      return `<span class="char">${ch}</span>`;
+    }).join('');
+  }).join('');
+  heading.innerHTML = wrapped;
+  heading.dataset.charsWrapped = 'true';
+}
+
 function setupSectionAnimation(section) {
   const type    = section.dataset.animation;
   const persist = section.dataset.persist === 'true';
   const enter   = parseFloat(section.dataset.enter) / 100;
   const leave   = parseFloat(section.dataset.leave) / 100;
   const sc      = document.getElementById('scroll-container');
+  const footer  = section.id === 'contacto' ? document.querySelector('.site-footer') : null;
 
   // Pre-procesar headings para revelado por palabras
   const heading = section.querySelector('.section-heading');
   if (heading) wrapHeadingWords(heading);
+
+  const introHeading = section.querySelector('.intro-heading');
+  if (introHeading) wrapHeadingChars(introHeading);
 
   const tl = gsap.timeline({ paused: true });
 
@@ -772,9 +793,24 @@ function setupSectionAnimation(section) {
     if (section.classList.contains('section-pinned')) {
       tl.fromTo(section,
         { opacity: 0 },
-        { opacity: 1, duration: 0.6, ease: 'power2.out',
-          onStart: () => section.classList.add('is-visible'),
-          onReverseComplete: () => section.classList.remove('is-visible') }, 0);
+        { opacity: 1, duration: 0.5, ease: 'power2.out',
+          onStart: () => {
+            section.classList.add('is-visible');
+            if (footer) {
+              footer.classList.add('is-visible');
+              gsap.set(footer, { y: '0%', opacity: 0 });
+            }
+          },
+          onReverseComplete: () => {
+            section.classList.remove('is-visible');
+            if (footer) footer.classList.remove('is-visible');
+          } }, 0);
+
+      if (footer) {
+        tl.fromTo(footer,
+          { opacity: 0 },
+          { opacity: 1, duration: 0.3, ease: 'power2.out' }, 0.12);
+      }
     }
 
     switch (type) {
@@ -817,9 +853,17 @@ function setupSectionAnimation(section) {
           { y: 0, opacity: 1, stagger: 0.08, duration: 0.85, ease: 'power3.out' });
         break;
       case 'stagger-up':
-        tl.fromTo(children,
-          { y: 32, opacity: 0 },
-          { y: 0, opacity: 1, stagger: 0.09, duration: 0.72, ease: 'power3.out' });
+        if (introHeading) {
+          const introChars = introHeading.querySelectorAll('.char');
+          tl.set(introHeading, { opacity: 1 }, 0);
+          tl.fromTo(introChars,
+            { yPercent: 120, opacity: 0 },
+            { yPercent: 0, opacity: 1, stagger: 0.028, duration: 0.65, ease: 'power3.out' }, 0.05);
+        } else {
+          tl.fromTo(children,
+            { y: 32, opacity: 0 },
+            { y: 0, opacity: 1, stagger: 0.09, duration: 0.72, ease: 'power3.out' });
+        }
         break;
       case 'scale-up':
         tl.fromTo(children,
@@ -850,7 +894,11 @@ function setupSectionAnimation(section) {
       const p = self.progress;
       // Allow sections flagged with data-after-carousel to appear only after the carousel has finished
       let showEnter = enter - 0.04;
-      const showLeave = persist ? 1 : leave + 0.04;
+      let showLeave = persist ? 1 : leave + 0.04;
+      if (section.id === 'contacto') {
+        showEnter = enter - 0.012;
+        showLeave = leave + 0.012;
+      }
       if (section.dataset.afterCarousel === 'true') {
         showEnter = Math.max(showEnter, CAROUSEL_LEAVE + 0.01);
       }
@@ -1053,11 +1101,11 @@ function initGallery() {
     introTl
       .set(introEl, { opacity: 1, y: 0 })
       .fromTo(introLabel,
-        { clipPath: 'inset(0 105% 0 0)' },
-        { clipPath: 'inset(0 0% 0 0)', duration: 0.4, ease: 'power3.out' }, 0)
+        { clipPath: 'inset(0 105% 0 0)', y: 6, opacity: 0 },
+        { clipPath: 'inset(0 0% 0 0)', y: 0, opacity: 1, duration: 0.4, ease: 'power3.out' }, 0)
       .fromTo(introTitle,
-        { clipPath: 'inset(0 105% 0 0)' },
-        { clipPath: 'inset(0 0% 0 0)', duration: 0.6, ease: 'power3.out' }, 0.12)
+        { clipPath: 'inset(0 105% 0 0)', y: 18, opacity: 0, filter: 'blur(6px)' },
+        { clipPath: 'inset(0 0% 0 0)', y: 0, opacity: 1, filter: 'blur(0px)', duration: 0.65, ease: 'power3.out' }, 0.12)
       .to(introEl, { opacity: 0, y: -20, duration: 0.45, ease: 'power2.in' }, '+=0.85');
   }
   let bgPendingImg = null;
@@ -1760,32 +1808,9 @@ function initContactForm() {
 function initFooter() {
   const footer = document.querySelector('.site-footer');
   if (!footer) return;
-  const sc = document.getElementById('scroll-container');
-  let footerVisible = false;
-
-  ScrollTrigger.create({
-    trigger: sc,
-    start: 'top top',
-    end: 'bottom bottom',
-    onUpdate: (self) => {
-      const shouldShow = self.progress >= 0.95;
-      if (shouldShow === footerVisible) return;
-      footerVisible = shouldShow;
-      gsap.killTweensOf(footer);
-      if (shouldShow) {
-        footer.classList.add('is-visible');
-        gsap.fromTo(footer,
-          { opacity: 0, y: '100%' },
-          { opacity: 1, y: '0%', duration: 0.9, ease: 'power3.out' });
-      } else {
-        gsap.to(footer, {
-          opacity: 0, y: '100%',
-          delay: 0.65, duration: 1.8, ease: 'power4.in',
-          onComplete: () => footer.classList.remove('is-visible')
-        });
-      }
-    }
-  });
+  // Footer visibility is fully controlled by the contact section timeline.
+  footer.classList.remove('is-visible');
+  gsap.set(footer, { opacity: 0, y: '0%' });
 }
 
 // ── INIT ──────────────────────────────────────────────────────

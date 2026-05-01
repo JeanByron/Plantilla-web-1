@@ -4,16 +4,102 @@
    ============================================================ */
 
 /* ── VARIABLES ─────────────────────────────────────────────── */
+@font-face {
+  font-family: 'Ariana Pro';
+  src: url('../fonts/ariana-pro/Ariana Pro Light.otf') format('opentype');
+  font-weight: 300;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Ariana Pro';
+  src: url('../fonts/ariana-pro/Ariana Pro Light Italic.otf') format('opentype');
+  font-weight: 300;
+  font-style: italic;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Ariana Pro';
+  src: url('../fonts/ariana-pro/Ariana Pro Regular.otf') format('opentype');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Ariana Pro';
+  src: url('../fonts/ariana-pro/Ariana Pro Regular Italic.otf') format('opentype');
+  font-weight: 400;
+  font-style: italic;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Ariana Pro';
+  src: url('../fonts/ariana-pro/Ariana Pro Medium.otf') format('opentype');
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Ariana Pro';
+  src: url('../fonts/ariana-pro/Ariana Pro Medium Italic.otf') format('opentype');
+  font-weight: 500;
+  font-style: italic;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Ariana Pro';
+  src: url('../fonts/ariana-pro/Ariana Pro Bold.otf') format('opentype');
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Ariana Pro';
+  src: url('../fonts/ariana-pro/Ariana Pro Bold Italic.otf') format('opentype');
+  font-weight: 700;
+  font-style: italic;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Ariana Pro';
+  src: url('../fonts/ariana-pro/Ariana Pro Heavy.otf') format('opentype');
+  font-weight: 800;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Ariana Pro';
+  src: url('../fonts/ariana-pro/Ariana Pro Heavy Italic.otf') format('opentype');
+  font-weight: 800;
+  font-style: italic;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Ariana Pro';
+  src: url('../fonts/ariana-pro/Ariana Pro Black.otf') format('opentype');
+  font-weight: 900;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Ariana Pro';
+  src: url('../fonts/ariana-pro/Ariana Pro Black Italic.otf') format('opentype');
+  font-weight: 900;
+  font-style: italic;
+  font-display: swap;
+}
+
 :root {
-  --dark:          #0d2a24;
-  --teal:          #1B4D47;
-  --teal-light:    #2A6B63;
-  --orange:        #E8621A;
-  --orange-muted:  rgba(232,98,26,0.15);
+  --dark:          #053337;
+  --teal:          #05807a;
+  --teal-light:    #0a9c95;
+  --yellow:        #eba020;
+  --orange:        #ee761f;
+  --orange-muted:  rgba(238,118,31,0.18);
   --cream:         #F5F1EB;
   --cream-dim:     rgba(245,241,235,0.65);
-  --font-display:  'Oswald', sans-serif;
-  --font-body:     'DM Sans', sans-serif;
+  --font-display:  'Ariana Pro', sans-serif;
+  --font-body:     'Ariana Pro', sans-serif;
 }
 
 /* ── RESET ──────────────────────────────────────────────────── */
@@ -594,7 +680,7 @@ button { border: none; background: none; cursor: pointer; }
   font-size: 0.7rem;
   letter-spacing: 0.25em;
   text-transform: uppercase;
-  color: var(--orange);
+  color: var(--yellow);
 }
 
 .section-heading {
@@ -1118,12 +1204,16 @@ canvas#map-particles {
 }
 .carousel-intro-title {
   font-family: var(--font-display);
-  font-size: clamp(2rem, 4vw, 3.4rem);
+  font-size: clamp(2.6rem, 6vw, 5.2rem);
   font-weight: 700;
   color: var(--cream);
   text-transform: uppercase;
   line-height: 1.0;
   margin: 0;
+  letter-spacing: 0.06em;
+  text-shadow: 0 10px 30px rgba(0,0,0,0.45), 0 2px 10px rgba(0,0,0,0.45);
+  background: transparent;
+  padding: 0;
 }
 .carousel-intro .gallery-label { display: block; color: var(--orange); margin-bottom: 0.6rem; }
 
@@ -1137,12 +1227,44 @@ canvas#map-particles {
 }
 
 /* Apply to common headings/labels/captions */
-.section-label, .carousel-intro .gallery-label, .hero-tagline, .carousel-intro-title,
+.section-label, .carousel-intro .gallery-label, .hero-tagline,
 .gallery-caption, .gallery-counter, .agenda-card-title, .agenda-card-tag,
 .section-heading { background: rgba(13,42,36,0.78); color: var(--cream); padding: 0.25rem 0.6rem; border-radius:6px; display:inline-block; }
 
 /* For longer paragraph bodies, use a softer panel that spans width */
 .section-body { background: rgba(0, 0, 0, 0.6); padding: 0.8rem; border-radius: 8px; display: block; }
+
+/* ── Intro de mensaje antes del carrusel ───────────────────── */
+.section-intro {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+}
+
+.section-intro .section-inner {
+  max-width: 70vw;
+  align-items: center;
+  margin: 0 auto;
+}
+
+.section-intro .section-heading.intro-heading {
+  font-size: clamp(2.6rem, 7.5vw, 6rem);
+  letter-spacing: 0.08em;
+  text-shadow: 0 12px 36px rgba(0,0,0,0.5), 0 2px 10px rgba(0,0,0,0.45);
+  background: transparent;
+  padding: 0;
+}
+
+.section-intro .intro-heading .char {
+  display: inline-block;
+  will-change: transform, opacity;
+}
+
+.section-intro .intro-heading .char.space {
+  width: 0.45em;
+}
 
 @media (max-width: 768px) {
   .section-body { padding: 0.6rem; }
@@ -1572,7 +1694,7 @@ canvas#map-particles {
 .section-agenda {
   width: 100%;
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   justify-content: center;
   pointer-events: auto;
 }
@@ -1580,7 +1702,7 @@ canvas#map-particles {
 .agenda-inner {
   width: 90vw;
   max-width: 1180px;
-  padding: 2rem 0;
+  padding: 3rem 0 5rem;
   position: relative;
   z-index: 2;
 }
@@ -1630,7 +1752,7 @@ canvas#map-particles {
   -webkit-backdrop-filter: blur(14px);
   border: 1px solid rgba(255, 255, 255, 0.08);
   border-radius: 10px;
-  padding: 2rem 1.6rem;
+  padding: 1.6rem 1.3rem;
   transition:
     border-color 0.5s cubic-bezier(0.22,1,0.36,1),
     transform 0.55s cubic-bezier(0.22,1,0.36,1),
@@ -1823,6 +1945,10 @@ canvas#map-particles {
   font-size: 0.84rem;
   line-height: 1.65;
   color: rgba(245, 241, 235, 0.85);
+  display: -webkit-box;
+  -webkit-line-clamp: 4;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
 }
 
 /* ── ZOOM PARALLAX GALLERY ───────────────────────────────────── */
