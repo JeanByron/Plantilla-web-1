@@ -214,7 +214,7 @@ function drawGenerativeFrame(frameIndex, maxFrames) {
 // ── FRAME-TO-SCROLL BINDING ──────────────────────────────────
 const GALLERY_ENTER  = 0.17;   // flat bg desactivado (siempre frames de video)
 const GALLERY_LEAVE  = 0.82;
-const GALLERY_FADE   = 0.035;
+const GALLERY_FADE   = 0.055;
 const ZP_ENTER       = 0.18;   // después de ¿Quien es Manuel Correa?
 const ZP_LEAVE       = 0.36;
 // Ajustados para dar más espacio antes de que aparezca el carrusel
@@ -754,13 +754,13 @@ function setupSectionAnimation(section) {
     const cards     = section.querySelectorAll('.agenda-card');
     tl
       .fromTo(headerEls,
-        { y: 36, opacity: 0, filter: 'blur(6px)' },
-        { y: 0, opacity: 1, filter: 'blur(0px)', stagger: 0.12, duration: 0.95, ease: 'power3.out' }, 0)
+        { y: 36, opacity: 0 },
+        { y: 0, opacity: 1, stagger: 0.12, duration: 0.95, ease: 'power3.out' }, 0)
       .fromTo(cards,
-        { y: 50, opacity: 0, scale: 0.94, rotateX: -8 },
-        { y: 0, opacity: 1, scale: 1, rotateX: 0,
+        { y: 40, opacity: 0, scale: 0.96 },
+        { y: 0, opacity: 1, scale: 1,
           stagger: { each: 0.09, from: 'start' },
-          duration: 0.95, ease: 'power3.out' }, 0.45);
+          duration: 0.9, ease: 'power3.out' }, 0.35);
   } else {
     const children = section.querySelectorAll(
       '.section-label, .section-heading, .section-body, .section-note, .section-link, ' +
@@ -828,8 +828,8 @@ function setupSectionAnimation(section) {
         break;
       case 'blur-up':
         tl.fromTo(children,
-          { y: 26, opacity: 0, filter: 'blur(4px)' },
-          { y: 0, opacity: 1, filter: 'blur(0px)', stagger: 0.08, duration: 0.85, ease: 'power3.out' });
+          { y: 26, opacity: 0 },
+          { y: 0, opacity: 1, stagger: 0.08, duration: 0.85, ease: 'power3.out' });
         break;
       default:
         tl.fromTo(children,
@@ -1025,31 +1025,46 @@ function initGallery() {
   }
   const dots = dotsEl ? [...dotsEl.querySelectorAll('.gallery-dot')] : [];
 
+  // Cache per-item DOM refs so goTo() avoids repeated querySelector calls
+  const innerEls = items.map(item => item.querySelector('.gallery-item-inner'));
+  const imgEls   = items.map(item => item.querySelector('img'));
+
   // Oryzo-style sizing: active = big, near = medium, far = small
+  let cachedSizes = null;
   function getSizes() {
+    if (cachedSizes) return cachedSizes;
     const vw = window.innerWidth, vh = window.innerHeight;
-    return {
+    cachedSizes = {
       active: { w: Math.min(vw * 0.36, 540), h: vh * 0.74, opacity: 1    },
       near:   { w: Math.min(vw * 0.18, 270), h: vh * 0.50, opacity: 0.55 },
       far:    { w: Math.min(vw * 0.12, 190), h: vh * 0.37, opacity: 0.28 },
       hidden: { w: Math.min(vw * 0.09, 140), h: vh * 0.28, opacity: 0.12 },
     };
+    return cachedSizes;
   }
 
-  const bgEl = document.getElementById('gallery-bg');
-  const introEl = document.getElementById('carousel-intro');
-  let introPlayed = false;
-  // Timeline for intro: appear, hold, then disappear
+  const bgEl       = document.getElementById('gallery-bg');
+  const introEl    = document.getElementById('carousel-intro');
+  const introLabel = introEl?.querySelector('.gallery-label');
+  const introTitle = introEl?.querySelector('.carousel-intro-title');
+  let introPlayed  = false;
   const introTl = gsap.timeline({ paused: true });
   if (introEl) {
-    introTl.fromTo(introEl, { y: 24, opacity: 0 }, { y: 0, opacity: 1, duration: 0.5, ease: 'power2.out' })
-           .to(introEl, { y: -20, opacity: 0, duration: 0.44, ease: 'power2.in' }, '+=0.9');
+    introTl
+      .set(introEl, { opacity: 1, y: 0 })
+      .fromTo(introLabel,
+        { clipPath: 'inset(0 105% 0 0)' },
+        { clipPath: 'inset(0 0% 0 0)', duration: 0.4, ease: 'power3.out' }, 0)
+      .fromTo(introTitle,
+        { clipPath: 'inset(0 105% 0 0)' },
+        { clipPath: 'inset(0 0% 0 0)', duration: 0.6, ease: 'power3.out' }, 0.12)
+      .to(introEl, { opacity: 0, y: -20, duration: 0.45, ease: 'power2.in' }, '+=0.85');
   }
-  let bgPendingImg = null; // track preload image to avoid flashes
+  let bgPendingImg = null;
 
   function updateBg(index, animate) {
     if (!bgEl) return;
-    const img = items[index] ? items[index].querySelector('img') : null;
+    const img = imgEls[index] ?? null;
     const src = img ? img.src : '';
     if (!src) return;
 
@@ -1113,8 +1128,8 @@ function initGallery() {
       const cfg      = dist === 0 ? s.active : dist === 1 ? s.near : dist === 2 ? s.far : s.hidden;
       item.classList.toggle('is-active', isActive);
 
-      const inner = item.querySelector('.gallery-item-inner');
-      const img   = item.querySelector('img');
+      const inner = innerEls[i];
+      const img   = imgEls[i];
 
       // limpiar transformaciones previas que provocan stutter
       if (inner) gsap.set(inner, { clearProps: 'clipPath' });
@@ -1222,6 +1237,7 @@ function initGallery() {
 
   // Resize — recalculate item sizes
   window.addEventListener('resize', () => {
+    cachedSizes = null;
     requestAnimationFrame(() => goTo(currentIndex, false));
   }, { passive: true });
 
@@ -1280,7 +1296,9 @@ function initGallery() {
         if (introEl) {
           introPlayed = false;
           introTl.pause(0);
-          gsap.set(introEl, { y: 24, opacity: 0 });
+          gsap.set(introEl, { opacity: 0, y: 0 });
+          if (introLabel) gsap.set(introLabel, { clearProps: 'clipPath' });
+          if (introTitle) gsap.set(introTitle, { clearProps: 'clipPath' });
         }
       }
 
@@ -1646,19 +1664,15 @@ function initZoomParallax() {
     onUpdate: (self) => {
       const p = self.progress;
 
-      // Visibilidad de la sección
+      // Visibilidad de la sección — solo opacity (visibility siempre visible para pre-compositing)
       if (p >= ZP_ENTER && p <= ZP_LEAVE) {
         section.style.opacity    = '1';
-        section.style.visibility = 'visible';
       } else if (p > ZP_ENTER - FADE && p < ZP_ENTER) {
         section.style.opacity    = Math.max(0, (p - (ZP_ENTER - FADE)) / FADE).toFixed(3);
-        section.style.visibility = 'visible';
       } else if (p > ZP_LEAVE && p < ZP_LEAVE + FADE) {
         section.style.opacity    = Math.max(0, 1 - (p - ZP_LEAVE) / FADE).toFixed(3);
-        section.style.visibility = 'visible';
       } else {
         section.style.opacity    = '0';
-        section.style.visibility = 'hidden';
       }
 
       if (p >= ZP_ENTER && p <= ZP_LEAVE) {
@@ -1675,25 +1689,10 @@ function initZoomParallax() {
           const depth    = parseFloat(item.dataset.scale) || 4;
           const newScale = 1 + (depth - 1) * fastP;
 
-          const props = { opacity, scale: newScale };
-          if (i === 0) {
-            props.filter = `contrast(${(1 + fastP * 0.14).toFixed(3)}) saturate(${(1 + fastP * 0.25).toFixed(3)})`;
-            // Eliminar border-radius y sombra conforme la imagen llena la pantalla
-            const inner = item.querySelector('.zp-inner');
-            if (inner) {
-              inner.style.borderRadius = `${(4 * (1 - fastP)).toFixed(2)}px`;
-              const s = 1 - fastP;
-              inner.style.boxShadow = s > 0.02
-                ? `0 ${(30*s).toFixed(0)}px ${(80*s).toFixed(0)}px rgba(0,0,0,${(0.6*s).toFixed(3)})`
-                : 'none';
-            }
-          }
-          gsap.set(item, props);
+          gsap.set(item, { opacity, scale: newScale });
         });
       } else if (p < ZP_ENTER - FADE) {
-        gsap.set(items, { opacity: 0, scale: 1, filter: 'none' });
-        const inner0 = items[0]?.querySelector('.zp-inner');
-        if (inner0) { inner0.style.borderRadius = ''; inner0.style.boxShadow = ''; }
+        gsap.set(items, { opacity: 0, scale: 1 });
       }
     }
   });
@@ -1762,18 +1761,28 @@ function initFooter() {
   const footer = document.querySelector('.site-footer');
   if (!footer) return;
   const sc = document.getElementById('scroll-container');
+  let footerVisible = false;
 
   ScrollTrigger.create({
     trigger: sc,
     start: 'top top',
     end: 'bottom bottom',
     onUpdate: (self) => {
-      const shouldShow = self.progress >= 0.96;
-
+      const shouldShow = self.progress >= 0.95;
+      if (shouldShow === footerVisible) return;
+      footerVisible = shouldShow;
+      gsap.killTweensOf(footer);
       if (shouldShow) {
         footer.classList.add('is-visible');
+        gsap.fromTo(footer,
+          { opacity: 0, y: '100%' },
+          { opacity: 1, y: '0%', duration: 0.9, ease: 'power3.out' });
       } else {
-        footer.classList.remove('is-visible');
+        gsap.to(footer, {
+          opacity: 0, y: '100%',
+          delay: 0.65, duration: 1.8, ease: 'power4.in',
+          onComplete: () => footer.classList.remove('is-visible')
+        });
       }
     }
   });

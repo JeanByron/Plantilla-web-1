@@ -734,8 +734,7 @@ button { border: none; background: none; cursor: pointer; }
   min-height: 64px;
   padding: 1rem 5vw;
   background:
-    linear-gradient(to top, rgba(7,18,16,1) 0%, rgba(13,42,36,0.96) 100%);
-  border-top: 1px solid rgba(232,98,26,0.18);
+    linear-gradient(to top, rgba(2,6,5,1) 0%, rgba(5,14,11,0.99) 100%);
   backdrop-filter: blur(14px);
   -webkit-backdrop-filter: blur(14px);
   display: flex;
@@ -745,14 +744,9 @@ button { border: none; background: none; cursor: pointer; }
   opacity: 0;
   pointer-events: none;
   transform: translateY(100%);
-  transition:
-    opacity 0.9s cubic-bezier(0.22,1,0.36,1),
-    transform 0.9s cubic-bezier(0.22,1,0.36,1);
 }
 .site-footer.is-visible {
-  opacity: 1;
   pointer-events: auto;
-  transform: translateY(0);
 }
 
 .footer-logo {
@@ -1059,11 +1053,16 @@ canvas#map-particles {
   visibility: hidden;
 }
 
+/* section-zp stays in the render tree so GPU layers are pre-composited,
+   eliminating the jerk when photos first appear */
+.scroll-section.section-zp {
+  visibility: visible;
+}
+
 
 .scroll-section.section-zp {
   pointer-events: none;
   opacity: 0;
-  visibility: hidden;
 }
 
 .scroll-section.section-carousel {
