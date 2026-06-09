@@ -222,7 +222,7 @@ button { border: none; background: none; cursor: pointer; }
   flex-shrink: 0;
 }
 .nav-logo-img {
-  height: 36px;
+  height: 76px;
   width: auto;
   display: block;
   opacity: 0.9;
@@ -432,13 +432,11 @@ button { border: none; background: none; cursor: pointer; }
 .hero-card-left {
   left: 5vw;
   top: 50%;
-  transform: translateY(-50%) rotate(-6deg);
 }
 
 .hero-card-right {
   right: 5vw;
   top: 50%;
-  transform: translateY(-50%) rotate(5deg);
 }
 
 /* ── HERO LOGO (PNG oficial) ─────────────────────────────────── */
@@ -515,6 +513,13 @@ button { border: none; background: none; cursor: pointer; }
   height: 1300vh;
 }
 
+@media (max-width: 768px) {
+  /* Expandimos el espacio de scroll en móviles, pero sin exagerar para no hacer el scroll muy tedioso. 1800vh es el equilibrio. */
+  #scroll-container {
+    height: 1800vh;
+  }
+}
+
 /* ── SCROLL SECTION BASE ─────────────────────────────────────── */
 .scroll-section {
   position: absolute;
@@ -548,10 +553,10 @@ button { border: none; background: none; cursor: pointer; }
 /* Sección anclada a la pantalla (contacto al final) */
 .scroll-section.section-pinned {
   position: fixed;
-  top: 0; left: 0; bottom: 64px;
+  top: 0; left: 0; bottom: 0;
   width: 100%; 
   height: auto;
-  min-height: calc(100vh - 64px);
+  min-height: 100vh;
   transform: none;
   display: flex;
   align-items: center;
@@ -587,7 +592,7 @@ button { border: none; background: none; cursor: pointer; }
 
 /* Contact specific: reduce left column to fit content on screen */
 #contacto .section-inner {
-  max-width: 34vw;
+  max-width: 50vw;
   padding-bottom: 8rem; /* espacio para footer y botones */
 }
 
@@ -817,8 +822,9 @@ button { border: none; background: none; cursor: pointer; }
   left: 0;
   right: 0;
   z-index: 90;
-  min-height: 64px;
-  padding: 1rem 5vw;
+  height: 64px;
+  padding: 0 5vw;
+  overflow: visible;
   background:
     linear-gradient(to top, rgba(2,6,5,1) 0%, rgba(5,14,11,0.99) 100%);
   backdrop-filter: blur(14px);
@@ -837,11 +843,12 @@ button { border: none; background: none; cursor: pointer; }
 
 .footer-logo {
   display: flex;
-  align-items: center;
+  align-items: flex-end;
   flex-shrink: 0;
+  align-self: flex-end;
 }
 .footer-logo-img {
-  height: 30px;
+  height: 76px;
   width: auto;
   display: block;
   opacity: 0.9;
@@ -944,7 +951,7 @@ button { border: none; background: none; cursor: pointer; }
 
 .mapa-layout {
   display: grid;
-  grid-template-columns: 1fr clamp(340px, 32vw, 480px);
+  grid-template-columns: minmax(0, 1fr) clamp(340px, 32vw, 480px);
   gap: 2.5rem;
   align-items: start;
 }
@@ -952,6 +959,7 @@ button { border: none; background: none; cursor: pointer; }
 /* ── Map container ── */
 .mapa-svg-container {
   position: relative;
+  width: 100%;
   background: rgba(5,13,11,0.97);
   border: 1px solid rgba(232,98,26,0.18);
   border-radius: 6px;
@@ -1042,12 +1050,19 @@ canvas#map-particles {
   min-height: 560px;
   display:flex; flex-direction:column; gap: 1.1rem;
   transition: border-color .4s, box-shadow .4s;
-  overflow: hidden;
+  overflow-y: auto;
+  overflow-x: hidden;
+  max-height: 80vh;
   position: relative;
 }
 .mapa-selected.is-active {
-  border-color: rgba(232,98,26,.32);
-  box-shadow: 0 0 40px rgba(232,98,26,.06);
+  border-color: rgba(232,98,26,.45);
+  box-shadow: 0 0 40px rgba(232,98,26,.15);
+  cursor: pointer;
+}
+.mapa-selected.is-active:hover {
+  border-color: rgba(232,98,26,.8);
+  box-shadow: 0 0 50px rgba(232,98,26,.25);
 }
 .mapa-selected.is-locked::before {
   content: '';
@@ -1365,7 +1380,7 @@ canvas#map-particles {
 /* Add extra spacing before contacto section so phone mockup has breathing room */
 /* Add extra spacing before contacto section so phone mockup has breathing room
   and to avoid header overlap on pinned sections */
-#contacto .section-inner { padding-top: 16vh; }
+#contacto .section-inner { padding-top: 10vh; }
 
 .gallery-caption {
   position: absolute;
@@ -1477,7 +1492,7 @@ canvas#map-particles {
 
   /* Gallery */
   .gallery-title { font-size: clamp(1.8rem, 8vw, 3rem); }
-  #gallery-track { padding: 1rem 40vw 1rem 40vw; }
+  #gallery-track { padding: 1rem 0; }
   .gallery-item {
     width: clamp(160px, 55vw, 240px);
     height: clamp(220px, 70vw, 320px);
@@ -1501,7 +1516,7 @@ canvas#map-particles {
 }
 
 @media (max-width: 480px) {
-  #gallery-track { padding: 0 1vw; gap: 8px; }
+  #gallery-track { padding: 0; }
 }
 
 /* Gallery progress dots */
@@ -1532,14 +1547,15 @@ canvas#map-particles {
 /* ── PHONE MOCKUP (sección contacto, lado derecho) ────────────── */
 .phone-mockup {
   position: absolute;
-  top: 55%;
-  left: 60vw;
+  top: 48%;
+  left: auto;
+  right: 26vw;
   transform: translateY(-50%);
   width: 220px;
   max-height: 74vh;
   height: auto;
   z-index: 1;
-  pointer-events: auto;
+  pointer-events: inherit;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -1548,22 +1564,22 @@ canvas#map-particles {
 /* Responsive tweaks */
 @media (max-width: 1366px) {
   .section-content.section-cta.align-left { padding-right: 30vw; }
-  #contacto .section-inner { max-width: 36vw; padding-top: 14vh; }
-  .phone-mockup { width: 200px; right: 12vw; max-height: 72vh; }
+  #contacto .section-inner { max-width: 36vw; padding-top: 9vh; }
+  .phone-mockup { width: 200px; right: 23vw; max-height: 72vh; }
 }
 
 @media (max-width: 1100px) {
   .section-content.section-cta.align-left { padding-right: 24vw; }
-  #contacto .section-inner { max-width: 44vw; padding-top: 12vh; }
-  .phone-mockup { width: 180px; right: 10vw; }
+  #contacto .section-inner { max-width: 44vw; padding-top: 8vh; }
+  .phone-mockup { width: 180px; right: 19vw; }
 }
 
 @media (max-width: 900px) {
   /* Stack content: make contact form full width and phone mockup below */
-  .section-content.section-cta.align-left { padding: 6vh 6vw; align-items: flex-start; }
-  #contacto .section-inner { order: 1; max-width: 100%; padding-top: 6vh; }
-  .phone-mockup { position: relative; order: 2; width: 62vw; right: auto; top: auto; transform: none; margin: 2rem auto 0; }
-  .phone-frame { width: 100%; max-width: 420px; }
+  .section-content.section-cta.align-left { padding: 6vh 6vw; flex-direction: column; align-items: flex-start; }
+  #contacto .section-inner { order: 1; max-width: 100%; padding-top: 6vh; height: auto; }
+  .phone-mockup { position: relative; order: 2; width: 220px; left: auto; right: auto; top: auto; transform: none; margin: 2rem auto 0; max-height: none; }
+  .phone-frame { width: 100%; max-width: 220px; }
   .section-inner .cta-button { max-width: 420px; }
 }
 
@@ -1576,7 +1592,7 @@ canvas#map-particles {
     align-items: flex-start;
     text-align: left;
     height: 100vh;
-    padding-top: 14vh; /* push heading down to align with phone mockup */
+    padding-top: 9vh; /* push heading down to align with phone mockup */
     padding-bottom: 0; /* rely on footer spacing elsewhere */
     max-width: 30vw; /* slightly narrower so form fields fit */
   }
@@ -1605,7 +1621,6 @@ canvas#map-particles {
 
 @media (max-width: 768px) {
   #contacto .section-heading { font-size: clamp(1.6rem, 6.5vw, 2.6rem); }
-  .phone-mockup { width: 70vw; }
   .cta-input, .cta-textarea { font-size: 0.95rem; }
 }
 
@@ -1649,18 +1664,7 @@ canvas#map-particles {
 .phone-vol-down { left: -3px; top: 140px; width: 4px; height: 60px; }
 .phone-power    { right: -3px; top: 110px; width: 4px; height: 70px; }
 
-@media (max-width: 768px) {
-  .phone-mockup {
-    position: relative;
-    right: auto;
-    top: auto;
-    transform: none;
-    margin: 2rem auto 1rem;
-    width: 220px;
-  }
-  .phone-frame { width: 220px; border-radius: 34px; padding: 10px; }
-  .phone-screen { border-radius: 26px; }
-}
+/* Redundant phone mockup rules removed */
 
 /* Textarea dentro del form */
 .cta-textarea {
@@ -1999,22 +2003,351 @@ canvas#map-particles {
 .zp-item-5 .zp-inner { width: 30vw; height: 25vh; transform: translate(-22.5vw, 27.5vh); }
 .zp-item-6 .zp-inner { width: 15vw; height: 15vh; transform: translate(25vw, 22.5vh); }
 
+/* ═══════════════════════════════════════════════════════════════
+   COMPREHENSIVE RESPONSIVE DESIGN
+   Breakpoints: 1024px (tablet landscape), 768px (tablet portrait),
+                600px (mobile large), 480px (mobile small)
+   ═══════════════════════════════════════════════════════════════ */
+
+/* ── TABLET LANDSCAPE (≤ 1024px) ─────────────────────────────── */
+@media (max-width: 1024px) {
+  /* Nav: activate hamburger */
+  .nav-links { display: none; }
+  .nav-links.open {
+    display: flex;
+    flex-direction: column;
+    position: absolute;
+    top: 100%; left: 0; right: 0;
+    background: rgba(13,42,36,0.97);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    padding: 1.5rem 5vw;
+    gap: 1.25rem;
+    z-index: 200;
+  }
+  .nav-toggle { display: flex; }
+
+  /* Hero cards smaller */
+  .hero-card { width: clamp(100px, 12vw, 170px); }
+
+  /* Content sections: relax side padding */
+  .section-content.align-left { padding-left: 5vw; padding-right: 40vw; }
+  .section-content.align-right { padding-left: 40vw; padding-right: 5vw; }
+  .section-inner { max-width: 50vw; }
+  .section-photo { width: 34vw; max-width: 420px; }
+
+  /* Map: grid narrows */
+  .mapa-layout { grid-template-columns: 1fr clamp(260px, 28vw, 380px); gap: 1.5rem; }
+  .mapa-inner { width: 94vw; }
+
+  /* Agenda: 2 columns */
+  .agenda-grid { grid-template-columns: repeat(2, 1fr); gap: 0.85rem; }
+  .agenda-inner { width: 94vw; }
+
+  /* Gallery controls */
+  .gallery-drag-hint { display: none; }
+
+  /* Zoom parallax: slightly reduced offsets */
+  .zp-item-0 .zp-inner { width: 28vw; height: 28vh; }
+  .zp-item-1 .zp-inner { width: 32vw; height: 28vh; transform: translate(3vw, -28vh); }
+  .zp-item-6 .zp-inner { width: 18vw; height: 18vh; }
+
+  /* Contact: tighter layout */
+  .section-content.section-cta.align-left { padding-right: 28vw; }
+  #contacto .section-inner { max-width: 40vw; }
+  .phone-mockup { width: 190px; left: auto; right: 23vw; }
+}
+
+/* ── TABLET PORTRAIT (≤ 768px) ───────────────────────────────── */
 @media (max-width: 768px) {
-  /* Agenda — 1 column on mobile */
-  .agenda-grid { grid-template-columns: 1fr; gap: 0.75rem; }
-  .agenda-inner { width: 92vw; }
-  .agenda-title { font-size: clamp(1.8rem, 7vw, 3rem); }
+  /* Header */
+  .site-header { padding: 1rem 4vw; }
+  .site-header.visible { padding: 0.7rem 4vw; }
+  .nav-logo-img { height: 58px; }
 
-  /* Zoom parallax mobile: offsets reducidos */
-  .zp-item-1 .zp-inner { transform: translate(0, -18vh); }
-  .zp-item-2 .zp-inner { transform: translate(-12vw, -8vh); width: 28vw; height: 36vh; }
-  .zp-item-3 .zp-inner { transform: translate(18vw, 0); width: 22vw; }
-  .zp-item-4 .zp-inner { transform: translate(0, 18vh); }
-  .zp-item-5 .zp-inner { transform: translate(-14vw, 18vh); width: 28vw; }
+  /* Hero: hide floating cards, enlarge logo */
+  .hero-card { display: none; }
+  .hero-logo-img { width: clamp(220px, 65vw, 420px); }
+  .hero-tagline { font-size: clamp(0.75rem, 2.5vw, 1rem); }
+
+  /* Content sections: single column, full width */
+  .section-content.align-left,
+  .section-content.align-right {
+    padding: 12vh 6vw 6vh;
+    align-items: flex-start;
+    flex-direction: column;
+  }
+  .section-inner { max-width: 100%; }
+  .section-heading { font-size: clamp(2rem, 7.5vw, 3.2rem); }
+  .section-body { font-size: 0.95rem; max-width: none; }
+
+  /* Section photo: full width banner above text */
+  .section-photo,
+  .section-photo.photo-left,
+  .section-photo.photo-right {
+    position: relative;
+    width: 100%;
+    max-width: 100%;
+    height: 45vh;
+    top: auto; right: auto; left: auto; bottom: auto;
+    margin: 0 0 1.5rem 0;
+    border-radius: 8px;
+    align-self: center;
+    transform: none;
+  }
+
+  /* Dark backdrop for text legibility on mobile */
+  .section-content.align-left::before,
+  .section-content.align-right::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: rgba(13,42,36,0.78);
+    pointer-events: none;
+    z-index: -1;
+  }
+
+  /* Map: Overlay Modal para móvil */
+  .mapa-layout {
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    gap: 1rem;
+  }
+  .mapa-svg-container { width: 100%; max-height: 55vh; height: auto; margin: 0 auto; pointer-events: auto; }
+  .mapa-sidebar {
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    z-index: 20;
+    pointer-events: none;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 1rem;
+  }
+  .mapa-selected {
+    width: 100%;
+    max-width: 380px;
+    max-height: 90vh;
+    overflow-y: auto;
+    background: rgba(5,13,11,0.96);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    box-shadow: 0 30px 60px rgba(0,0,0,0.8), 0 0 0 1px rgba(245,241,235,0.1);
+    border: none;
+    pointer-events: auto;
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(20px) scale(0.95);
+    transition: opacity 0.4s cubic-bezier(0.2,0.8,0.2,1), transform 0.4s cubic-bezier(0.2,0.8,0.2,1), visibility 0.4s;
+    min-height: auto;
+    padding: 1.5rem;
+  }
+  .mapa-selected.is-active {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0) scale(1);
+    cursor: pointer;
+  }
+  .mapa-header-row { flex-direction: column; margin-bottom: 0.5rem; }
+  .map-title { font-size: clamp(1.5rem, 5vw, 2.4rem); }
+  .map-desc-top { font-size: 0.78rem; max-width: 100%; }
+  
+  /* Disable tooltip on mobile to prevent touch issues */
+  .map-tooltip { display: none !important; }
+
+  /* Agenda: single column vertical stack as requested by user */
+  .agenda-grid { grid-template-columns: 1fr; gap: 0.6rem; }
+  .agenda-inner { width: 92vw; padding: 2rem 0; }
+  .agenda-header { margin-bottom: 1.5rem; }
+  .agenda-title { font-size: clamp(1.6rem, 7vw, 2.4rem); margin-top: 0; }
+  .agenda-desc { font-size: 0.8rem; max-width: 100%; margin-top: 0.3rem; }
+  .agenda-card { padding: 1.1rem 1rem; }
+  .agenda-card-num { font-size: 0.75rem; margin-bottom: 0.8rem; }
+  .agenda-card-icon { width: 28px; height: 28px; margin-bottom: 0.8rem; }
+  .agenda-card-title { font-size: 1.15rem; margin-bottom: 0.3rem; }
+  .agenda-card-tag { font-size: 0.65rem; margin-bottom: 0.5rem; }
+  .agenda-card-body { font-size: 0.8rem; -webkit-line-clamp: 4; }
+
+  /* Gallery */
+  .gallery-title { font-size: clamp(1.8rem, 8vw, 3rem); }
+  .gallery-header { top: 6vh; left: 4vw; }
+  .gallery-controls { bottom: 2.5vh; left: 4vw; gap: 0.8rem; }
+  .gallery-prev, .gallery-next { width: 36px; height: 36px; }
+  .gallery-counter { font-size: 0.78rem; }
+  .gallery-drag-hint { display: none; }
+  #gallery-track { padding: 0; }
+
+  /* Zoom parallax mobile: less items, more spread out */
+  .zp-item-0 .zp-inner { width: 45vw; height: 30vh; transform: translate(0, 0); }
+  .zp-item-1 .zp-inner { width: 35vw; height: 22vh; transform: translate(-15vw, -25vh); }
+  .zp-item-4 .zp-inner { width: 35vw; height: 22vh; transform: translate(15vw, 25vh); }
+  .zp-item-2 .zp-inner,
+  .zp-item-3 .zp-inner,
+  .zp-item-5 .zp-inner,
   .zp-item-6 .zp-inner { display: none; }
+
+  /* Contact: stack vertically and move up */
+  .section-content.section-cta.align-left {
+    padding: 2vh 6vw 4vh; /* Reduced top padding to move up */
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  #contacto .section-inner {
+    order: 1;
+    max-width: 100%;
+    padding-top: 0; /* Removed extra top padding */
+    padding-bottom: 4rem; /* Added bottom padding to push footer away */
+    height: auto;
+  }
+  #contacto .section-heading { font-size: clamp(1.6rem, 6.5vw, 2.6rem); }
+  #contacto .cta-form { max-width: 100%; }
+  .phone-mockup {
+    display: none !important; /* Hide phone on mobile */
+  }
+  .phone-frame { width: 220px; border-radius: 34px; padding: 10px; }
+  .phone-screen { border-radius: 26px; }
+
+  /* Footer */
+  .site-footer { height: auto; min-height: 56px; padding: 0.6rem 4vw; gap: 0.75rem; }
+  .footer-logo-img { height: 58px; }
+  .footer-mid p { font-size: 0.65rem; }
+  .footer-links { gap: 1rem; }
+  .footer-link { font-size: 0.62rem; }
+
+  /* Text bg panels */
+  .section-body { padding: 0.6rem; }
+
+  /* Intro heading */
+  .section-intro .section-heading.intro-heading {
+    font-size: clamp(2rem, 9vw, 4rem);
+  }
+  .section-intro .section-inner { max-width: 90vw; }
+  .carousel-intro { top: 46%; }
 }
 
-@media (max-width: 480px) {
-  .agenda-grid { gap: 0.6rem; }
-  .agenda-card { padding: 1rem; }
+/* ── MOBILE LARGE (≤ 600px) ──────────────────────────────────── */
+@media (max-width: 600px) {
+  /* Footer: hide mid section */
+  .footer-mid { display: none; }
+  .site-footer { justify-content: space-between; }
+  .footer-logo-img { height: 51px; }
+
+  /* Content sections: more padding */
+  .section-content.align-left,
+  .section-content.align-right { padding: 4vh 5vw; }
+
+  /* Map: compact */
+  .mapa-inner { width: 96vw; padding: 1.5rem 0; }
+  .mapa-selected-name { font-size: 1.3rem; }
+  .mapa-selected-desc { font-size: 0.85rem; }
+
+  /* Agenda cards: compact tech overlay */
+  .tech-overlay { padding: 1.2rem 1rem; }
+  .tech-title { font-size: 0.95rem; }
+  .tech-description { font-size: 0.78rem; }
+  .tech-list { font-size: 0.72rem; }
+
+  /* Gallery: smaller items */
+  #gallery-track { padding: 0; }
+
+  /* Contact */
+  .cta-input, .cta-textarea { font-size: 0.92rem; padding: 0.75rem 0.85rem; }
+  .cta-button { padding: 0.8rem 1.2rem; font-size: 0.82rem; }
+
+  /* Intro heading smaller */
+  .section-intro .section-heading.intro-heading {
+    font-size: clamp(1.8rem, 10vw, 3.2rem);
+  }
 }
+
+/* ── MOBILE SMALL (≤ 480px) ──────────────────────────────────── */
+@media (max-width: 480px) {
+  /* Header compact */
+  .site-header { padding: 0.8rem 3vw; }
+  .site-header.visible { padding: 0.6rem 3vw; }
+  .nav-logo-img { height: 45px; }
+
+  /* Hero */
+  .hero-logo-img { width: clamp(200px, 75vw, 340px); }
+  .hero-tagline { font-size: 0.72rem; letter-spacing: 0.08em; }
+  .scroll-indicator { gap: 0.5rem; }
+  .scroll-line { width: 24px; }
+  .scroll-text { font-size: 0.58rem; }
+
+  /* Content */
+  .section-content.align-left,
+  .section-content.align-right { padding: 3vh 4vw; }
+  .section-heading { font-size: clamp(1.6rem, 8vw, 2.5rem); }
+  .section-body { font-size: 0.88rem; }
+  .section-label { font-size: 0.62rem; letter-spacing: 0.2em; }
+  .section-photo { height: 35vh; }
+
+  /* Map */
+  .map-title { font-size: clamp(1.3rem, 6vw, 2rem); }
+  .map-label { font-size: 0.6rem; }
+  .mapa-selected-name { font-size: 1.1rem; }
+  .mapa-selected-desc { font-size: 0.8rem; line-height: 1.55; }
+
+  /* Agenda */
+  .agenda-grid { gap: 0.6rem; }
+  .agenda-card { padding: 1rem 0.85rem; }
+  .agenda-card-title { font-size: clamp(0.88rem, 4vw, 1.05rem); }
+  .agenda-card-body { font-size: 0.78rem; -webkit-line-clamp: 3; }
+  .agenda-card-tag { font-size: 0.58rem; }
+  .agenda-card-num { font-size: 0.65rem; margin-bottom: 0.4rem; }
+  .agenda-card-icon { width: 22px; height: 22px; margin-bottom: 0.5rem; }
+  .agenda-title { font-size: clamp(1.5rem, 8vw, 2.5rem); }
+  .agenda-desc { font-size: 0.8rem; }
+
+  /* Gallery */
+  #gallery-track { padding: 0; }
+  .gallery-controls { bottom: 2vh; left: 3vw; gap: 0.6rem; }
+  .gallery-prev, .gallery-next { width: 32px; height: 32px; }
+  .gallery-prev svg, .gallery-next svg { width: 14px; height: 14px; }
+  .gallery-counter { font-size: 0.72rem; min-width: 48px; }
+  .gallery-caption { font-size: 0.55rem; bottom: 0.6rem; left: 0.6rem; right: 0.6rem; }
+  .gallery-dots { bottom: 2vh; gap: 4px; }
+  .gallery-dot { width: 4px; height: 4px; }
+
+  /* Zoom parallax: center focus */
+  .zp-item-0 .zp-inner { width: 60vw; height: 32vh; transform: translate(0, 0); }
+  .zp-item-1 .zp-inner { width: 45vw; height: 20vh; transform: translate(-10vw, -26vh); }
+  .zp-item-4 .zp-inner { width: 45vw; height: 20vh; transform: translate(10vw, 26vh); }
+  .zp-item-2 .zp-inner,
+  .zp-item-3 .zp-inner,
+  .zp-item-5 .zp-inner,
+  .zp-item-6 .zp-inner { display: none; }
+
+  /* Contact */
+  #contacto .section-heading { font-size: clamp(1.4rem, 7vw, 2.2rem); }
+  .phone-mockup { width: 180px; }
+  .phone-frame { width: 180px; border-radius: 30px; padding: 8px; }
+  .phone-screen { border-radius: 22px; }
+
+  /* Footer */
+  .site-footer { padding: 0.5rem 3vw; }
+  .footer-logo-img { height: 45px; }
+  .footer-link { font-size: 0.58rem; letter-spacing: 0.08em; }
+  .footer-links { gap: 0.7rem; }
+
+  /* Intro */
+  .section-intro .section-heading.intro-heading {
+    font-size: clamp(1.5rem, 11vw, 2.8rem);
+    letter-spacing: 0.04em;
+  }
+}
+
+/* ── VERY SMALL SCREENS (≤ 360px) ────────────────────────────── */
+@media (max-width: 360px) {
+  .hero-logo-img { width: clamp(170px, 80vw, 280px); }
+  .section-heading { font-size: clamp(1.4rem, 9vw, 2.2rem); }
+  .section-body { font-size: 0.84rem; }
+  .agenda-card { padding: 0.85rem 0.7rem; }
+  .agenda-card-title { font-size: 0.85rem; }
+  .phone-mockup { width: 160px; }
+  .phone-frame { width: 160px; }
+  #contacto .section-heading { font-size: clamp(1.2rem, 8vw, 1.8rem); }
+  .cta-input, .cta-textarea { font-size: 0.85rem; padding: 0.65rem 0.75rem; }
+}
+

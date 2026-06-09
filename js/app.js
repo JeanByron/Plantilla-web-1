@@ -36,33 +36,33 @@ const MAP_MUN_NAME = {
 // Datos de cada municipio: hover (frase corta), click (texto largo), img (foto referencial).
 // TODO: reemplazar las imágenes genéricas (1-25.jpeg) por fotos específicas del municipio cuando estén disponibles.
 const MAP_MUN_DATA = {
-  'Manizales':   { hover:'Centro de oportunidades, educación y desarrollo regional.',           click:'Manizales es el eje administrativo y académico del departamento, donde convergen la educación, la innovación y el crecimiento económico, impulsando oportunidades para todos los sectores.', img:'images/1.jpeg'  },
-  'Villamaría':  { hover:'Riqueza natural y compromiso ambiental.',                              click:'Villamaría se destaca por su biodiversidad y cercanía a ecosistemas estratégicos, promoviendo el turismo sostenible y la protección ambiental como base de su desarrollo.',                  img:'images/2.jpeg'  },
-  'Chinchiná':   { hover:'Tradición cafetera que impulsa desarrollo.',                           click:'Chinchiná es clave en la economía cafetera, donde tradición e innovación se articulan para fortalecer el campo y generar oportunidades.',                                                  img:'images/3.jpeg'  },
-  'Neira':       { hover:'Identidad cafetera y tradición rural.',                                click:'Neira es un municipio con fuerte vocación agrícola, donde se promueven iniciativas para fortalecer el campo y mejorar la calidad de vida rural.',                                          img:'images/4.jpeg'  },
-  'Palestina':   { hover:'Territorio de proyección y conectividad.',                             click:'Palestina se proyecta como un punto estratégico para el desarrollo logístico y económico, impulsando proyectos que fortalecen la conectividad regional.',                                 img:'images/5.jpeg'  },
-  'Aguadas':     { hover:'Tradición, cultura y emprendimiento artesanal.',                       click:'Aguadas es referente cultural y artesanal, impulsando la economía local a través de sus tradiciones y el talento de su gente.',                                                              img:'images/6.jpeg'  },
-  'Pácora':      { hover:'Historia y tradición que construyen territorio.',                      click:'Pácora conserva su identidad histórica mientras fortalece procesos comunitarios y productivos que dinamizan su desarrollo.',                                                                  img:'images/7.jpeg'  },
-  'Salamina':    { hover:'Patrimonio y arquitectura emblemática.',                               click:'Salamina destaca por su riqueza patrimonial y turística, promoviendo el desarrollo sostenible desde su identidad cultural.',                                                                  img:'images/8.jpeg'  },
-  'Aranzazu':    { hover:'Trabajo rural y compromiso comunitario.',                              click:'Aranzazu impulsa el desarrollo desde el campo, fortaleciendo la producción agrícola y la organización comunitaria.',                                                                          img:'images/9.jpeg'  },
-  'Filadelfia':  { hover:'Campo, tradición y progreso local.',                                   click:'Filadelfia es un municipio que crece desde su vocación rural, promoviendo iniciativas que fortalecen la economía local.',                                                                       img:'images/10.jpeg' },
-  'La Merced':   { hover:'Pequeño territorio con gran identidad.',                               click:'La Merced se caracteriza por su cohesión social y su trabajo comunitario, impulsando procesos de desarrollo local.',                                                                          img:'images/11.jpeg' },
-  'Riosucio':    { hover:'Cultura, diversidad y tradición.',                                     click:'Riosucio es un referente cultural, donde la diversidad y las tradiciones fortalecen el tejido social y el desarrollo comunitario.',                                                          img:'images/12.jpeg' },
-  'Supía':       { hover:'Diversidad cultural y dinamismo social.',                              click:'Supía es un territorio diverso que promueve la inclusión, la participación y el crecimiento social.',                                                                                          img:'images/13.jpeg' },
-  'Marmato':     { hover:'Historia minera y resiliencia territorial.',                           click:'Marmato es reconocido por su tradición minera, impulsando procesos que buscan el desarrollo sostenible y la formalización del sector.',                                                        img:'images/14.jpeg' },
-  'Belalcázar':  { hover:'Tradición y desarrollo en el occidente caldense.',                     click:'Belalcázar promueve el desarrollo desde su identidad cultural y el trabajo comunitario.',                                                                                                       img:'images/15.jpeg' },
-  'San José':    { hover:'Territorio joven con vocación productiva.',                            click:'San José es uno de los municipios más jóvenes del departamento, con un gran potencial en el desarrollo agrícola y social.',                                                                  img:'images/16.jpeg' },
-  'Viterbo':     { hover:'Turismo, cultura y crecimiento regional.',                              click:'Viterbo impulsa el turismo y el desarrollo económico, consolidándose como un destino atractivo en el occidente.',                                                                              img:'images/17.jpeg' },
-  'Risaralda':   { hover:'Tradición agrícola y dinamismo local.',                                click:'Risaralda fortalece su economía desde el campo, promoviendo iniciativas productivas y comunitarias.',                                                                                        img:'images/18.jpeg' },
-  'Anserma':     { hover:'Historia y vocación agrícola.',                                        click:'Anserma combina su legado histórico con el impulso al desarrollo rural y la productividad agrícola.',                                                                                          img:'images/19.jpeg' },
-  'Pensilvania': { hover:'Progreso desde el campo y el territorio.',                             click:'Pensilvania impulsa su desarrollo desde la ruralidad, fortaleciendo el campo y mejorando la calidad de vida de sus habitantes.',                                                            img:'images/20.jpeg' },
-  'Marquetalia': { hover:'Tradición agrícola y cultura campesina.',                              click:'Marquetalia impulsa el desarrollo desde el campo, fortaleciendo su identidad campesina y productiva.',                                                                                       img:'images/21.jpeg' },
-  'Manzanares':  { hover:'Historia, tradición y desarrollo local.',                              click:'Manzanares combina su legado histórico con procesos de crecimiento social y económico.',                                                                                                       img:'images/22.jpeg' },
-  'Marulanda':   { hover:'Territorio rural de tradición y esfuerzo.',                            click:'Marulanda se caracteriza por su trabajo ganadero y rural, promoviendo el desarrollo sostenible desde el campo.',                                                                            img:'images/23.jpeg' },
-  'La Dorada':   { hover:'Eje logístico y puerta del Magdalena.',                                click:'La Dorada es un punto estratégico para el comercio y la conectividad, impulsando el desarrollo económico regional.',                                                                          img:'images/24.jpeg' },
-  'Victoria':    { hover:'Progreso desde la cercanía y el territorio.',                          click:'Victoria promueve el desarrollo local mediante el fortalecimiento comunitario y productivo.',                                                                                                  img:'images/25.jpeg' },
-  'Norcasia':    { hover:'Energía, naturaleza y desarrollo.',                                    click:'Norcasia es clave en la generación energética y la protección ambiental, impulsando el desarrollo sostenible.',                                                                                img:'images/15.jpeg' },
-  'Samaná':      { hover:'Territorio de resiliencia y transformación.',                          click:'Samaná es un ejemplo de reconstrucción social, donde se promueven iniciativas de paz y desarrollo territorial.',                                                                              img:'images/22.jpeg' }
+  'Manizales':   { hover:'Centro de oportunidades, educación y desarrollo regional.',           click:'Manizales es el eje administrativo y académico del departamento, donde convergen la educación, la innovación y el crecimiento económico, impulsando oportunidades para todos los sectores.', img:'images/1_map.jpeg'  },
+  'Villamaría':  { hover:'Riqueza natural y compromiso ambiental.',                              click:'Villamaría se destaca por su biodiversidad y cercanía a ecosistemas estratégicos, promoviendo el turismo sostenible y la protección ambiental como base de su desarrollo.',                  img:'images/2_map.jpeg'  },
+  'Chinchiná':   { hover:'Tradición cafetera que impulsa desarrollo.',                           click:'Chinchiná es clave en la economía cafetera, donde tradición e innovación se articulan para fortalecer el campo y generar oportunidades.',                                                  img:'images/3_map.jpeg'  },
+  'Neira':       { hover:'Identidad cafetera y tradición rural.',                                click:'Neira es un municipio con fuerte vocación agrícola, donde se promueven iniciativas para fortalecer el campo y mejorar la calidad de vida rural.',                                          img:'images/4_map.jpeg'  },
+  'Palestina':   { hover:'Territorio de proyección y conectividad.',                             click:'Palestina se proyecta como un punto estratégico para el desarrollo logístico y económico, impulsando proyectos que fortalecen la conectividad regional.',                                 img:'images/5_map.jpeg'  },
+  'Aguadas':     { hover:'Tradición, cultura y emprendimiento artesanal.',                       click:'Aguadas es referente cultural y artesanal, impulsando la economía local a través de sus tradiciones y el talento de su gente.',                                                              img:'images/6_map.jpeg'  },
+  'Pácora':      { hover:'Historia y tradición que construyen territorio.',                      click:'Pácora conserva su identidad histórica mientras fortalece procesos comunitarios y productivos que dinamizan su desarrollo.',                                                                  img:'images/7_map.jpeg'  },
+  'Salamina':    { hover:'Patrimonio y arquitectura emblemática.',                               click:'Salamina destaca por su riqueza patrimonial y turística, promoviendo el desarrollo sostenible desde su identidad cultural.',                                                                  img:'images/8_map.jpeg'  },
+  'Aranzazu':    { hover:'Trabajo rural y compromiso comunitario.',                              click:'Aranzazu impulsa el desarrollo desde el campo, fortaleciendo la producción agrícola y la organización comunitaria.',                                                                          img:'images/9_map.jpeg'  },
+  'Filadelfia':  { hover:'Campo, tradición y progreso local.',                                   click:'Filadelfia es un municipio que crece desde su vocación rural, promoviendo iniciativas que fortalecen la economía local.',                                                                       img:'images/10_map.jpeg' },
+  'La Merced':   { hover:'Pequeño territorio con gran identidad.',                               click:'La Merced se caracteriza por su cohesión social y su trabajo comunitario, impulsando procesos de desarrollo local.',                                                                          img:'images/11_map.jpeg' },
+  'Riosucio':    { hover:'Cultura, diversidad y tradición.',                                     click:'Riosucio es un referente cultural, donde la diversidad y las tradiciones fortalecen el tejido social y el desarrollo comunitario.',                                                          img:'images/12_map.jpeg' },
+  'Supía':       { hover:'Diversidad cultural y dinamismo social.',                              click:'Supía es un territorio diverso que promueve la inclusión, la participación y el crecimiento social.',                                                                                          img:'images/13_map.jpeg' },
+  'Marmato':     { hover:'Historia minera y resiliencia territorial.',                           click:'Marmato es reconocido por su tradición minera, impulsando procesos que buscan el desarrollo sostenible y la formalización del sector.',                                                        img:'images/14_map.jpeg' },
+  'Belalcázar':  { hover:'Tradición y desarrollo en el occidente caldense.',                     click:'Belalcázar promueve el desarrollo desde su identidad cultural y el trabajo comunitario.',                                                                                                       img:'images/15_map.jpeg' },
+  'San José':    { hover:'Territorio joven con vocación productiva.',                            click:'San José es uno de los municipios más jóvenes del departamento, con un gran potencial en el desarrollo agrícola y social.',                                                                  img:'images/16_map.jpeg' },
+  'Viterbo':     { hover:'Turismo, cultura y crecimiento regional.',                              click:'Viterbo impulsa el turismo y el desarrollo económico, consolidándose como un destino atractivo en el occidente.',                                                                              img:'images/17_map.jpeg' },
+  'Risaralda':   { hover:'Tradición agrícola y dinamismo local.',                                click:'Risaralda fortalece su economía desde el campo, promoviendo iniciativas productivas y comunitarias.',                                                                                        img:'images/18_map.jpeg' },
+  'Anserma':     { hover:'Historia y vocación agrícola.',                                        click:'Anserma combina su legado histórico con el impulso al desarrollo rural y la productividad agrícola.',                                                                                          img:'images/19_map.jpeg' },
+  'Pensilvania': { hover:'Progreso desde el campo y el territorio.',                             click:'Pensilvania impulsa su desarrollo desde la ruralidad, fortaleciendo el campo y mejorando la calidad de vida de sus habitantes.',                                                            img:'images/20_map.jpeg' },
+  'Marquetalia': { hover:'Tradición agrícola y cultura campesina.',                              click:'Marquetalia impulsa el desarrollo desde el campo, fortaleciendo su identidad campesina y productiva.',                                                                                       img:'images/21_map.jpeg' },
+  'Manzanares':  { hover:'Historia, tradición y desarrollo local.',                              click:'Manzanares combina su legado histórico con procesos de crecimiento social y económico.',                                                                                                       img:'images/22_map.jpeg' },
+  'Marulanda':   { hover:'Territorio rural de tradición y esfuerzo.',                            click:'Marulanda se caracteriza por su trabajo ganadero y rural, promoviendo el desarrollo sostenible desde el campo.',                                                                            img:'images/23_map.jpeg' },
+  'La Dorada':   { hover:'Eje logístico y puerta del Magdalena.',                                click:'La Dorada es un punto estratégico para el comercio y la conectividad, impulsando el desarrollo económico regional.',                                                                          img:'images/24_map.jpeg' },
+  'Victoria':    { hover:'Progreso desde la cercanía y el territorio.',                          click:'Victoria promueve el desarrollo local mediante el fortalecimiento comunitario y productivo.',                                                                                                  img:'images/25_map.jpeg' },
+  'Norcasia':    { hover:'Energía, naturaleza y desarrollo.',                                    click:'Norcasia es clave en la generación energética y la protección ambiental, impulsando el desarrollo sostenible.',                                                                                img:'images/15_map.jpeg' },
+  'Samaná':      { hover:'Territorio de resiliencia y transformación.',                          click:'Samaná es un ejemplo de reconstrucción social, donde se promueven iniciativas de paz y desarrollo territorial.',                                                                              img:'images/22_map.jpeg' }
 };
 
 // Color base unificado para todos los municipios (no hay gradiente por votos).
@@ -218,9 +218,9 @@ const GALLERY_FADE   = 0.055;
 const ZP_ENTER       = 0.18;   // después de ¿Quien es Manuel Correa?
 const ZP_LEAVE       = 0.36;
 // Ajustados para dar más espacio antes de que aparezca el carrusel
-const CAROUSEL_ENTER = 0.72;   // despues del mensaje "En el campo"
+const CAROUSEL_ENTER = 0.77;   // despues del mensaje "En el campo"
 // Extender el final del carrusel para que cubra todo el tramo antes de contacto
-const CAROUSEL_LEAVE = 0.94;
+const CAROUSEL_LEAVE = 0.98;
 // No frame freeze: background frames should advance during the whole page
 
 function drawFlatBg(cw, ch) {
@@ -388,6 +388,7 @@ function mapAttachEvents(el, name, cx, cy, svgEl, container, tooltip, detailPane
   const data = MAP_MUN_DATA[name] || { hover: name, click: name + ', municipio de Caldas.', img: 'images/1.jpeg' };
 
   el.addEventListener('mouseenter', () => {
+    if (window.innerWidth <= 768) return; // SKIP HOVER ON MOBILE
     tooltip.innerHTML = `
       <div class="map-tooltip-name">${name}</div>
       <div class="map-tooltip-hover">${data.hover}</div>`;
@@ -412,6 +413,7 @@ function mapAttachEvents(el, name, cx, cy, svgEl, container, tooltip, detailPane
   });
 
   el.addEventListener('mousemove', e => {
+    if (window.innerWidth <= 768) return; // SKIP HOVER ON MOBILE
     const rc = container.getBoundingClientRect();
     let left = e.clientX - rc.left + 18;
     let top  = Math.max(e.clientY - rc.top - 56, 8);
@@ -421,6 +423,7 @@ function mapAttachEvents(el, name, cx, cy, svgEl, container, tooltip, detailPane
   });
 
   el.addEventListener('mouseleave', () => {
+    if (window.innerWidth <= 768) return; // SKIP HOVER ON MOBILE
     tooltip.classList.remove('visible');
     if (el !== activePath) {
       el.setAttribute('stroke', 'rgba(5,13,11,0.85)');
@@ -439,12 +442,12 @@ function mapAttachEvents(el, name, cx, cy, svgEl, container, tooltip, detailPane
     }
   });
 
-  el.addEventListener('click', () => {
+  const handleClick = (e) => {
+    if (e && e.cancelable) e.preventDefault(); // Evitar doble disparo si es touch
     const allPaths = document.querySelectorAll('#caldas-map path,#caldas-map polygon');
     const { px, py } = getMapPos();
     mapCreatePulse(px, py, container);
     if (activePath === el) {
-      // Click en el mismo municipio bloqueado → desbloquear
       activePath = null;
       el.setAttribute('stroke', 'rgba(5,13,11,0.85)');
       el.setAttribute('stroke-width', '1');
@@ -452,7 +455,6 @@ function mapAttachEvents(el, name, cx, cy, svgEl, container, tooltip, detailPane
       allPaths.forEach(p => gsap.to(p, { opacity: 1, duration: 0.3 }));
       mapClearDetail(detailPanel);
     } else {
-      // Cambio de bloqueo a otro municipio
       if (activePath) {
         activePath.setAttribute('stroke', 'rgba(5,13,11,0.85)');
         activePath.setAttribute('stroke-width', '1');
@@ -465,12 +467,35 @@ function mapAttachEvents(el, name, cx, cy, svgEl, container, tooltip, detailPane
       allPaths.forEach(p => gsap.to(p, { opacity: p === el ? 1 : 0.35, duration: 0.3 }));
       mapShowDetail(name, detailPanel, /*locked=*/true);
     }
-  });
+  };
+
+  el.addEventListener('click', handleClick);
+  
+  // Soporte robusto para táctil: registrar el inicio del toque
+  let touchStartX = 0;
+  let touchStartY = 0;
+  el.addEventListener('touchstart', (e) => {
+    if (e.touches.length > 0) {
+      touchStartX = e.touches[0].clientX;
+      touchStartY = e.touches[0].clientY;
+    }
+  }, { passive: true });
+
+  // Si levanta el dedo cerca de donde lo puso (es un tap, no un scroll), disparamos
+  el.addEventListener('touchend', (e) => {
+    if (e.changedTouches.length > 0) {
+      const dx = Math.abs(e.changedTouches[0].clientX - touchStartX);
+      const dy = Math.abs(e.changedTouches[0].clientY - touchStartY);
+      if (dx < 10 && dy < 10) {
+        handleClick(e);
+      }
+    }
+  }, { passive: false });
 }
 
 function mapShowDetail(name, detailPanel, locked) {
   if (!detailPanel) return;
-  const data = MAP_MUN_DATA[name] || { hover: name, click: name + ', municipio de Caldas.', img: 'images/1.jpeg' };
+  const data = MAP_MUN_DATA[name] || { hover: name, click: name + ', municipio de Caldas.', img: 'images/1_map.jpeg' };
 
   // Si ya está mostrando el mismo municipio en el mismo modo, no resetear
   if (detailPanel.dataset.currentMun === name && (detailPanel.classList.contains('is-locked') === !!locked)) {
@@ -508,6 +533,14 @@ async function mapLoad(section) {
   const detailPanel = section.querySelector('#mapa-selected');
   const container = section.querySelector('.mapa-svg-container');
   if (!svgEl || !container) return;
+
+  // Hacer que el panel se pueda cerrar al hacer click en él (en cualquier resolución)
+  detailPanel.addEventListener('click', () => {
+    if (detailPanel.classList.contains('is-active')) {
+      const activeElement = document.querySelector('#caldas-map path[stroke="#E8621A"], #caldas-map polygon[stroke="#E8621A"]');
+      if (activeElement) activeElement.dispatchEvent(new Event('click'));
+    }
+  });
 
   mapInitParticles(container);
   mapInitMouseGlow(container);
@@ -805,12 +838,6 @@ function setupSectionAnimation(section) {
             section.classList.remove('is-visible');
             if (footer) footer.classList.remove('is-visible');
           } }, 0);
-
-      if (footer) {
-        tl.fromTo(footer,
-          { opacity: 0 },
-          { opacity: 1, duration: 0.3, ease: 'power2.out' }, 0.12);
-      }
     }
 
     switch (type) {
@@ -879,6 +906,14 @@ function setupSectionAnimation(section) {
         tl.fromTo(children,
           { y: 22, opacity: 0 },
           { y: 0, opacity: 1, stagger: 0.07, duration: 0.7, ease: 'power2.out' });
+    }
+
+    if (footer) {
+      // Al añadirlo al final de la línea de tiempo, aparece último al bajar,
+      // y desaparece primero al hacer scroll hacia arriba (reverse).
+      tl.fromTo(footer,
+        { opacity: 0 },
+        { opacity: 1, duration: 0.3, ease: 'power2.out' }, ">-0.1");
     }
   }
 
@@ -995,8 +1030,8 @@ function initHeroFade() {
       // Cards caen mientras el hero se desvanece
       const t = Math.min(1, p / HERO_FADE_END);
       const fallY = t * 160;
-      if (cardL) gsap.set(cardL, { y: fallY });
-      if (cardR) gsap.set(cardR, { y: fallY * 0.7 });
+      if (cardL) gsap.set(cardL, { y: fallY, yPercent: -50 });
+      if (cardR) gsap.set(cardR, { y: fallY * 0.7, yPercent: -50 });
     }
   });
 }
@@ -1082,11 +1117,12 @@ function initGallery() {
   function getSizes() {
     if (cachedSizes) return cachedSizes;
     const vw = window.innerWidth, vh = window.innerHeight;
+    const isMobile = vw <= 768;
     cachedSizes = {
-      active: { w: Math.min(vw * 0.36, 540), h: vh * 0.74, opacity: 1    },
-      near:   { w: Math.min(vw * 0.18, 270), h: vh * 0.50, opacity: 0.55 },
-      far:    { w: Math.min(vw * 0.12, 190), h: vh * 0.37, opacity: 0.28 },
-      hidden: { w: Math.min(vw * 0.09, 140), h: vh * 0.28, opacity: 0.12 },
+      active: { w: isMobile ? vw * 0.82 : Math.min(vw * 0.36, 540), h: vh * 0.74, opacity: 1    },
+      near:   { w: isMobile ? vw * 0.15 : Math.min(vw * 0.18, 270), h: vh * 0.50, opacity: 0.55 },
+      far:    { w: isMobile ? vw * 0.08 : Math.min(vw * 0.12, 190), h: vh * 0.37, opacity: 0.28 },
+      hidden: { w: isMobile ? vw * 0.05 : Math.min(vw * 0.09, 140), h: vh * 0.28, opacity: 0.12 },
     };
     return cachedSizes;
   }
@@ -1586,7 +1622,14 @@ function sampleVideoBgColor(video) {
 function runFakeLoader() {
   return new Promise(resolve => {
     const video = document.querySelector('.loader-video');
-    if (!video) { setTimeout(resolve, 600); return; }
+    const isMobile = window.innerWidth <= 768;
+
+    // On mobile, skip the video loader completely since it doesn't scale well
+    if (!video || isMobile) {
+      if (video) video.style.display = 'none';
+      setTimeout(resolve, 200); // short delay to let things settle
+      return;
+    }
 
     const MAX_SECONDS = 3;
     let resolved = false;
@@ -1664,11 +1707,11 @@ function initHeroEntrance() {
   if (scroll) tl.to(scroll, { opacity: 1, duration: 0.6, ease: 'power2.out' }, 0.85);
 
   if (cardL) tl.fromTo(cardL,
-    { opacity: 0, y: -50, rotation: -8, x: -50 },
-    { opacity: 1, y: 0,   x: 0, duration: 1.7, ease: 'power3.out' }, 0.2);
+    { opacity: 0, y: -50, yPercent: -50, rotation: -8, x: -50 },
+    { opacity: 1, y: 0,   yPercent: -50, x: 0, duration: 1.7, ease: 'power3.out' }, 0.2);
   if (cardR) tl.fromTo(cardR,
-    { opacity: 0, y: -60, rotation: 7, x: 50 },
-    { opacity: 1, y: 0,   x: 0, duration: 1.7, ease: 'power3.out' }, 0.4);
+    { opacity: 0, y: -60, yPercent: -50, rotation: 7, x: 50 },
+    { opacity: 1, y: 0,   yPercent: -50, x: 0, duration: 1.7, ease: 'power3.out' }, 0.4);
 }
 
 // ── HERO BG FADE ──────────────────────────────────────────────
@@ -1874,3 +1917,17 @@ if (document.readyState === 'loading') {
 } else {
   init();
 }
+
+// Global resize handler to fix layout bugs when user zooms in/out
+window.addEventListener('resize', () => {
+  requestAnimationFrame(() => {
+    // Recalculate all absolutely positioned sections
+    document.querySelectorAll('.scroll-section').forEach(sec => {
+      if (typeof positionSection === 'function') positionSection(sec);
+    });
+    // Notify ScrollTrigger to recalculate bounds
+    if (typeof ScrollTrigger !== 'undefined' && ScrollTrigger.refresh) {
+      ScrollTrigger.refresh();
+    }
+  });
+}, { passive: true });
