@@ -3,17 +3,18 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Manuel Correa — Representante a la Cámara · Caldas 2026–2030</title>
-  <meta name="description" content="Manuel Correa, Representante a la Cámara por Caldas 2026–2030. Trabajando por los sueños de los 27 municipios." />
+  <title>Tu Marca — Plantilla Web Interactiva</title>
+  <meta name="description" content="Plantilla web interactiva con scroll cinematográfico, fondo animado, galerías y formulario de contacto. Lista para personalizar con tu contenido." />
   <link rel="stylesheet" href="css/style.css" />
 </head>
 <body>
 
-  <!-- 1. LOADER — video colibrí + cortina de revelado -->
+  <!-- 1. LOADER — spinner CSS puro -->
   <div id="loader">
-    <video class="loader-video" muted autoplay playsinline preload="auto">
-      <source src="elementos_graficos/video colibri inicio.mp4" type="video/mp4">
-    </video>
+    <div class="loader-spinner">
+      <div class="spinner-ring"></div>
+      <span class="loader-text">Cargando experiencia…</span>
+    </div>
   </div>
   <div id="curtain" aria-hidden="true">
     <div class="curtain-panel curtain-top"></div>
@@ -23,12 +24,10 @@
   <!-- 2. FIXED HEADER -->
   <header id="site-header" class="site-header hidden">
     <nav class="site-nav">
-      <!-- TODO: si lOGO.png aún tiene fondo blanco, reemplazar por versión con transparencia -->
-      <a href="#" class="nav-logo"><img src="elementos_graficos/lOGO.png" alt="Manuel Correa" class="nav-logo-img"/></a>
+      <a href="#" class="nav-logo"><span class="nav-logo-text">TU LOGO</span></a>
       <ul class="nav-links">
         <li><a href="#inicio">Inicio</a></li>
-        <li><a href="#caldas">Caldas</a></li>
-        <li><a href="#agenda">Agenda</a></li>
+        <li><a href="#proyectos">Proyectos</a></li>
         <li><a href="#galeria">Galería</a></li>
         <li><a href="#contacto" class="nav-cta">Contacto</a></li>
       </ul>
@@ -48,36 +47,23 @@
     <div class="hero-bg-gradient"></div>
   </div>
 
-  <!-- 4b. Solid background overlay (activated from #caldas onward) -->
+  <!-- 4b. Solid background overlay (activated from #cobertura onward) -->
   <div id="solid-bg" aria-hidden="true"></div>
 
   <!-- 5. HERO OVERLAY (fixed) -->
   <div id="hero-overlay">
 
-    <div class="hero-card hero-card-left">
-      <img src="images/21.jpeg" alt="Manuel Correa" />
-    </div>
-    <div class="hero-card hero-card-right">
-      <img src="images/1.jpeg" alt="Manuel Correa con la comunidad" />
-    </div>
-
     <div class="hero-content">
       <div class="hero-logo">
-        <!-- TODO: si lOGO.png aún tiene fondo, reemplazar por PNG con transparencia -->
-        <img src="elementos_graficos/lOGO.png" alt="Manuel Correa — Representante a la Cámara 2026–2030" class="hero-logo-img"/>
+        <h1 class="hero-title-text">TU MARCA</h1>
       </div>
 
-      <p class="hero-tagline">Trabajando por los sueños de Caldas.</p>
+      <p class="hero-tagline">Tu mensaje inspirador aquí. Desplázate y descubre la experiencia.</p>
       <div class="scroll-indicator">
         <span class="scroll-line"></span>
         <span class="scroll-text">Scroll</span>
       </div>
     </div>
-  </div>
-
-  <!-- 6b. FONDO DIFUMINADO post-galería -->
-  <div id="bg-photo">
-    <img src="images/20.jpeg" alt="" loading="lazy"/>
   </div>
 
   <!-- 7. SCROLL CONTAINER -->
@@ -92,22 +78,22 @@
       id="inicio"
     >
       <div class="section-photo photo-right">
-        <img src="images/21.jpeg" alt="Manuel Correa" loading="lazy"/>
+        <img src="images/demo_about.jpg" alt="Foto de ejemplo — reemplázala por la tuya" loading="lazy" />
       </div>
       <div class="section-inner">
-        <span class="section-label">001 / Conoce al Repre</span>
-        <h2 class="section-heading">¿Quien es<br>Manuel Correa?</h2>
+        <span class="section-label">001 / Sobre Nosotros</span>
+        <h2 class="section-heading">¿Quiénes<br>somos?</h2>
         <p class="section-body">
-          Soy Manuel Correa y cuento con más de 20 años de experiencia en el servicio público, construyendo mi camino desde el trabajo directo con las comunidades. He tenido la oportunidad de desempeñarme como edil, concejal de Manizales, diputado de Caldas y de hacer parte de la administración departamental.
+          Aquí va una breve descripción sobre ti, tu empresa o tu proyecto. Cuenta tu historia, tu experiencia y lo que te hace único. Este espacio es ideal para conectar con tu audiencia de forma personal y auténtica.
         </p>
         <p class="section-body">
-          Hoy asumo con responsabilidad el reto de ser Representante a la Cámara por Caldas para el periodo 2026–2030, con la convicción de seguir trabajando de la mano de la gente por un mejor futuro para todos.
+          Comparte tu misión, tus valores y lo que impulsa tu trabajo cada día. Haz que el visitante se sienta identificado con tu visión.
         </p>
-        <a href="#caldas" class="section-link">Conocer el territorio →</a>
+        <a href="#cobertura" class="section-link">Conocer más →</a>
       </div>
     </section>
 
-    <!-- SECTION 2: Galería Zoom Parallax — 17–32% (después de quién soy) -->
+    <!-- SECTION 2: Galería Zoom Parallax — 17–32% -->
     <section
       class="scroll-section section-gallery section-zp"
       data-enter="17"
@@ -117,78 +103,66 @@
     >
       <div class="zp-stage">
         <div class="zp-item zp-item-0" data-scale="4">
-          <div class="zp-inner"><img src="images/13.jpeg" alt="Manuel Correa con la gente" loading="lazy"/></div>
+          <div class="zp-inner"><img src="images/demo_zp_1.jpg" alt="Imagen de ejemplo 1" loading="lazy" /></div>
         </div>
         <div class="zp-item zp-item-1" data-scale="5">
-          <div class="zp-inner"><img src="images/8_zp_opt.jpeg" alt="Recorrido por Caldas" loading="lazy"/></div>
+          <div class="zp-inner"><img src="images/demo_zp_2.jpg" alt="Imagen de ejemplo 2" loading="lazy" /></div>
         </div>
         <div class="zp-item zp-item-2" data-scale="6">
-          <div class="zp-inner"><img src="images/17_zp_opt.jpeg" alt="Encuentro ciudadano" loading="lazy"/></div>
+          <div class="zp-inner"><img src="images/demo_zp_3.jpg" alt="Imagen de ejemplo 3" loading="lazy" /></div>
         </div>
         <div class="zp-item zp-item-3" data-scale="5">
-          <div class="zp-inner"><img src="images/1_zp_opt.jpeg" alt="Acto público" loading="lazy"/></div>
+          <div class="zp-inner"><img src="images/demo_zp_4.jpg" alt="Imagen de ejemplo 4" loading="lazy" /></div>
         </div>
         <div class="zp-item zp-item-4" data-scale="6">
-          <div class="zp-inner"><img src="images/20_zp_opt.jpeg" alt="Trabajo en territorio" loading="lazy"/></div>
+          <div class="zp-inner"><img src="images/demo_zp_5.jpg" alt="Imagen de ejemplo 5" loading="lazy" /></div>
         </div>
         <div class="zp-item zp-item-5" data-scale="8">
-          <div class="zp-inner"><img src="images/23_zp_opt.jpeg" alt="Caldas unida" loading="lazy"/></div>
+          <div class="zp-inner"><img src="images/demo_zp_6.jpg" alt="Imagen de ejemplo 6" loading="lazy" /></div>
         </div>
         <div class="zp-item zp-item-6" data-scale="9">
-          <div class="zp-inner"><img src="images/25_zp_opt.jpeg" alt="Manuel Correa Representante" loading="lazy"/></div>
+          <div class="zp-inner"><img src="images/demo_zp_7.jpg" alt="Imagen de ejemplo 7" loading="lazy" /></div>
         </div>
       </div>
     </section>
 
-    <!-- SECTION 3: Mapa de Caldas — 32–48% -->
+    <!-- SECTION 3: Cobertura / Territorio — 32–48% -->
     <section
-      class="scroll-section section-map"
+      class="scroll-section section-content section-coverage align-left"
       data-enter="32"
       data-leave="48"
-      data-animation="map-reveal"
-      id="caldas"
+      data-animation="fade-up"
+      id="cobertura"
     >
-      <div class="mapa-inner">
-        <div class="mapa-header-row">
-          <div>
-            <div class="section-label map-label">002 / El Territorio</div>
-            <h2 class="map-title">Caldas,<br><em style="color:var(--orange)">municipio a municipio</em></h2>
-            <p class="map-desc-top">Gracias a cada uno de los 27 municipios que hicieron posible esta representación. Pasa el cursor sobre el mapa y haz clic para conocer más.</p>
-          </div>
-        </div>
-        <div class="mapa-layout">
-          <div class="mapa-svg-container">
-            <div class="map-corner tl"></div>
-            <div class="map-corner tr"></div>
-            <div class="map-corner bl"></div>
-            <div class="map-corner br"></div>
-            <div class="map-scan-line"></div>
-            <svg id="caldas-map" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:100%;display:block;position:relative;z-index:1"></svg>
-            <div id="map-tooltip" class="map-tooltip"></div>
-            <div id="map-loading" style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:rgba(245,241,235,0.45);font-size:.8rem;letter-spacing:.12em;text-transform:uppercase">Cargando mapa…</div>
-          </div>
-          <div class="mapa-sidebar">
-            <div class="mapa-selected" id="mapa-selected">
-              <div class="mapa-selected-hint">Pasa el cursor sobre<br>un municipio<br><span style="color:var(--orange);font-size:.7rem;letter-spacing:.15em;display:block;margin-top:.6rem">— o haz clic para ver más —</span></div>
-            </div>
-          </div>
-        </div>
+      <div class="section-photo photo-right">
+        <img src="images/demo_coverage.jpg" alt="Foto de ejemplo — reemplázala por la tuya" loading="lazy" />
+      </div>
+      <div class="section-inner">
+        <span class="section-label">002 / Cobertura</span>
+        <h2 class="section-heading">Nuestro<br>territorio</h2>
+        <p class="section-body">
+          Describe aquí tu alcance geográfico, tus zonas de operación, o el territorio que cubres. Este espacio es perfecto para mostrar dónde trabajas y cómo llegas a tu audiencia.
+        </p>
+        <p class="section-body">
+          Menciona las ciudades, regiones o comunidades donde tienes presencia. Haz que el visitante sienta la amplitud de tu impacto.
+        </p>
+        <a href="#proyectos" class="section-link">Ver proyectos →</a>
       </div>
     </section>
 
-    <!-- SECTION 4: Agenda Legislativa — 48–69% -->
+    <!-- SECTION 4: Proyectos / Servicios — 48–69% -->
     <section
       class="scroll-section section-agenda"
       data-enter="48"
       data-leave="69"
       data-animation="stagger-cards"
-      id="agenda"
+      id="proyectos"
     >
       <div class="agenda-inner">
         <div class="agenda-header">
-          <span class="section-label">003 / Agenda Legislativa</span>
-          <h2 class="agenda-title">Proyectos de Ley</h2>
-          <p class="agenda-desc">Compromisos concretos que llevaremos al Congreso de la República para transformar Caldas y Colombia.</p>
+          <span class="section-label">003 / Proyectos</span>
+          <h2 class="agenda-title">Nuestros Servicios</h2>
+          <p class="agenda-desc">Compromisos concretos y proyectos que impulsan el crecimiento y la transformación.</p>
         </div>
         <div class="agenda-grid">
 
@@ -196,28 +170,25 @@
             <div class="front-content">
               <div class="agenda-card-num">01</div>
               <div class="agenda-card-icon">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 12c0-4 3-7 7-7 3 0 5 1 6 3-2 0-3 1-3 2 0 2 4 2 4 5 0 3-3 4-7 4-4 0-7-3-7-7z"/><path d="M14 9l5-5"/></svg>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
               </div>
-              <h3 class="agenda-card-title">Parque Nacional de las Aves</h3>
-              <p class="agenda-card-tag">Caldas · Naturaleza · Futuro</p>
-              <p class="agenda-card-body">Queremos que Caldas sea protagonista mundial en biodiversidad. Este proyecto busca proteger nuestras aves, generar empleo y convertir nuestro territorio en un referente de turismo sostenible.</p>
+              <h3 class="agenda-card-title">Título del Proyecto 1</h3>
+              <p class="agenda-card-tag">Categoría · Etiqueta · Área</p>
+              <p class="agenda-card-body">Descripción breve del proyecto o servicio. Explica el valor que aporta y por qué es importante para tu audiencia.</p>
             </div>
-
             <div class="tech-overlay">
-              <!-- <img src="images/pl1.png" alt="Parque Nacional de las Aves" class="tech-img"> -->
               <div class="tech-info">
-                <h4 class="tech-title">Especificaciones del Proyecto</h4>
+                <h4 class="tech-title">Detalles del Proyecto</h4>
                 <br>
-                <p class="tech-description">Radicado para la protección de 150 especies endémicas y la creación de infraestructura ecoturística en la zona de amortiguación del Nevado del Ruiz.</p>
+                <p class="tech-description">Descripción técnica o detallada del proyecto. Incluye especificaciones, alcance y beneficios concretos.</p>
                 <br>
                 <ul class="tech-list">
-                  <li><strong>Inversión:</strong> Proyectada 2026</li>
-                  <li><strong>Impacto:</strong> 12 municipios beneficiados</li>
-                  <li><strong>Estado:</strong> En socialización parlamentaria</li>
+                  <li><strong>Beneficio:</strong> Descripción del beneficio principal</li>
+                  <li><strong>Alcance:</strong> Áreas o personas impactadas</li>
+                  <li><strong>Estado:</strong> Fase actual del proyecto</li>
                 </ul>
               </div>
             </div>
-
           </div>
 
           <div class="agenda-card" data-delay="1" onclick="this.classList.toggle('show-tech')">
@@ -226,20 +197,20 @@
               <div class="agenda-card-icon">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 21h18M5 21V8l7-5 7 5v13M9 21v-6h6v6"/></svg>
               </div>
-              <h3 class="agenda-card-title">Paisajes Culturales de Marmato y Marulanda</h3>
+              <h3 class="agenda-card-title">Título del Proyecto 2</h3>
               <p class="agenda-card-tag">Historia · Tradición · Identidad</p>
-              <p class="agenda-card-body">Defender nuestras raíces es construir futuro. Este proyecto protege la historia minera y campesina de nuestro territorio, reconociendo el valor de quienes han construido Caldas con su trabajo.</p>
+              <p class="agenda-card-body">Descripción breve del segundo proyecto o servicio. Destaca los aspectos más relevantes para tu público objetivo.</p>
             </div>
             <div class="tech-overlay">
               <div class="tech-info">
-                <h4 class="tech-title">Especificaciones del Proyecto</h4>
+                <h4 class="tech-title">Detalles del Proyecto</h4>
                 <br>
-                <p class="tech-description">Preservar los paisajes culturales de Marmato y Marulanda garantiza el legado de la minería, la biodiversidad y el campesinado local, aportando a la memoria colectiva de Caldas.</p>
+                <p class="tech-description">Descripción detallada con especificaciones técnicas y objetivos medibles del proyecto.</p>
                 <br>
                 <ul class="tech-list">
-                  <li><strong>Beneficio:</strong> recuperación del patrimonio y turismo responsable</li>
-                  <li><strong>Alcance:</strong> comunidades mineras y rurales del occidente de Caldas</li>
-                  <li><strong>Estado:</strong> en proceso de concertación regional</li>
+                  <li><strong>Beneficio:</strong> Recuperación y preservación</li>
+                  <li><strong>Alcance:</strong> Comunidades beneficiadas</li>
+                  <li><strong>Estado:</strong> En proceso de desarrollo</li>
                 </ul>
               </div>
             </div>
@@ -251,20 +222,20 @@
               <div class="agenda-card-icon">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 3a9 9 0 100 18 9 9 0 000-18zM3 12h18M12 3a14 14 0 010 18M12 3a14 14 0 000 18"/></svg>
               </div>
-              <h3 class="agenda-card-title">Agencia del Paisaje Cultural Cafetero</h3>
-              <p class="agenda-card-tag">Café · Cultura · Orgullo</p>
-              <p class="agenda-card-body">El Paisaje Cultural Cafetero es nuestra identidad ante el mundo. Buscamos una institución fuerte que lo proteja, lo promueva y garantice que sus beneficios lleguen a nuestras comunidades.</p>
+              <h3 class="agenda-card-title">Título del Proyecto 3</h3>
+              <p class="agenda-card-tag">Global · Cultura · Impacto</p>
+              <p class="agenda-card-body">Otro servicio o proyecto importante. Describe cómo contribuye al crecimiento y la transformación.</p>
             </div>
             <div class="tech-overlay">
               <div class="tech-info">
-                <h4 class="tech-title">Especificaciones del Proyecto</h4>
+                <h4 class="tech-title">Detalles del Proyecto</h4>
                 <br>
-                <p class="tech-description">Crear una agencia dedicada al PCC facilitará la gestión de recursos, la certificación de productores y la promoción internacional de nuestras tradiciones cafeteras.</p>
+                <p class="tech-description">Más detalles sobre la implementación, beneficios y resultados esperados de este proyecto.</p>
                 <br>
                 <ul class="tech-list">
-                  <li><strong>Beneficio:</strong> apoyo a familias cafeteras y reconocimiento global</li>
-                  <li><strong>Alcance:</strong> municipios cafeteros de Caldas y zonas aledañas</li>
-                  <li><strong>Estado:</strong> estudio técnico en avance</li>
+                  <li><strong>Beneficio:</strong> Apoyo y reconocimiento</li>
+                  <li><strong>Alcance:</strong> Zonas de impacto</li>
+                  <li><strong>Estado:</strong> Estudio técnico en avance</li>
                 </ul>
               </div>
             </div>
@@ -276,20 +247,20 @@
               <div class="agenda-card-icon">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 7h18M3 7l2-3h14l2 3M3 7v13h18V7M9 12h6M9 16h6"/></svg>
               </div>
-              <h3 class="agenda-card-title">Fondo Nacional del Comercio</h3>
-              <p class="agenda-card-tag">Economía · Empleo · Progreso</p>
-              <p class="agenda-card-body">El comercio mueve a Colombia. Este fondo permitirá apoyar a miles de emprendedores y comerciantes para que crezcan, se modernicen y generen más empleo para las familias.</p>
+              <h3 class="agenda-card-title">Título del Proyecto 4</h3>
+              <p class="agenda-card-tag">Economía · Crecimiento · Progreso</p>
+              <p class="agenda-card-body">Descripción de un cuarto proyecto clave. Muestra los resultados esperados y el impacto positivo.</p>
             </div>
             <div class="tech-overlay">
               <div class="tech-info">
-                <h4 class="tech-title">Especificaciones del Proyecto</h4>
+                <h4 class="tech-title">Detalles del Proyecto</h4>
                 <br>
-                <p class="tech-description">Fortalecer al comercio local con líneas de crédito, asesoría técnica y capacitación digital, para que cada negocio sea más competitivo y genere más empleo.</p>
+                <p class="tech-description">Modernización y fortalecimiento con líneas de apoyo, asesoría y capacitación.</p>
                 <br>
                 <ul class="tech-list">
-                  <li><strong>Beneficio:</strong> modernización de micro y pequeñas empresas</li>
-                  <li><strong>Alcance:</strong> emprendedores de Caldas y todo el país</li>
-                  <li><strong>Estado:</strong> propuesta en fase de articulación</li>
+                  <li><strong>Beneficio:</strong> Modernización de procesos</li>
+                  <li><strong>Alcance:</strong> Emprendedores y empresas</li>
+                  <li><strong>Estado:</strong> En fase de articulación</li>
                 </ul>
               </div>
             </div>
@@ -299,22 +270,22 @@
             <div class="front-content">
               <div class="agenda-card-num">05</div>
               <div class="agenda-card-icon">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M13 2L3 14h7v8l10-12h-7V2z"/></svg>
               </div>
-              <h3 class="agenda-card-title">Manizales 2049: Ciudad del Conocimiento</h3>
-              <p class="agenda-card-tag">Innovación · Juventud · Futuro</p>
-              <p class="agenda-card-body">Soñamos con una Manizales líder en conocimiento, tecnología e innovación. Este proyecto apuesta por oportunidades para los jóvenes y por una ciudad preparada para el futuro.</p>
+              <h3 class="agenda-card-title">Título del Proyecto 5</h3>
+              <p class="agenda-card-tag">Innovación · Tecnología · Futuro</p>
+              <p class="agenda-card-body">Un proyecto enfocado en la innovación y la tecnología. Describe cómo transforma la experiencia.</p>
             </div>
             <div class="tech-overlay">
               <div class="tech-info">
-                <h4 class="tech-title">Especificaciones del Proyecto</h4>
+                <h4 class="tech-title">Detalles del Proyecto</h4>
                 <br>
-                <p class="tech-description">Impulsar un ecosistema de ciencia, educación y tecnología que conecte universidades, empresas y jóvenes con infraestructura y programas de alto impacto.</p>
+                <p class="tech-description">Impulso a la innovación tecnológica y la transformación digital como motor de desarrollo.</p>
                 <br>
                 <ul class="tech-list">
-                  <li><strong>Beneficio:</strong> más oportunidades para estudiantes y emprendedores</li>
-                  <li><strong>Alcance:</strong> formación, laboratorios y parques tecnológicos</li>
-                  <li><strong>Estado:</strong> definición de la hoja de ruta</li>
+                  <li><strong>Beneficio:</strong> Oportunidades para jóvenes</li>
+                  <li><strong>Alcance:</strong> Formación y tecnología</li>
+                  <li><strong>Estado:</strong> En definición</li>
                 </ul>
               </div>
             </div>
@@ -326,20 +297,20 @@
               <div class="agenda-card-icon">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 2C8 6 5 10 5 14a7 7 0 0014 0c0-4-3-8-7-12z"/></svg>
               </div>
-              <h3 class="agenda-card-title">Ley de Protección de la Naturaleza</h3>
-              <p class="agenda-card-tag">Agua · Vida · Biodiversidad</p>
-              <p class="agenda-card-body">Proteger la naturaleza es proteger la vida. Esta iniciativa busca cuidar el frailejón, garantizar el agua y reconocer nuestra flor nacional como símbolo de lo que somos.</p>
+              <h3 class="agenda-card-title">Título del Proyecto 6</h3>
+              <p class="agenda-card-tag">Sostenibilidad · Vida · Naturaleza</p>
+              <p class="agenda-card-body">Proyecto enfocado en la sostenibilidad y el cuidado del medio ambiente. Un compromiso con el futuro.</p>
             </div>
             <div class="tech-overlay">
               <div class="tech-info">
-                <h4 class="tech-title">Especificaciones del Proyecto</h4>
+                <h4 class="tech-title">Detalles del Proyecto</h4>
                 <br>
-                <p class="tech-description">Garantizar la conservación de páramos y cuencas, proteger la fauna y apoyar programas ambientales que aseguren agua limpia y resiliencia climática.</p>
+                <p class="tech-description">Conservación, protección ambiental y programas que aseguran un desarrollo sostenible.</p>
                 <br>
                 <ul class="tech-list">
-                  <li><strong>Beneficio:</strong> agua para las familias y protección de ecosistemas</li>
-                  <li><strong>Alcance:</strong> páramos y subcuencas de Caldas</li>
-                  <li><strong>Estado:</strong> propuesta de ley lista para presentación</li>
+                  <li><strong>Beneficio:</strong> Protección de ecosistemas</li>
+                  <li><strong>Alcance:</strong> Comunidades y territorios</li>
+                  <li><strong>Estado:</strong> Propuesta lista</li>
                 </ul>
               </div>
             </div>
@@ -349,22 +320,22 @@
             <div class="front-content">
               <div class="agenda-card-num">07</div>
               <div class="agenda-card-icon">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M13 2L3 14h7v8l10-12h-7V2z"/></svg>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 11-2.83 2.83l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 11-4 0v-.09a1.65 1.65 0 00-1-1.51 1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 11-2.83-2.83l.06-.06a1.65 1.65 0 00.33-1.82 1.65 1.65 0 00-1.51-1H3a2 2 0 110-4h.09a1.65 1.65 0 001.51-1 1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 112.83-2.83l.06.06a1.65 1.65 0 001.82.33H9a1.65 1.65 0 001-1.51V3a2 2 0 114 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 112.83 2.83l-.06.06a1.65 1.65 0 00-.33 1.82V9a1.65 1.65 0 001.51 1H21a2 2 0 110 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg>
               </div>
-              <h3 class="agenda-card-title">Innovación por Impuestos</h3>
-              <p class="agenda-card-tag">Empresas · Tecnología · Desarrollo</p>
-              <p class="agenda-card-body">Queremos que las empresas inviertan en el futuro del país. Esta propuesta permite transformar impuestos en innovación, ciencia y oportunidades para todos.</p>
+              <h3 class="agenda-card-title">Título del Proyecto 7</h3>
+              <p class="agenda-card-tag">Talento · Emprendimiento · Desarrollo</p>
+              <p class="agenda-card-body">Un proyecto que impulsa el talento y conecta ideas con inversión para llevar la innovación a otro nivel.</p>
             </div>
             <div class="tech-overlay">
               <div class="tech-info">
-                <h4 class="tech-title">Especificaciones del Proyecto</h4>
+                <h4 class="tech-title">Detalles del Proyecto</h4>
                 <br>
-                <p class="tech-description">Transformar obligaciones tributarias en inversión productiva que financie investigación, desarrollo de tecnologías verdes y soluciones empresariales para el país.</p>
+                <p class="tech-description">Apoyo financiero, formación y redes para emprendedores con atención al talento joven.</p>
                 <br>
                 <ul class="tech-list">
-                  <li><strong>Beneficio:</strong> incentivos para innovación empresarial</li>
-                  <li><strong>Alcance:</strong> pymes, startups y programas de I+D</li>
-                  <li><strong>Estado:</strong> borrador legal en evaluación</li>
+                  <li><strong>Beneficio:</strong> Más empresas de alto valor</li>
+                  <li><strong>Alcance:</strong> Innovación territorial</li>
+                  <li><strong>Estado:</strong> En construcción</li>
                 </ul>
               </div>
             </div>
@@ -374,22 +345,22 @@
             <div class="front-content">
               <div class="agenda-card-num">08</div>
               <div class="agenda-card-icon">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 11-2.83 2.83l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 11-4 0v-.09a1.65 1.65 0 00-1-1.51 1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 11-2.83-2.83l.06-.06a1.65 1.65 0 00.33-1.82 1.65 1.65 0 00-1.51-1H3a2 2 0 110-4h.09a1.65 1.65 0 001.51-1 1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 112.83-2.83l.06.06a1.65 1.65 0 001.82.33H9a1.65 1.65 0 001-1.51V3a2 2 0 114 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 112.83 2.83l-.06.06a1.65 1.65 0 00-.33 1.82V9a1.65 1.65 0 001.51 1H21a2 2 0 110 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="4" width="18" height="12" rx="2"/><path d="M8 20h8M12 16v4"/></svg>
               </div>
-              <h3 class="agenda-card-title">Agencia Nacional de Innovación</h3>
-              <p class="agenda-card-tag">Talento · Emprendimiento · País</p>
-              <p class="agenda-card-body">Colombia tiene talento de sobra. Esta agencia impulsará a nuestros emprendedores, conectando ideas con inversión y llevando la innovación a otro nivel.</p>
+              <h3 class="agenda-card-title">Título del Proyecto 8</h3>
+              <p class="agenda-card-tag">Digital · Seguridad · Conectividad</p>
+              <p class="agenda-card-body">Proyecto enfocado en la transformación digital, seguridad y conectividad para todos.</p>
             </div>
             <div class="tech-overlay">
               <div class="tech-info">
-                <h4 class="tech-title">Especificaciones del Proyecto</h4>
+                <h4 class="tech-title">Detalles del Proyecto</h4>
                 <br>
-                <p class="tech-description">Una agencia nacional que articule apoyo financiero, formación y redes para emprendedores, con atención especial a talento joven y regiones con potencial creativo.</p>
+                <p class="tech-description">Regulación digital, protección de datos y acceso a conectividad segura.</p>
                 <br>
                 <ul class="tech-list">
-                  <li><strong>Beneficio:</strong> más empresas y empleo de alto valor</li>
-                  <li><strong>Alcance:</strong> innovación territorial y nacional</li>
-                  <li><strong>Estado:</strong> en construcción de consenso</li>
+                  <li><strong>Beneficio:</strong> Acceso digital para todos</li>
+                  <li><strong>Alcance:</strong> Educación y servicios</li>
+                  <li><strong>Estado:</strong> En estudio</li>
                 </ul>
               </div>
             </div>
@@ -399,22 +370,22 @@
             <div class="front-content">
               <div class="agenda-card-num">09</div>
               <div class="agenda-card-icon">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="4" width="18" height="12" rx="2"/><path d="M8 20h8M12 16v4"/></svg>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 12c0-4 3-7 7-7 3 0 5 1 6 3-2 0-3 1-3 2 0 2 4 2 4 5 0 3-3 4-7 4-4 0-7-3-7-7z"/><path d="M14 9l5-5"/></svg>
               </div>
-              <h3 class="agenda-card-title">Ley del Ecosistema Digital</h3>
-              <p class="agenda-card-tag">Tecnología · Seguridad · Futuro</p>
-              <p class="agenda-card-body">El mundo avanza y Colombia no puede quedarse atrás. Esta ley busca regular la tecnología, proteger a los ciudadanos y abrir camino a nuevas oportunidades digitales.</p>
+              <h3 class="agenda-card-title">Título del Proyecto 9</h3>
+              <p class="agenda-card-tag">Comunidad · Impacto · Futuro</p>
+              <p class="agenda-card-body">Proyecto enfocado en el impacto comunitario y la construcción de un futuro mejor para todos.</p>
             </div>
             <div class="tech-overlay">
               <div class="tech-info">
-                <h4 class="tech-title">Especificaciones del Proyecto</h4>
+                <h4 class="tech-title">Detalles del Proyecto</h4>
                 <br>
-                <p class="tech-description">Reglas claras para la economía digital, protección de datos personales y acceso a conectividad segura, especialmente para jóvenes y zonas rurales.</p>
+                <p class="tech-description">Protección del patrimonio natural y cultural, generando empleo y turismo sostenible.</p>
                 <br>
                 <ul class="tech-list">
-                  <li><strong>Beneficio:</strong> ciberseguridad y acceso digital para comunidades</li>
-                  <li><strong>Alcance:</strong> educación, servicios y modernización estatal</li>
-                  <li><strong>Estado:</strong> ante el Congreso para estudio</li>
+                  <li><strong>Beneficio:</strong> Protección y turismo</li>
+                  <li><strong>Alcance:</strong> Múltiples comunidades</li>
+                  <li><strong>Estado:</strong> En socialización</li>
                 </ul>
               </div>
             </div>
@@ -433,11 +404,11 @@
       id="campo-gente"
     >
       <div class="section-inner">
-        <h2 class="section-heading intro-heading">EN EL CAMPO,<br>CON LA GENTE</h2>
+        <h2 class="section-heading intro-heading">NUESTRO<br>COMPROMISO</h2>
       </div>
     </section>
 
-    <!-- SECTION 5: Galería Carrusel — 77–98% (después del mensaje) -->
+    <!-- SECTION 5: Galería Carrusel — 77–98% -->
     <section
       class="scroll-section section-gallery section-carousel"
       data-enter="77"
@@ -448,77 +419,44 @@
       <div class="gallery-bg" id="gallery-bg"></div>
       <div class="gallery-header">
         <span class="section-label gallery-label">Galería</span>
-        <!-- title moved to animated intro above -->
       </div>
       <div class="gallery-track-outer">
         <div id="gallery-track">
           <div class="gallery-item">
-            <div class="gallery-item-inner"><img src="images/2_gal.jpeg" alt="Cercanía con la comunidad" loading="lazy"/></div>
-            <div class="gallery-caption">Cercanía con la comunidad</div>
+            <div class="gallery-item-inner"><img src="images/demo_gal_1.jpg" alt="Imagen de ejemplo 1" loading="lazy" /></div>
+            <div class="gallery-caption">Imagen de ejemplo 1</div>
           </div>
           <div class="gallery-item">
-            <div class="gallery-item-inner"><img src="images/3_gal.jpeg" alt="Diálogo en plaza pública" loading="lazy"/></div>
-            <div class="gallery-caption">Diálogo en plaza pública</div>
+            <div class="gallery-item-inner"><img src="images/demo_gal_2.jpg" alt="Imagen de ejemplo 2" loading="lazy" /></div>
+            <div class="gallery-caption">Imagen de ejemplo 2</div>
           </div>
           <div class="gallery-item">
-            <div class="gallery-item-inner"><img src="images/4_gal.jpeg" alt="Recorrido cafetero" loading="lazy"/></div>
-            <div class="gallery-caption">Recorrido cafetero</div>
+            <div class="gallery-item-inner"><img src="images/demo_gal_3.jpg" alt="Imagen de ejemplo 3" loading="lazy" /></div>
+            <div class="gallery-caption">Imagen de ejemplo 3</div>
           </div>
           <div class="gallery-item">
-            <div class="gallery-item-inner"><img src="images/5_gal.jpeg" alt="Trabajo de campo" loading="lazy"/></div>
-            <div class="gallery-caption">Trabajo de campo</div>
+            <div class="gallery-item-inner"><img src="images/demo_gal_4.jpg" alt="Imagen de ejemplo 4" loading="lazy" /></div>
+            <div class="gallery-caption">Imagen de ejemplo 4</div>
           </div>
           <div class="gallery-item">
-            <div class="gallery-item-inner"><img src="images/6_gal.jpeg" alt="Encuentro juvenil" loading="lazy"/></div>
-            <div class="gallery-caption">Encuentro juvenil</div>
+            <div class="gallery-item-inner"><img src="images/demo_gal_5.jpg" alt="Imagen de ejemplo 5" loading="lazy" /></div>
+            <div class="gallery-caption">Imagen de ejemplo 5</div>
           </div>
           <div class="gallery-item">
-            <div class="gallery-item-inner"><img src="images/7_gal.jpeg" alt="Recorrido municipal" loading="lazy"/></div>
-            <div class="gallery-caption">Recorrido municipal</div>
+            <div class="gallery-item-inner"><img src="images/demo_gal_6.jpg" alt="Imagen de ejemplo 6" loading="lazy" /></div>
+            <div class="gallery-caption">Imagen de ejemplo 6</div>
           </div>
           <div class="gallery-item">
-            <div class="gallery-item-inner"><img src="images/9_gal.jpeg" alt="Acto público" loading="lazy"/></div>
-            <div class="gallery-caption">Acto público</div>
+            <div class="gallery-item-inner"><img src="images/demo_gal_7.jpg" alt="Imagen de ejemplo 7" loading="lazy" /></div>
+            <div class="gallery-caption">Imagen de ejemplo 7</div>
           </div>
           <div class="gallery-item">
-            <div class="gallery-item-inner"><img src="images/10_gal.jpeg" alt="Caldas unida" loading="lazy"/></div>
-            <div class="gallery-caption">Caldas unida</div>
+            <div class="gallery-item-inner"><img src="images/demo_gal_8.jpg" alt="Imagen de ejemplo 8" loading="lazy" /></div>
+            <div class="gallery-caption">Imagen de ejemplo 8</div>
           </div>
           <div class="gallery-item">
-            <div class="gallery-item-inner"><img src="images/11_gal.jpeg" alt="Liderazgo regional" loading="lazy"/></div>
-            <div class="gallery-caption">Liderazgo regional</div>
-          </div>
-          <div class="gallery-item">
-            <div class="gallery-item-inner"><img src="images/12_gal.jpeg" alt="Caldas nos une" loading="lazy"/></div>
-            <div class="gallery-caption">Caldas nos une</div>
-          </div>
-          <div class="gallery-item">
-            <div class="gallery-item-inner"><img src="images/14_gal.jpeg" alt="Visita escolar" loading="lazy"/></div>
-            <div class="gallery-caption">Visita escolar</div>
-          </div>
-          <div class="gallery-item">
-            <div class="gallery-item-inner"><img src="images/15_gal.jpeg" alt="Asamblea ciudadana" loading="lazy"/></div>
-            <div class="gallery-caption">Asamblea ciudadana</div>
-          </div>
-          <div class="gallery-item">
-            <div class="gallery-item-inner"><img src="images/16_gal.jpeg" alt="Con líderes comunitarios" loading="lazy"/></div>
-            <div class="gallery-caption">Con líderes comunitarios</div>
-          </div>
-          <div class="gallery-item">
-            <div class="gallery-item-inner"><img src="images/18_gal.jpeg" alt="En el norte de Caldas" loading="lazy"/></div>
-            <div class="gallery-caption">En el norte de Caldas</div>
-          </div>
-          <div class="gallery-item">
-            <div class="gallery-item-inner"><img src="images/19_gal.jpeg" alt="Encuentro cafetero" loading="lazy"/></div>
-            <div class="gallery-caption">Encuentro cafetero</div>
-          </div>
-          <div class="gallery-item">
-            <div class="gallery-item-inner"><img src="images/22.jpeg" alt="Trabajo por Caldas" loading="lazy"/></div>
-            <div class="gallery-caption">Trabajo por Caldas</div>
-          </div>
-          <div class="gallery-item">
-            <div class="gallery-item-inner"><img src="images/24_gal.jpeg" alt="Cercanía y servicio" loading="lazy"/></div>
-            <div class="gallery-caption">Cercanía y servicio</div>
+            <div class="gallery-item-inner"><img src="images/demo_gal_9.jpg" alt="Imagen de ejemplo 9" loading="lazy" /></div>
+            <div class="gallery-caption">Imagen de ejemplo 9</div>
           </div>
         </div>
       </div>
@@ -527,7 +465,7 @@
         <button class="gallery-prev" aria-label="Anterior">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg>
         </button>
-        <span class="gallery-counter">01 / 17</span>
+        <span class="gallery-counter">01 / 09</span>
         <button class="gallery-next" aria-label="Siguiente">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
         </button>
@@ -544,63 +482,20 @@
       data-after-carousel="true"
       id="contacto"
     >
-      <!-- Mockup de celular con video de Instagram (a la izquierda donde antes iba el muro) -->
-      <div class="phone-mockup">
-        <div class="phone-frame">
-          <div class="phone-vol phone-vol-up"></div>
-          <div class="phone-vol phone-vol-down"></div>
-          <div class="phone-power"></div>
-          <div class="phone-screen">
-            <video src="elementos_graficos/video ig manuel.mp4" autoplay loop muted playsinline></video>
-            <div class="phone-notch"></div>
-          </div>
-        </div>
-      </div>
-
       <div class="section-inner">
-        <span class="section-label">005 / Contacto</span>
+        <span class="section-label">004 / Contacto</span>
         <h2 class="section-heading">Sigamos<br>en contacto.</h2>
         <p class="section-body">
-          Tu voz nos llevó al Congreso. Cuéntanos cómo podemos seguir trabajando juntos por Caldas.
+          Tu opinión es importante. Cuéntanos cómo podemos ayudarte o trabajar juntos.
         </p>
         <form class="cta-form" id="contact-form">
           <input type="text" id="contact-nombre" placeholder="Tu nombre" class="cta-input" required />
-          <select id="contact-municipio" class="cta-input cta-select" required>
-            <option value="" disabled selected>Tu municipio</option>
-            <option>Aguadas</option>
-            <option>Anserma</option>
-            <option>Aranzazu</option>
-            <option>Belalcázar</option>
-            <option>Chinchiná</option>
-            <option>Filadelfia</option>
-            <option>La Dorada</option>
-            <option>La Merced</option>
-            <option>Manizales</option>
-            <option>Manzanares</option>
-            <option>Marmato</option>
-            <option>Marquetalia</option>
-            <option>Marulanda</option>
-            <option>Neira</option>
-            <option>Norcasia</option>
-            <option>Pácora</option>
-            <option>Palestina</option>
-            <option>Pensilvania</option>
-            <option>Riosucio</option>
-            <option>Risaralda</option>
-            <option>Salamina</option>
-            <option>Samaná</option>
-            <option>San José</option>
-            <option>Supía</option>
-            <option>Victoria</option>
-            <option>Villamaría</option>
-            <option>Viterbo</option>
-          </select>
-          <input type="tel" id="contact-numero" placeholder="Tu número de contacto" class="cta-input" required />
-          <textarea id="contact-mensaje" placeholder="Tu mensaje, idea o propuesta para Caldas…" class="cta-input cta-textarea" required maxlength="500"></textarea>
+          <input type="text" id="contact-asunto" placeholder="Asunto" class="cta-input" required />
+          <input type="email" id="contact-email" placeholder="Tu correo electrónico" class="cta-input" required />
+          <textarea id="contact-mensaje" placeholder="Tu mensaje, idea o propuesta…" class="cta-input cta-textarea" required maxlength="500"></textarea>
           <button type="submit" class="cta-button">Enviar mensaje</button>
         </form>
         <div id="contact-success" class="contact-success" hidden>¡Gracias! Hemos recibido tu mensaje.</div>
-        <!-- social links removed (kept in footer) -->
       </div>
     </section>
 
@@ -608,24 +503,29 @@
 
   <!-- FOOTER -->
   <footer class="site-footer">
-    <a href="#" class="footer-logo"><img src="elementos_graficos/lOGO.png" alt="Manuel Correa" class="footer-logo-img"/></a>
+    <a href="#" class="footer-logo"><span class="footer-logo-text">TU LOGO</span></a>
     <div class="footer-mid">
-      <p>Representante a la Cámara · Caldas 2026–2030</p>
-      <p class="footer-legal">© 2026 · Manuel Correa</p>
+      <p>Tu cargo o eslogan aquí</p>
+      <p class="footer-legal">© 2026 · Tu Nombre</p>
     </div>
     <div class="footer-links">
-      <a href="https://www.instagram.com/correamanucobe/" class="footer-link" target="_blank" rel="noopener">Instagram</a>
-      <a href="https://www.facebook.com/CorreaManucobe/" class="footer-link" target="_blank" rel="noopener">Facebook</a>
-      <a href="mailto:atencionalciudadano@caldas.gov.co" class="footer-link">Contacto</a>
+      <a href="#" class="footer-link" target="_blank" rel="noopener">Instagram</a>
+      <a href="#" class="footer-link" target="_blank" rel="noopener">Facebook</a>
+      <a href="mailto:contacto@tusitio.com" class="footer-link">Contacto</a>
     </div>
   </footer>
+
+  <!-- DEMO: selector de fondo animado (ambos avanzan y retroceden con el scroll) -->
+  <div id="bg-switcher" class="bg-switcher" role="group" aria-label="Cambiar fondo animado">
+    <span class="bg-switcher-label">Fondo</span>
+    <button type="button" class="bg-switcher-btn is-active" data-bg="aurora" title="Cintas de aurora y orbes de luz sincronizados con el scroll">Aurora</button>
+    <button type="button" class="bg-switcher-btn" data-bg="cosmos" title="Viaje estelar con efecto túnel sincronizado con el scroll">Cosmos</button>
+  </div>
 
   <!-- CDN SCRIPTS -->
   <script src="https://cdn.jsdelivr.net/npm/lenis@1/dist/lenis.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/gsap@3/dist/gsap.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/gsap@3/dist/ScrollTrigger.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/d3@7.9.0/dist/d3.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/topojson-client@3.1.0/dist/topojson-client.min.js"></script>
   <script src="js/app.js"></script>
 
   <!-- Cursor personalizado -->

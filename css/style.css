@@ -1,6 +1,6 @@
 /* ============================================================
-   Manuel Correa — Caldas al Congreso 2026
-   css/style.css — v3: video real + mapa SVG + carrusel Oryzo
+   Plantilla Web Interactiva — scroll cinematográfico
+   css/style.css — fondo animado + galerías + carrusel
    ============================================================ */
 
 /* ── VARIABLES ─────────────────────────────────────────────── */
@@ -374,12 +374,6 @@ button { border: none; background: none; cursor: pointer; }
 }
 #solid-bg.is-active { opacity: 1; }
 
-/* From #caldas onward use a flat, plain background color until the end of the page */
-#caldas, #caldas ~ .scroll-section {
-  background-color: #0d2a24 !important;
-  background-image: none !important;
-}
-
 .hero-bg-gradient {
   position: absolute;
   inset: 0;
@@ -611,7 +605,7 @@ button { border: none; background: none; cursor: pointer; }
   font-size: 0.82rem;
 }
 
-/* Foto de Manuel al lado del texto */
+/* Foto al lado del texto de la sección */
 .section-photo {
   position: absolute;
   width: 40vw;
@@ -892,248 +886,6 @@ button { border: none; background: none; cursor: pointer; }
   .footer-links { gap: 1rem; }
 }
 
-/* ───────────────────────────────────────────────────────────────
-   MAP SECTION — v1 style (real GeoJSON choropleth)
-   ─────────────────────────────────────────────────────────────── */
-.section-map {
-  width: 100%;
-  min-height: 100vh;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  pointer-events: auto;
-  position: relative;
-}
-
-.section-map::before { display: none; }
-
-.mapa-inner {
-  width: 92vw;
-  max-width: 1360px;
-  padding: 3.5rem 0;
-  position: relative;
-  z-index: 2;
-}
-
-.mapa-header-row {
-  display: flex;
-  align-items: flex-end;
-  justify-content: space-between;
-  margin-bottom: 1.5rem;
-  flex-wrap: wrap;
-  gap: 1rem;
-}
-
-.map-label {
-  font-size: 0.68rem;
-  letter-spacing: 0.2em;
-  text-transform: uppercase;
-  color: var(--orange);
-  font-family: var(--font-body);
-  margin-bottom: 0.35rem;
-}
-
-.map-title {
-  font-family: var(--font-display);
-  font-size: clamp(1.6rem, 3.5vw, 3rem);
-  font-weight: 700;
-  color: var(--cream);
-  line-height: 1.1;
-}
-
-.map-desc-top {
-  font-size: 0.82rem;
-  color: rgba(245,241,235,0.55);
-  line-height: 1.6;
-  max-width: 380px;
-  margin-top: 0.4rem;
-}
-
-.mapa-layout {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) clamp(340px, 32vw, 480px);
-  gap: 2.5rem;
-  align-items: start;
-}
-
-/* ── Map container ── */
-.mapa-svg-container {
-  position: relative;
-  width: 100%;
-  background: rgba(5,13,11,0.97);
-  border: 1px solid rgba(232,98,26,0.18);
-  border-radius: 6px;
-  overflow: hidden;
-  aspect-ratio: 900 / 640;
-  box-shadow:
-    0 0 0 1px rgba(27,77,71,0.25),
-    0 0 80px rgba(232,98,26,0.07),
-    0 40px 100px rgba(0,0,0,0.6),
-    inset 0 0 60px rgba(27,77,71,0.06);
-}
-
-canvas#map-particles {
-  position: absolute; inset: 0;
-  width: 100%; height: 100%;
-  pointer-events: none; z-index: 0; opacity: 0.7;
-}
-
-.map-corner {
-  position: absolute; width: 18px; height: 18px;
-  pointer-events: none; z-index: 6;
-}
-.map-corner.tl { top:10px; left:10px;   border-top:1.5px solid rgba(232,98,26,.7); border-left:1.5px solid rgba(232,98,26,.7); }
-.map-corner.tr { top:10px; right:10px;  border-top:1.5px solid rgba(232,98,26,.7); border-right:1.5px solid rgba(232,98,26,.7); }
-.map-corner.bl { bottom:10px; left:10px; border-bottom:1.5px solid rgba(232,98,26,.7); border-left:1.5px solid rgba(232,98,26,.7); }
-.map-corner.br { bottom:10px; right:10px; border-bottom:1.5px solid rgba(232,98,26,.7); border-right:1.5px solid rgba(232,98,26,.7); }
-
-.map-scan-line {
-  position: absolute; top:0; bottom:0; width:3px;
-  background: linear-gradient(to bottom, transparent 0%, rgba(232,98,26,.15) 20%, rgba(232,98,26,.8) 50%, rgba(232,98,26,.15) 80%, transparent 100%);
-  box-shadow: 0 0 16px rgba(232,98,26,.5), 0 0 40px rgba(232,98,26,.2), -8px 0 30px rgba(232,98,26,.06);
-  pointer-events: none; z-index: 5;
-  left: -4px; opacity: 0;
-}
-
-.map-mouse-glow {
-  position: absolute; width:320px; height:320px; border-radius:50%;
-  background: radial-gradient(circle, rgba(232,98,26,.07) 0%, transparent 70%);
-  pointer-events: none; z-index: 2;
-  transform: translate(-50%,-50%); transition: opacity .5s;
-}
-
-#caldas-map {
-  position: relative; z-index: 1;
-  width: 100%; height: 100%; display: block;
-}
-
-#caldas-map path, #caldas-map polygon {
-  cursor: pointer;
-  stroke: rgba(5,13,11,0.85);
-  stroke-width: 1;
-  stroke-linejoin: round;
-  transition: filter 0.2s ease;
-}
-
-#caldas-map path:hover, #caldas-map polygon:hover {
-  stroke: var(--orange) !important;
-  stroke-width: 2 !important;
-  filter: brightness(1.4) drop-shadow(0 0 10px rgba(232,98,26,.55)) !important;
-}
-
-/* ── Tooltip (solo nombre + frase corta del hover) ── */
-.map-tooltip {
-  position: absolute; z-index: 20;
-  background: rgba(5,13,11,0.97);
-  border: 1px solid rgba(232,98,26,0.4);
-  border-radius: 6px;
-  padding: 0.65rem 0.9rem;
-  pointer-events: none; font-size: 0.78rem;
-  color: var(--cream); max-width: 260px;
-  backdrop-filter: blur(24px);
-  box-shadow: 0 20px 60px rgba(0,0,0,.75);
-  transform: translateY(12px) scale(0.95);
-  opacity: 0; visibility: hidden;
-  transition: opacity .22s ease, transform .22s ease, visibility .22s;
-}
-.map-tooltip.visible { visibility:visible; opacity:1; transform:translateY(0) scale(1); }
-.map-tooltip-name { font-family:var(--font-display); font-size:0.95rem; color:var(--cream); margin-bottom:.2rem; font-weight:600; }
-.map-tooltip-hover { font-size:.72rem; line-height:1.45; color:rgba(245,241,235,.7); }
-
-/* ── Sidebar (panel con imagen + texto del municipio al click) ── */
-.mapa-sidebar { display:flex; flex-direction:column; gap:1rem; }
-
-.mapa-selected {
-  background: rgba(5,13,11,0.6);
-  border: 1px solid rgba(245,241,235,.07);
-  border-radius: 8px; padding: 1.8rem;
-  min-height: 560px;
-  display:flex; flex-direction:column; gap: 1.1rem;
-  transition: border-color .4s, box-shadow .4s;
-  overflow-y: auto;
-  overflow-x: hidden;
-  max-height: 80vh;
-  position: relative;
-}
-.mapa-selected.is-active {
-  border-color: rgba(232,98,26,.45);
-  box-shadow: 0 0 40px rgba(232,98,26,.15);
-  cursor: pointer;
-}
-.mapa-selected.is-active:hover {
-  border-color: rgba(232,98,26,.8);
-  box-shadow: 0 0 50px rgba(232,98,26,.25);
-}
-.mapa-selected.is-locked::before {
-  content: '';
-  position: absolute;
-  top: 0.8rem; right: 0.9rem;
-  width: 8px; height: 8px;
-  border-radius: 50%;
-  background: var(--orange);
-  box-shadow: 0 0 10px rgba(232,98,26,.7), 0 0 0 4px rgba(232,98,26,.12);
-  animation: lockedDot 1.6s ease-in-out infinite;
-  z-index: 4;
-}
-@keyframes lockedDot {
-  0%,100% { opacity: 0.55; transform: scale(1); }
-  50%     { opacity: 1;    transform: scale(1.15); }
-}
-.mapa-selected-hint {
-  font-size: .82rem;
-  color: rgba(245,241,235,.45);
-  text-align: center;
-  line-height: 1.6;
-  margin: auto 0;
-}
-.mapa-selected-img {
-  width: 100%;
-  aspect-ratio: 16 / 10;
-  object-fit: cover;
-  border-radius: 8px;
-  display: block;
-  opacity: 0;
-  transform: translateX(20px);
-  transition: opacity .45s ease, transform .45s ease;
-}
-.mapa-selected.is-active .mapa-selected-img {
-  opacity: 1;
-  transform: translateX(0);
-}
-.mapa-selected-name {
-  font-family: var(--font-display);
-  font-size: 1.75rem;
-  font-weight: 700;
-  color: var(--cream);
-  letter-spacing: .02em;
-  text-transform: uppercase;
-  opacity: 0;
-  transform: translateY(8px);
-  transition: opacity .5s ease .1s, transform .5s ease .1s;
-}
-.mapa-selected.is-active .mapa-selected-name { opacity: 1; transform: translateY(0); }
-.mapa-selected-desc {
-  font-family: var(--font-body);
-  font-size: .93rem;
-  line-height: 1.7;
-  color: rgba(245,241,235,.75);
-  opacity: 0;
-  transform: translateY(8px);
-  transition: opacity .5s ease .2s, transform .5s ease .2s;
-}
-.mapa-selected.is-active .mapa-selected-desc { opacity: 1; transform: translateY(0); }
-
-/* ── Pulse ring on hover ── */
-@keyframes pulseRing {
-  0%   { transform: translate(-50%,-50%) scale(0.8); opacity: 0.9; }
-  100% { transform: translate(-50%,-50%) scale(4);   opacity: 0; }
-}
-.pulse-ring {
-  position:absolute; width:28px; height:28px; border-radius:50%;
-  border:1.5px solid rgba(232,98,26,.8); pointer-events:none; z-index:4;
-  animation: pulseRing 1.1s ease-out forwards;
-}
-.pulse-ring-2 { animation-delay:.2s; animation-duration:1.4s; border-color:rgba(232,98,26,.4); }
 
 /* ───────────────────────────────────────────────────────────────
    GALLERY SECTION — position:fixed, Oryzo-style pinned carousel
@@ -1482,13 +1234,6 @@ canvas#map-particles {
   .section-heading { font-size: clamp(2rem, 8vw, 3.5rem); }
   .section-body { font-size: 0.95rem; max-width: none; }
 
-  /* Map */
-  .mapa-layout { grid-template-columns: 1fr; gap: 1rem; }
-  .mapa-sidebar { width: 100%; }
-  .mapa-selected { min-height: 200px; }
-  .mapa-inner { width: 95vw; }
-  .mapa-header-row { flex-direction: column; }
-  .map-title { font-size: clamp(1.6rem, 5vw, 2.5rem); }
 
   /* Gallery */
   .gallery-title { font-size: clamp(1.8rem, 8vw, 3rem); }
@@ -1499,8 +1244,6 @@ canvas#map-particles {
   }
   .gallery-drag-hint { display: none; }
 
-  /* Section map mobile backdrop */
-  .section-map,
   .section-gallery { pointer-events: none; }
 
   /* Dark backdrop for text sections on mobile */
@@ -2036,9 +1779,6 @@ canvas#map-particles {
   .section-inner { max-width: 50vw; }
   .section-photo { width: 34vw; max-width: 420px; }
 
-  /* Map: grid narrows */
-  .mapa-layout { grid-template-columns: 1fr clamp(260px, 28vw, 380px); gap: 1.5rem; }
-  .mapa-inner { width: 94vw; }
 
   /* Agenda: 2 columns */
   .agenda-grid { grid-template-columns: repeat(2, 1fr); gap: 0.85rem; }
@@ -2107,54 +1847,6 @@ canvas#map-particles {
     z-index: -1;
   }
 
-  /* Map: Overlay Modal para móvil */
-  .mapa-layout {
-    display: flex;
-    flex-direction: column;
-    position: relative;
-    gap: 1rem;
-  }
-  .mapa-svg-container { width: 100%; max-height: 55vh; height: auto; margin: 0 auto; pointer-events: auto; }
-  .mapa-sidebar {
-    position: absolute;
-    top: 0; left: 0; right: 0; bottom: 0;
-    z-index: 20;
-    pointer-events: none;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    padding: 1rem;
-  }
-  .mapa-selected {
-    width: 100%;
-    max-width: 380px;
-    max-height: 90vh;
-    overflow-y: auto;
-    background: rgba(5,13,11,0.96);
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
-    box-shadow: 0 30px 60px rgba(0,0,0,0.8), 0 0 0 1px rgba(245,241,235,0.1);
-    border: none;
-    pointer-events: auto;
-    opacity: 0;
-    visibility: hidden;
-    transform: translateY(20px) scale(0.95);
-    transition: opacity 0.4s cubic-bezier(0.2,0.8,0.2,1), transform 0.4s cubic-bezier(0.2,0.8,0.2,1), visibility 0.4s;
-    min-height: auto;
-    padding: 1.5rem;
-  }
-  .mapa-selected.is-active {
-    opacity: 1;
-    visibility: visible;
-    transform: translateY(0) scale(1);
-    cursor: pointer;
-  }
-  .mapa-header-row { flex-direction: column; margin-bottom: 0.5rem; }
-  .map-title { font-size: clamp(1.5rem, 5vw, 2.4rem); }
-  .map-desc-top { font-size: 0.78rem; max-width: 100%; }
-  
-  /* Disable tooltip on mobile to prevent touch issues */
-  .map-tooltip { display: none !important; }
 
   /* Agenda: single column vertical stack as requested by user */
   .agenda-grid { grid-template-columns: 1fr; gap: 0.6rem; }
@@ -2237,10 +1929,6 @@ canvas#map-particles {
   .section-content.align-left,
   .section-content.align-right { padding: 4vh 5vw; }
 
-  /* Map: compact */
-  .mapa-inner { width: 96vw; padding: 1.5rem 0; }
-  .mapa-selected-name { font-size: 1.3rem; }
-  .mapa-selected-desc { font-size: 0.85rem; }
 
   /* Agenda cards: compact tech overlay */
   .tech-overlay { padding: 1.2rem 1rem; }
@@ -2283,11 +1971,6 @@ canvas#map-particles {
   .section-label { font-size: 0.62rem; letter-spacing: 0.2em; }
   .section-photo { height: 35vh; }
 
-  /* Map */
-  .map-title { font-size: clamp(1.3rem, 6vw, 2rem); }
-  .map-label { font-size: 0.6rem; }
-  .mapa-selected-name { font-size: 1.1rem; }
-  .mapa-selected-desc { font-size: 0.8rem; line-height: 1.55; }
 
   /* Agenda */
   .agenda-grid { gap: 0.6rem; }
@@ -2351,3 +2034,65 @@ canvas#map-particles {
   .cta-input, .cta-textarea { font-size: 0.85rem; padding: 0.65rem 0.75rem; }
 }
 
+
+/* ═══════════════════════════════════════════════════════════════
+   DEMO: SELECTOR DE FONDO ANIMADO
+   Pastilla flotante para alternar entre los dos fondos de ejemplo
+   (secuencia de video / aurora generativa), ambos ligados al scroll.
+   ═══════════════════════════════════════════════════════════════ */
+.bg-switcher {
+  position: fixed;
+  bottom: 1.2rem;
+  right: 1.2rem;
+  z-index: 80;
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+  padding: 0.35rem 0.45rem;
+  background: rgba(7, 18, 16, 0.72);
+  border: 1px solid rgba(232, 98, 26, 0.25);
+  border-radius: 999px;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  box-shadow: 0 6px 24px rgba(0, 0, 0, 0.35);
+}
+
+.bg-switcher-label {
+  font-size: 0.6rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: rgba(245, 241, 235, 0.55);
+  padding: 0 0.3rem 0 0.55rem;
+}
+
+.bg-switcher-btn {
+  font-family: inherit;
+  font-size: 0.72rem;
+  letter-spacing: 0.06em;
+  color: rgba(245, 241, 235, 0.7);
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: 999px;
+  padding: 0.35rem 0.85rem;
+  cursor: pointer;
+  transition: color 0.25s ease, background 0.25s ease, border-color 0.25s ease;
+}
+
+.bg-switcher-btn:hover { color: #F5F1EB; }
+
+.bg-switcher-btn.is-active {
+  color: #F5F1EB;
+  background: rgba(232, 98, 26, 0.22);
+  border-color: rgba(232, 98, 26, 0.45);
+}
+
+@media (max-width: 600px) {
+  .bg-switcher { bottom: 0.8rem; right: 0.8rem; }
+}
+
+/* Fondo de respaldo mientras cargan las fotos de ejemplo */
+.section-photo,
+.zp-inner,
+.gallery-item-inner {
+  background-color: #0d2a24;
+}

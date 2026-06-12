@@ -1,6 +1,6 @@
 /* ============================================================
-   Manuel Correa — Caldas al Congreso 2026
-   js/app.js — v3: video real + mapa SVG Caldas + carrusel
+   Plantilla Web Interactiva — scroll cinematográfico
+   js/app.js — fondo animado por scroll + galerías + carrusel
    ============================================================ */
 
 'use strict';
@@ -12,128 +12,21 @@ window.addEventListener('load', () => window.scrollTo(0, 0));
 
 // ── CONFIG ────────────────────────────────────────────────────
 const FRAME_SPEED   = 3.0;   // mayor: avanza más rápido respecto al scroll
-const IMAGE_SCALE   = 1.0;   // 1.0 = full-cover sin barras laterales
 const WINDOW        = 0.06;  // ventana de animación por sección
-const FRAME_EXT     = 'jpg';
 
 // Hero desaparece al 12% de scroll
 const HERO_FADE_END = 0.12;
 
-// ── MAP DATA (post-elecciones: hover corto + click largo + imagen) ──
-// Mapeo código DANE → nombre municipio (los 27 de Caldas)
-const MAP_MUN_NAME = {
-  17001:'Manizales',  17013:'Aguadas',    17042:'Anserma',
-  17050:'Aranzazu',   17088:'Belalcázar', 17174:'Chinchiná',
-  17272:'Filadelfia', 17380:'La Dorada',  17388:'La Merced',
-  17433:'Manzanares', 17442:'Marmato',    17444:'Marquetalia',
-  17446:'Marulanda',  17486:'Neira',      17495:'Norcasia',
-  17513:'Pácora',     17524:'Palestina',  17541:'Pensilvania',
-  17614:'Riosucio',   17616:'Risaralda',  17653:'Salamina',
-  17662:'Samaná',     17665:'San José',   17777:'Supía',
-  17867:'Victoria',   17873:'Villamaría', 17877:'Viterbo'
-};
+// ── FONDO ANIMADO — modos generativos ligados al scroll ──────
+//  'aurora' → cintas de aurora, orbes de luz y estrellas
+//  'cosmos' → viaje estelar con efecto túnel y nebulosa
+// Ambos se dibujan en canvas y avanzan/retroceden con el scroll.
+// El selector flotante (#bg-switcher) permite alternar entre ellos.
+let bgMode = 'aurora';
 
-// Datos de cada municipio: hover (frase corta), click (texto largo), img (foto referencial).
-// TODO: reemplazar las imágenes genéricas (1-25.jpeg) por fotos específicas del municipio cuando estén disponibles.
-const MAP_MUN_DATA = {
-  'Manizales':   { hover:'Centro de oportunidades, educación y desarrollo regional.',           click:'Manizales es el eje administrativo y académico del departamento, donde convergen la educación, la innovación y el crecimiento económico, impulsando oportunidades para todos los sectores.', img:'images/1_map.jpeg'  },
-  'Villamaría':  { hover:'Riqueza natural y compromiso ambiental.',                              click:'Villamaría se destaca por su biodiversidad y cercanía a ecosistemas estratégicos, promoviendo el turismo sostenible y la protección ambiental como base de su desarrollo.',                  img:'images/2_map.jpeg'  },
-  'Chinchiná':   { hover:'Tradición cafetera que impulsa desarrollo.',                           click:'Chinchiná es clave en la economía cafetera, donde tradición e innovación se articulan para fortalecer el campo y generar oportunidades.',                                                  img:'images/3_map.jpeg'  },
-  'Neira':       { hover:'Identidad cafetera y tradición rural.',                                click:'Neira es un municipio con fuerte vocación agrícola, donde se promueven iniciativas para fortalecer el campo y mejorar la calidad de vida rural.',                                          img:'images/4_map.jpeg'  },
-  'Palestina':   { hover:'Territorio de proyección y conectividad.',                             click:'Palestina se proyecta como un punto estratégico para el desarrollo logístico y económico, impulsando proyectos que fortalecen la conectividad regional.',                                 img:'images/5_map.jpeg'  },
-  'Aguadas':     { hover:'Tradición, cultura y emprendimiento artesanal.',                       click:'Aguadas es referente cultural y artesanal, impulsando la economía local a través de sus tradiciones y el talento de su gente.',                                                              img:'images/6_map.jpeg'  },
-  'Pácora':      { hover:'Historia y tradición que construyen territorio.',                      click:'Pácora conserva su identidad histórica mientras fortalece procesos comunitarios y productivos que dinamizan su desarrollo.',                                                                  img:'images/7_map.jpeg'  },
-  'Salamina':    { hover:'Patrimonio y arquitectura emblemática.',                               click:'Salamina destaca por su riqueza patrimonial y turística, promoviendo el desarrollo sostenible desde su identidad cultural.',                                                                  img:'images/8_map.jpeg'  },
-  'Aranzazu':    { hover:'Trabajo rural y compromiso comunitario.',                              click:'Aranzazu impulsa el desarrollo desde el campo, fortaleciendo la producción agrícola y la organización comunitaria.',                                                                          img:'images/9_map.jpeg'  },
-  'Filadelfia':  { hover:'Campo, tradición y progreso local.',                                   click:'Filadelfia es un municipio que crece desde su vocación rural, promoviendo iniciativas que fortalecen la economía local.',                                                                       img:'images/10_map.jpeg' },
-  'La Merced':   { hover:'Pequeño territorio con gran identidad.',                               click:'La Merced se caracteriza por su cohesión social y su trabajo comunitario, impulsando procesos de desarrollo local.',                                                                          img:'images/11_map.jpeg' },
-  'Riosucio':    { hover:'Cultura, diversidad y tradición.',                                     click:'Riosucio es un referente cultural, donde la diversidad y las tradiciones fortalecen el tejido social y el desarrollo comunitario.',                                                          img:'images/12_map.jpeg' },
-  'Supía':       { hover:'Diversidad cultural y dinamismo social.',                              click:'Supía es un territorio diverso que promueve la inclusión, la participación y el crecimiento social.',                                                                                          img:'images/13_map.jpeg' },
-  'Marmato':     { hover:'Historia minera y resiliencia territorial.',                           click:'Marmato es reconocido por su tradición minera, impulsando procesos que buscan el desarrollo sostenible y la formalización del sector.',                                                        img:'images/14_map.jpeg' },
-  'Belalcázar':  { hover:'Tradición y desarrollo en el occidente caldense.',                     click:'Belalcázar promueve el desarrollo desde su identidad cultural y el trabajo comunitario.',                                                                                                       img:'images/15_map.jpeg' },
-  'San José':    { hover:'Territorio joven con vocación productiva.',                            click:'San José es uno de los municipios más jóvenes del departamento, con un gran potencial en el desarrollo agrícola y social.',                                                                  img:'images/16_map.jpeg' },
-  'Viterbo':     { hover:'Turismo, cultura y crecimiento regional.',                              click:'Viterbo impulsa el turismo y el desarrollo económico, consolidándose como un destino atractivo en el occidente.',                                                                              img:'images/17_map.jpeg' },
-  'Risaralda':   { hover:'Tradición agrícola y dinamismo local.',                                click:'Risaralda fortalece su economía desde el campo, promoviendo iniciativas productivas y comunitarias.',                                                                                        img:'images/18_map.jpeg' },
-  'Anserma':     { hover:'Historia y vocación agrícola.',                                        click:'Anserma combina su legado histórico con el impulso al desarrollo rural y la productividad agrícola.',                                                                                          img:'images/19_map.jpeg' },
-  'Pensilvania': { hover:'Progreso desde el campo y el territorio.',                             click:'Pensilvania impulsa su desarrollo desde la ruralidad, fortaleciendo el campo y mejorando la calidad de vida de sus habitantes.',                                                            img:'images/20_map.jpeg' },
-  'Marquetalia': { hover:'Tradición agrícola y cultura campesina.',                              click:'Marquetalia impulsa el desarrollo desde el campo, fortaleciendo su identidad campesina y productiva.',                                                                                       img:'images/21_map.jpeg' },
-  'Manzanares':  { hover:'Historia, tradición y desarrollo local.',                              click:'Manzanares combina su legado histórico con procesos de crecimiento social y económico.',                                                                                                       img:'images/22_map.jpeg' },
-  'Marulanda':   { hover:'Territorio rural de tradición y esfuerzo.',                            click:'Marulanda se caracteriza por su trabajo ganadero y rural, promoviendo el desarrollo sostenible desde el campo.',                                                                            img:'images/23_map.jpeg' },
-  'La Dorada':   { hover:'Eje logístico y puerta del Magdalena.',                                click:'La Dorada es un punto estratégico para el comercio y la conectividad, impulsando el desarrollo económico regional.',                                                                          img:'images/24_map.jpeg' },
-  'Victoria':    { hover:'Progreso desde la cercanía y el territorio.',                          click:'Victoria promueve el desarrollo local mediante el fortalecimiento comunitario y productivo.',                                                                                                  img:'images/25_map.jpeg' },
-  'Norcasia':    { hover:'Energía, naturaleza y desarrollo.',                                    click:'Norcasia es clave en la generación energética y la protección ambiental, impulsando el desarrollo sostenible.',                                                                                img:'images/15_map.jpeg' },
-  'Samaná':      { hover:'Territorio de resiliencia y transformación.',                          click:'Samaná es un ejemplo de reconstrucción social, donde se promueven iniciativas de paz y desarrollo territorial.',                                                                              img:'images/22_map.jpeg' }
-};
-
-// Color base unificado para todos los municipios (no hay gradiente por votos).
-function mapBaseColor() {
-  return 'rgb(27,77,71)'; // teal
-}
-
-// ── FRAME LOADING ─────────────────────────────────────────────
-const frames     = [];
-let loadedCount  = 0;
-let totalFrames  = 0;
+// Frames virtuales: resolución temporal de la animación de fondo
+const VIRTUAL_FRAMES = 240;
 let currentFrame = 0;
-let bgColor      = '#0A1A17';
-let hasFrames    = false;
-
-function buildFrameUrl(i) {
-  return `frames/frame_${String(i + 1).padStart(4, '0')}.${FRAME_EXT}`;
-}
-
-function detectFrames() {
-  return new Promise(resolve => {
-    const img = new Image();
-    img.onload  = () => { hasFrames = true;  resolve(true);  };
-    img.onerror = () => { hasFrames = false; resolve(false); };
-    img.src = buildFrameUrl(0);
-  });
-}
-
-function preloadFrames(frameCount) {
-  return new Promise(resolve => {
-    totalFrames = frameCount;
-    if (frameCount === 0) { resolve(); return; }
-
-    const PHASE1 = Math.min(10, frameCount);
-    let phase1Done = 0;
-
-    for (let i = 0; i < PHASE1; i++) {
-      const img = new Image();
-      img.onload = () => {
-        frames[img._idx] = img;
-        loadedCount++;
-        updateLoader(loadedCount, frameCount);
-        phase1Done++;
-        if (phase1Done === PHASE1) {
-          drawFrame(0);
-          resolve();
-          loadRestInBackground(PHASE1, frameCount);
-        }
-      };
-      img.onerror = () => {
-        loadedCount++;
-        phase1Done++;
-        if (phase1Done === PHASE1) resolve();
-      };
-      img._idx = i;
-      img.src = buildFrameUrl(i);
-    }
-  });
-}
-
-function loadRestInBackground(from, total) {
-  for (let i = from; i < total; i++) {
-    const img = new Image();
-    img.onload = () => { frames[img._idx] = img; loadedCount++; updateLoader(loadedCount, total); };
-    img.onerror = () => { loadedCount++; };
-    img._idx = i;
-    img.src = buildFrameUrl(i);
-  }
-}
-
-function updateLoader() { /* loader es ahora un video; no requiere progreso */ }
 
 // ── CANVAS RENDERER ──────────────────────────────────────────
 const canvas = document.getElementById('canvas');
@@ -144,94 +37,178 @@ function resizeCanvas() {
   canvas.width  = window.innerWidth  * dpr;
   canvas.height = window.innerHeight * dpr;
   ctx.scale(dpr, dpr);
-  if (hasFrames && frames[currentFrame]) {
-    drawFrame(currentFrame);
-  } else {
-    drawGenerativeFrame(currentFrame, totalFrames || 200);
+  renderBackground(currentFrame, VIRTUAL_FRAMES);
+}
+
+// ── FONDO "AURORA" (generativo, ligado al scroll) ─────────────
+// Todo se deriva del progreso del frame virtual, así que la
+// animación avanza y retrocede con el scroll, sin imágenes.
+function drawAuroraFrame(frameFloat, maxFrames) {
+  const cw = canvas.width  / (window.devicePixelRatio || 1);
+  const ch = canvas.height / (window.devicePixelRatio || 1);
+  const p  = maxFrames > 1 ? frameFloat / (maxFrames - 1) : 0;
+  const t  = p * Math.PI * 6; // "tiempo" derivado del scroll
+
+  // Cielo base con deriva sutil de tono (oscilante: p puede superar 1)
+  const sky = ctx.createLinearGradient(0, 0, 0, ch);
+  sky.addColorStop(0,    `hsl(${168 + Math.sin(t * 0.5) * 12}, 45%, ${(8 + Math.sin(t * 0.35) * 3).toFixed(1)}%)`);
+  sky.addColorStop(0.55, '#0A1A17');
+  sky.addColorStop(1,    `hsl(${(166 + Math.sin(t * 0.27) * 10).toFixed(1)}, 40%, ${(6 + Math.sin(t * 0.21) * 2).toFixed(1)}%)`);
+  ctx.fillStyle = sky;
+  ctx.fillRect(0, 0, cw, ch);
+
+  // Estrellas deterministas que titilan con el scroll
+  for (let i = 0; i < 80; i++) {
+    const sx = ((i * 127.3) % 97) / 97 * cw;
+    const sy = ((i * 311.7) % 89) / 89 * ch * 0.72;
+    const tw = Math.abs(Math.sin(t * 0.8 + i * 1.7));
+    ctx.fillStyle = `rgba(245,241,235,${(0.05 + tw * 0.16).toFixed(3)})`;
+    ctx.fillRect(sx, sy, 1.5, 1.5);
+  }
+
+  // Orbes de luz que viajan con el scroll (teal + acento naranja)
+  const orbs = [
+    { x: 0.5  + 0.32 * Math.sin(t * 0.45),     y: 0.32 + 0.10 * Math.cos(t * 0.6), r: 0.50, c: '170,60%,38%', a: 0.16 },
+    { x: 0.78 - 0.25 * Math.sin(t * 0.3 + 1),  y: 0.22 + 0.12 * Math.sin(t * 0.5), r: 0.34, c: '22,80%,48%',  a: 0.10 }
+  ];
+  orbs.forEach(o => {
+    const g = ctx.createRadialGradient(cw * o.x, ch * o.y, 0, cw * o.x, ch * o.y, Math.max(cw, ch) * o.r);
+    g.addColorStop(0, `hsla(${o.c},${o.a})`);
+    g.addColorStop(1, `hsla(${o.c},0)`);
+    ctx.fillStyle = g;
+    ctx.fillRect(0, 0, cw, ch);
+  });
+
+  // Cintas de aurora: ondas superpuestas que fluyen con el scroll
+  const ribbons = [
+    { base: 0.34, amp: 0.060, hue: 165, alpha: 0.16, speed: 1.0, freq: 1.6 },
+    { base: 0.47, amp: 0.090, hue: 150, alpha: 0.13, speed: 1.6, freq: 2.3 },
+    { base: 0.60, amp: 0.070, hue: 176, alpha: 0.11, speed: 2.2, freq: 1.2 },
+    { base: 0.42, amp: 0.050, hue: 24,  alpha: 0.07, speed: 1.3, freq: 2.8 }
+  ];
+  ribbons.forEach(rb => {
+    ctx.beginPath();
+    ctx.moveTo(0, ch);
+    for (let x = 0; x <= cw; x += 14) {
+      const n = x / cw;
+      const y = ch * (rb.base
+        + Math.sin(n * Math.PI * rb.freq + t * rb.speed) * rb.amp
+        + Math.sin(n * Math.PI * rb.freq * 2.7 - t * rb.speed * 0.6) * rb.amp * 0.4);
+      ctx.lineTo(x, y);
+    }
+    ctx.lineTo(cw, ch);
+    ctx.closePath();
+    const g = ctx.createLinearGradient(0, ch * (rb.base - rb.amp * 2), 0, ch);
+    g.addColorStop(0, `hsla(${rb.hue},70%,45%,${rb.alpha})`);
+    g.addColorStop(1, `hsla(${rb.hue},70%,45%,0)`);
+    ctx.fillStyle = g;
+    ctx.fill();
+  });
+}
+
+// ── FONDO "COSMOS" (generativo, ligado al scroll) ─────────────
+// Segundo ejemplo: viaje estelar. Las estrellas avanzan hacia el
+// espectador al bajar (y retroceden al subir), con anillos en
+// efecto túnel y una nebulosa que respira con el progreso.
+function drawCosmosFrame(frameFloat, maxFrames) {
+  const cw = canvas.width  / (window.devicePixelRatio || 1);
+  const ch = canvas.height / (window.devicePixelRatio || 1);
+  const p  = maxFrames > 1 ? frameFloat / (maxFrames - 1) : 0;
+  const t  = p * Math.PI * 6; // "tiempo" derivado del scroll
+  const cx = cw / 2, cy = ch / 2;
+  const maxR = Math.hypot(cx, cy);
+
+  // Espacio profundo con deriva sutil de tono (oscilante: p puede superar 1)
+  const base = ctx.createRadialGradient(cx, cy, 0, cx, cy, maxR);
+  base.addColorStop(0,   `hsl(${188 + Math.sin(t * 0.4) * 14}, 45%, ${(10 + Math.sin(t * 0.3) * 3).toFixed(1)}%)`);
+  base.addColorStop(0.6, '#081512');
+  base.addColorStop(1,   '#050D0B');
+  ctx.fillStyle = base;
+  ctx.fillRect(0, 0, cw, ch);
+
+  // Nebulosa naranja que se desplaza y respira con el scroll
+  const nx = cx + Math.sin(t * 0.35) * cw * 0.22;
+  const ny = cy * (0.6 + 0.2 * Math.cos(t * 0.5));
+  const neb = ctx.createRadialGradient(nx, ny, 0, nx, ny, maxR * (0.45 + 0.1 * Math.sin(t)));
+  neb.addColorStop(0, 'rgba(232,98,26,0.10)');
+  neb.addColorStop(1, 'rgba(232,98,26,0)');
+  ctx.fillStyle = neb;
+  ctx.fillRect(0, 0, cw, ch);
+
+  // Anillos concéntricos que se expanden con el scroll (efecto túnel)
+  for (let i = 0; i < 6; i++) {
+    const ringP = ((i / 6) + p * 2.2) % 1;          // 0 = centro, 1 = borde
+    const r     = Math.pow(ringP, 2.2) * maxR * 1.1;
+    const alpha = Math.sin(ringP * Math.PI) * 0.10; // aparece y se desvanece
+    ctx.beginPath();
+    ctx.arc(cx, cy, r, 0, Math.PI * 2);
+    ctx.strokeStyle = `hsla(168,60%,55%,${alpha.toFixed(3)})`;
+    ctx.lineWidth = 1.2;
+    ctx.stroke();
+  }
+
+  // Campo estelar en "warp": cada estrella viaja del centro al borde
+  for (let i = 0; i < 110; i++) {
+    const ang   = ((i * 137.5) % 360) * Math.PI / 180; // ángulo áureo: distribución uniforme
+    const seed  = ((i * 73.7) % 47) / 47;              // profundidad inicial determinista
+    const depth = (seed + p * 1.6) % 1;                // 0 = lejos, 1 = cerca
+    const r     = Math.pow(depth, 2.4) * maxR * 1.05;
+    const dirX  = Math.cos(ang + t * 0.05);
+    const dirY  = Math.sin(ang + t * 0.05);
+    const x     = cx + dirX * r;
+    const y     = cy + dirY * r;
+    const size  = 0.5 + depth * 2.2;
+    const alpha = Math.min(1, depth * 1.8) * 0.5;
+
+    // Estela corta hacia el centro (sensación de velocidad)
+    if (depth > 0.55) {
+      const trail = (depth - 0.55) * 26;
+      ctx.strokeStyle = `rgba(245,241,235,${(alpha * 0.35).toFixed(3)})`;
+      ctx.lineWidth = size * 0.6;
+      ctx.beginPath();
+      ctx.moveTo(x, y);
+      ctx.lineTo(x - dirX * trail, y - dirY * trail);
+      ctx.stroke();
+    }
+    ctx.fillStyle = `rgba(245,241,235,${alpha.toFixed(3)})`;
+    ctx.beginPath();
+    ctx.arc(x, y, size / 2, 0, Math.PI * 2);
+    ctx.fill();
   }
 }
 
-function sampleBgColor(img) {
-  try {
-    const tmp = document.createElement('canvas');
-    tmp.width = tmp.height = 4;
-    const tc = tmp.getContext('2d');
-    tc.drawImage(img, 0, 0, 4, 4);
-    const d = tc.getImageData(0, 0, 1, 1).data;
-    bgColor = `rgb(${d[0]},${d[1]},${d[2]})`;
-  } catch (_) { bgColor = '#0A1A17'; }
+// Dibuja el fondo según el modo activo del selector
+function renderBackground(frameFloat, maxF) {
+  if (bgMode === 'cosmos') drawCosmosFrame(frameFloat, maxF);
+  else drawAuroraFrame(frameFloat, maxF);
 }
 
-function drawFrame(index) {
-  const img = frames[index];
-  if (!img) { drawGenerativeFrame(index, totalFrames); return; }
-
-  if (index % 20 === 0) sampleBgColor(img);
-
-  const cw = canvas.width  / (window.devicePixelRatio || 1);
-  const ch = canvas.height / (window.devicePixelRatio || 1);
-  const iw = img.naturalWidth;
-  const ih = img.naturalHeight;
-
-  const scale = Math.max(cw / iw, ch / ih) * IMAGE_SCALE;
-  const dw = iw * scale;
-  const dh = ih * scale;
-  const dx = (cw - dw) / 2;
-  const dy = (ch - dh) / 2;
-
-  ctx.fillStyle = bgColor;
-  ctx.fillRect(0, 0, cw, ch);
-  ctx.drawImage(img, dx, dy, dw, dh);
-}
-
-function drawGenerativeFrame(frameIndex, maxFrames) {
-  const cw = canvas.width  / (window.devicePixelRatio || 1);
-  const ch = canvas.height / (window.devicePixelRatio || 1);
-  const p  = maxFrames > 0 ? frameIndex / maxFrames : 0;
-
-  ctx.clearRect(0, 0, cw, ch);
-
-  const grad = ctx.createRadialGradient(
-    cw * (0.3 + p * 0.4), ch * (0.6 - p * 0.3), 0,
-    cw * 0.5, ch * 0.5, Math.max(cw, ch) * 0.9
-  );
-  grad.addColorStop(0, `hsl(${160 + p * 30}, 40%, ${12 + p * 8}%)`);
-  grad.addColorStop(0.5, `hsl(${155 + p * 20}, 30%, 7%)`);
-  grad.addColorStop(1, '#0A1A17');
-  ctx.fillStyle = grad;
-  ctx.fillRect(0, 0, cw, ch);
-
-  const ag = ctx.createRadialGradient(
-    cw * (0.85 - p * 0.2), ch * (0.15 + p * 0.1), 0,
-    cw * 0.85, ch * 0.15, cw * 0.35
-  );
-  ag.addColorStop(0, `rgba(232,98,26,${0.07 + p * 0.05})`);
-  ag.addColorStop(1, 'rgba(232,98,26,0)');
-  ctx.fillStyle = ag;
-  ctx.fillRect(0, 0, cw, ch);
+// ── SELECTOR DE FONDO (demo para el cliente) ──────────────────
+function initBgSwitcher() {
+  const switcher = document.getElementById('bg-switcher');
+  if (!switcher) return;
+  const buttons = [...switcher.querySelectorAll('.bg-switcher-btn')];
+  buttons.forEach(btn => {
+    btn.addEventListener('click', () => {
+      if (btn.dataset.bg === bgMode) return;
+      bgMode = btn.dataset.bg;
+      buttons.forEach(b => b.classList.toggle('is-active', b === btn));
+    });
+  });
 }
 
 // ── FRAME-TO-SCROLL BINDING ──────────────────────────────────
-const GALLERY_ENTER  = 0.17;   // flat bg desactivado (siempre frames de video)
+const GALLERY_ENTER  = 0.17;
 const GALLERY_LEAVE  = 0.82;
 const GALLERY_FADE   = 0.055;
-const ZP_ENTER       = 0.18;   // después de ¿Quien es Manuel Correa?
+const ZP_ENTER       = 0.18;   // después de la sección de presentación
 const ZP_LEAVE       = 0.36;
 // Ajustados para dar más espacio antes de que aparezca el carrusel
-const CAROUSEL_ENTER = 0.77;   // despues del mensaje "En el campo"
+const CAROUSEL_ENTER = 0.77;
 // Extender el final del carrusel para que cubra todo el tramo antes de contacto
 const CAROUSEL_LEAVE = 0.98;
-// No frame freeze: background frames should advance during the whole page
+// El fondo animado avanza durante toda la página, sin congelarse
 
-function drawFlatBg(cw, ch) {
-  ctx.fillStyle = '#0A1A17';
-  ctx.fillRect(0, 0, cw, ch);
-  const g = ctx.createRadialGradient(cw * .35, ch * .5, 0, cw * .35, ch * .5, cw * .65);
-  g.addColorStop(0, 'rgba(27,77,71,0.22)');
-  g.addColorStop(1, 'rgba(10,26,23,0)');
-  ctx.fillStyle = g;
-  ctx.fillRect(0, 0, cw, ch);
-}
 
 function initFrameScroll() {
   const sc = document.getElementById('scroll-container');
@@ -248,10 +225,9 @@ function initFrameScroll() {
     scrub: true,
     onUpdate: (self) => {
       const p = self.progress;
-      const maxF = hasFrames ? totalFrames : 200;
-      const acc = Math.min(p * FRAME_SPEED, 1);
-      // use fractional target for smooth lerp (not floored yet)
-      targetFrameFloat = Math.max(0, Math.min(acc * maxF, maxF - 1));
+      // Sin tope superior: los fondos generativos no se agotan, así que
+      // la animación sigue avanzando durante toda la página.
+      targetFrameFloat = Math.max(0, p * FRAME_SPEED * VIRTUAL_FRAMES);
       // record last update time so the RAF fallback knows ScrollTrigger is active
       lastScrollUpdate = performance.now();
     }
@@ -264,438 +240,25 @@ function initFrameScroll() {
   let lastScrollUpdate = performance.now();
 
   (function tick() {
-    const maxF = hasFrames ? totalFrames : 200;
     const now = performance.now();
     // If no recent ScrollTrigger update, compute progress from scrollY as a fallback
     if (now - lastScrollUpdate > 120) {
       const docH = document.documentElement.scrollHeight - window.innerHeight;
       const p = docH > 0 ? (window.scrollY / docH) : 0;
-      const acc = Math.min(p * FRAME_SPEED, 1);
-      targetFrameFloat = Math.max(0, Math.min(acc * maxF, maxF - 1));
+      targetFrameFloat = Math.max(0, p * FRAME_SPEED * VIRTUAL_FRAMES);
       // update the timestamp so we don't continuously recompute on every RAF
       lastScrollUpdate = now;
     }
-    // lerp current toward target
+    // lerp current toward target (sin tope superior: nunca se detiene)
     currentFrameFloat += (targetFrameFloat - currentFrameFloat) * LERP;
-    // clamp
     if (currentFrameFloat < 0) currentFrameFloat = 0;
-    if (currentFrameFloat > Math.max(0, maxF - 1)) currentFrameFloat = maxF - 1;
 
-    const idx = Math.min(Math.floor(currentFrameFloat), Math.max(0, maxF - 1));
-    currentFrame = idx;
+    currentFrame = currentFrameFloat;
 
-    if (hasFrames && frames[currentFrame]) drawFrame(currentFrame);
-    else drawGenerativeFrame(currentFrame, maxF);
+    renderBackground(currentFrameFloat, VIRTUAL_FRAMES);
 
     requestAnimationFrame(tick);
   })();
-}
-
-// ── MAP v1 — REAL GeoJSON + RADAR SWEEP ───────────────────────
-let mapDataReady    = false;  // datos/SVG ya construidos (evita doble carga)
-let mapSvgElements  = [];    // referencias para repetir la animación
-let mapSvgContainer = null;
-let mapAllMuns = [];
-let activePath = null;
-
-function mapInitParticles(container) {
-  const c = document.createElement('canvas');
-  c.id = 'map-particles';
-  container.insertBefore(c, container.firstChild);
-  const cx = c.getContext('2d');
-  const resize = () => { c.width = container.offsetWidth; c.height = container.offsetHeight; };
-  resize();
-  new ResizeObserver(resize).observe(container);
-  const pts = Array.from({length:55}, () => ({
-    x: Math.random(), y: Math.random(),
-    vx: (Math.random()-.5)*.00025, vy: (Math.random()-.5)*.00018,
-    r: Math.random()*1.4+0.3, pa: Math.random()*Math.PI*2, a: Math.random()*.2+.04
-  }));
-  (function draw() {
-    cx.clearRect(0, 0, c.width, c.height);
-    pts.forEach(p => {
-      p.x += p.vx; p.y += p.vy; p.pa += .007;
-      if(p.x<0)p.x=1; if(p.x>1)p.x=0; if(p.y<0)p.y=1; if(p.y>1)p.y=0;
-      cx.beginPath();
-      cx.arc(p.x*c.width, p.y*c.height, p.r, 0, Math.PI*2);
-      cx.fillStyle = `rgba(232,98,26,${p.a*(0.45+0.55*Math.sin(p.pa))})`;
-      cx.fill();
-    });
-    requestAnimationFrame(draw);
-  })();
-}
-
-function mapInitMouseGlow(container) {
-  const glow = document.createElement('div');
-  glow.className = 'map-mouse-glow';
-  glow.style.opacity = '0';
-  container.appendChild(glow);
-  container.addEventListener('mousemove', e => {
-    const rc = container.getBoundingClientRect();
-    glow.style.left = (e.clientX - rc.left) + 'px';
-    glow.style.top  = (e.clientY - rc.top)  + 'px';
-    glow.style.opacity = '1';
-  });
-  container.addEventListener('mouseleave', () => { glow.style.opacity = '0'; });
-}
-
-function mapDoRadarSweep(elements, container) {
-  const scanLine = container.querySelector('.map-scan-line');
-  const SWEEP_DELAY = 1.1;
-
-  // Matar tweens pendientes para que el replay sea limpio
-  gsap.killTweensOf(elements);
-  gsap.killTweensOf(scanLine);
-
-  gsap.set(elements, { opacity: 0 });
-  gsap.set(scanLine, { opacity: 0, left: '-4px' });
-  gsap.to(scanLine, { opacity: 1, duration: 0.3, delay: SWEEP_DELAY });
-  const sorted = [...elements].sort((a,b) => (a._cx||0) - (b._cx||0));
-  gsap.to(scanLine, {
-    left: '104%', duration: 2.0, ease: 'power1.inOut', delay: SWEEP_DELAY,
-    onComplete: () => {
-      gsap.to(scanLine, { opacity: 0, duration: 0.6 });
-    }
-  });
-  sorted.forEach(el => {
-    const pct = (el._cx || 430) / 860;
-    gsap.to(el, { opacity: 1, duration: 0.5, ease: 'power2.out', delay: SWEEP_DELAY + pct * 1.55 + 0.08 });
-  });
-}
-
-function mapCreatePulse(px, py, container) {
-  [0, 180].forEach(delay => {
-    const ring = document.createElement('div');
-    ring.className = 'pulse-ring' + (delay ? ' pulse-ring-2' : '');
-    ring.style.cssText = `left:${px}px;top:${py}px;transform:translate(-50%,-50%);animation-delay:${delay}ms`;
-    container.appendChild(ring);
-    ring.addEventListener('animationend', () => ring.remove());
-  });
-}
-
-function mapAttachEvents(el, name, cx, cy, svgEl, container, tooltip, detailPanel) {
-  el._cx = cx; el._cy = cy;
-
-  function getMapPos() {
-    const svgRect = svgEl.getBoundingClientRect();
-    const cRect   = container.getBoundingClientRect();
-    return {
-      px: cx * (svgRect.width / 860) + (svgRect.left - cRect.left),
-      py: cy * (svgRect.height / 520) + (svgRect.top  - cRect.top)
-    };
-  }
-
-  const data = MAP_MUN_DATA[name] || { hover: name, click: name + ', municipio de Caldas.', img: 'images/1.jpeg' };
-
-  el.addEventListener('mouseenter', () => {
-    if (window.innerWidth <= 768) return; // SKIP HOVER ON MOBILE
-    tooltip.innerHTML = `
-      <div class="map-tooltip-name">${name}</div>
-      <div class="map-tooltip-hover">${data.hover}</div>`;
-    tooltip.classList.add('visible');
-    const { px, py } = getMapPos();
-    mapCreatePulse(px, py, container);
-    if (el !== activePath) {
-      el.setAttribute('stroke', '#E8621A');
-      el.setAttribute('stroke-width', '2.5');
-      el.style.filter = 'brightness(1.25) drop-shadow(0 0 14px rgba(232,98,26,.65))';
-      document.querySelectorAll('#caldas-map path,#caldas-map polygon').forEach(p => {
-        if (p !== el) {
-          gsap.killTweensOf(p, 'opacity');
-          gsap.to(p, { opacity: p === activePath ? 1 : 0.35, duration: 0.15 });
-        }
-      });
-      // Preview en sidebar SOLO si no hay un municipio bloqueado
-      if (!activePath) {
-        mapShowDetail(name, detailPanel, /*locked=*/false);
-      }
-    }
-  });
-
-  el.addEventListener('mousemove', e => {
-    if (window.innerWidth <= 768) return; // SKIP HOVER ON MOBILE
-    const rc = container.getBoundingClientRect();
-    let left = e.clientX - rc.left + 18;
-    let top  = Math.max(e.clientY - rc.top - 56, 8);
-    if (left + 200 > rc.width) left = e.clientX - rc.left - 220;
-    tooltip.style.left = left + 'px';
-    tooltip.style.top  = top  + 'px';
-  });
-
-  el.addEventListener('mouseleave', () => {
-    if (window.innerWidth <= 768) return; // SKIP HOVER ON MOBILE
-    tooltip.classList.remove('visible');
-    if (el !== activePath) {
-      el.setAttribute('stroke', 'rgba(5,13,11,0.85)');
-      el.setAttribute('stroke-width', '1');
-      el.style.filter = '';
-      if (!activePath) {
-        document.querySelectorAll('#caldas-map path,#caldas-map polygon').forEach(p => {
-          gsap.killTweensOf(p, 'opacity');
-          gsap.to(p, { opacity: 1, duration: 0.15 });
-        });
-        // Si no hay municipio bloqueado, limpiar el preview del sidebar
-        mapClearDetail(detailPanel);
-      } else {
-        gsap.to(el, { opacity: 0.35, duration: 0.15 });
-      }
-    }
-  });
-
-  const handleClick = (e) => {
-    if (e && e.cancelable) e.preventDefault(); // Evitar doble disparo si es touch
-    const allPaths = document.querySelectorAll('#caldas-map path,#caldas-map polygon');
-    const { px, py } = getMapPos();
-    mapCreatePulse(px, py, container);
-    if (activePath === el) {
-      activePath = null;
-      el.setAttribute('stroke', 'rgba(5,13,11,0.85)');
-      el.setAttribute('stroke-width', '1');
-      el.style.filter = '';
-      allPaths.forEach(p => gsap.to(p, { opacity: 1, duration: 0.3 }));
-      mapClearDetail(detailPanel);
-    } else {
-      if (activePath) {
-        activePath.setAttribute('stroke', 'rgba(5,13,11,0.85)');
-        activePath.setAttribute('stroke-width', '1');
-        activePath.style.filter = '';
-      }
-      activePath = el;
-      el.setAttribute('stroke', '#E8621A');
-      el.setAttribute('stroke-width', '2.5');
-      el.style.filter = 'brightness(1.25) drop-shadow(0 0 14px rgba(232,98,26,.65))';
-      allPaths.forEach(p => gsap.to(p, { opacity: p === el ? 1 : 0.35, duration: 0.3 }));
-      mapShowDetail(name, detailPanel, /*locked=*/true);
-    }
-  };
-
-  el.addEventListener('click', handleClick);
-  
-  // Soporte robusto para táctil: registrar el inicio del toque
-  let touchStartX = 0;
-  let touchStartY = 0;
-  el.addEventListener('touchstart', (e) => {
-    if (e.touches.length > 0) {
-      touchStartX = e.touches[0].clientX;
-      touchStartY = e.touches[0].clientY;
-    }
-  }, { passive: true });
-
-  // Si levanta el dedo cerca de donde lo puso (es un tap, no un scroll), disparamos
-  el.addEventListener('touchend', (e) => {
-    if (e.changedTouches.length > 0) {
-      const dx = Math.abs(e.changedTouches[0].clientX - touchStartX);
-      const dy = Math.abs(e.changedTouches[0].clientY - touchStartY);
-      if (dx < 10 && dy < 10) {
-        handleClick(e);
-      }
-    }
-  }, { passive: false });
-}
-
-function mapShowDetail(name, detailPanel, locked) {
-  if (!detailPanel) return;
-  const data = MAP_MUN_DATA[name] || { hover: name, click: name + ', municipio de Caldas.', img: 'images/1_map.jpeg' };
-
-  // Si ya está mostrando el mismo municipio en el mismo modo, no resetear
-  if (detailPanel.dataset.currentMun === name && (detailPanel.classList.contains('is-locked') === !!locked)) {
-    return;
-  }
-
-  // Reset clase para reiniciar la transición de aparición
-  detailPanel.classList.remove('is-active', 'is-locked');
-  detailPanel.innerHTML = `
-    <img src="${data.img}" alt="${name}" class="mapa-selected-img" loading="lazy"/>
-    <h3 class="mapa-selected-name">${name}</h3>
-    <p class="mapa-selected-desc">${data.click}</p>
-  `;
-  detailPanel.dataset.currentMun = name;
-  // Forzar reflow y activar
-  void detailPanel.offsetWidth;
-  detailPanel.classList.add('is-active');
-  if (locked) detailPanel.classList.add('is-locked');
-}
-
-function mapClearDetail(detailPanel) {
-  if (!detailPanel) return;
-  detailPanel.classList.remove('is-active', 'is-locked');
-  detailPanel.dataset.currentMun = '';
-  setTimeout(() => {
-    if (!detailPanel.classList.contains('is-active')) {
-      detailPanel.innerHTML = `<div class="mapa-selected-hint">Pasa el cursor sobre<br>un municipio<br><span style="color:var(--orange);font-size:.7rem;letter-spacing:.15em;display:block;margin-top:.6rem">— o haz clic para ver más —</span></div>`;
-    }
-  }, 350);
-}
-
-async function mapLoad(section) {
-  const svgEl     = section.querySelector('#caldas-map');
-  const tooltip   = section.querySelector('#map-tooltip');
-  const detailPanel = section.querySelector('#mapa-selected');
-  const container = section.querySelector('.mapa-svg-container');
-  if (!svgEl || !container) return;
-
-  // Hacer que el panel se pueda cerrar al hacer click en él (en cualquier resolución)
-  detailPanel.addEventListener('click', () => {
-    if (detailPanel.classList.contains('is-active')) {
-      const activeElement = document.querySelector('#caldas-map path[stroke="#E8621A"], #caldas-map polygon[stroke="#E8621A"]');
-      if (activeElement) activeElement.dispatchEvent(new Event('click'));
-    }
-  });
-
-  mapInitParticles(container);
-  mapInitMouseGlow(container);
-
-  // Animate header in
-  const headerEls = [...section.querySelectorAll('.map-label,.map-title,.map-desc-top')];
-  gsap.fromTo(headerEls,
-    { y: 30, opacity: 0 },
-    { y: 0, opacity: 1, stagger: 0.15, duration: 0.85, ease: 'power3.out', delay: 0.3 });
-
-  gsap.fromTo(container,
-    { opacity: 0, y: 20 },
-    { opacity: 1, y: 0, duration: 1.0, ease: 'power3.out', delay: 0.6 });
-
-  const URLS = [
-    'https://cdn.jsdelivr.net/gh/finiterank/mapa-colombia-js@master/colombia-municipios.json',
-    'https://cdn.jsdelivr.net/gh/juanchiem/agro_data@master/geodata/colombia_municipios.json',
-  ];
-  let topo = null;
-  for (const url of URLS) {
-    try {
-      const r = await fetch(url, { signal: AbortSignal.timeout(8000) });
-      if (r.ok) { topo = await r.json(); if (topo && (topo.arcs || topo.features)) break; }
-    } catch(e) { continue; }
-  }
-  if (!topo) { mapRenderFallback(svgEl, container, tooltip, detailPanel, section); return; }
-
-  let features;
-  if (topo.type === 'Topology' && topo.objects) {
-    const key = Object.keys(topo.objects)[0];
-    features = topojson.feature(topo, topo.objects[key]).features;
-  } else if (topo.features) { features = topo.features; }
-  else { mapRenderFallback(svgEl, container, tooltip, detailPanel, section); return; }
-
-  const caldas = features.filter(f => {
-    const id = String(f.id || f.properties?.MPIO_CDPMP || f.properties?.DPTO || '');
-    return id.startsWith('17') && id.length >= 4;
-  });
-  if (caldas.length < 10) { mapRenderFallback(svgEl, container, tooltip, detailPanel, section); return; }
-
-  const W = 860, H = 520;
-  svgEl.setAttribute('viewBox', `0 0 ${W} ${H}`);
-  const proj    = d3.geoMercator().fitExtent([[14,14],[W-14,H-14]], { type:'FeatureCollection', features:caldas });
-  const pathGen = d3.geoPath().projection(proj);
-  const elements = [];
-
-  caldas.forEach(feat => {
-    const code = parseInt(String(feat.id || feat.properties?.MPIO_CDPMP || 0));
-    const name = MAP_MUN_NAME[code] || feat.properties?.MPIO_CNMBR || `Mun ${code}`;
-    mapAllMuns.push({ name });
-    const el = document.createElementNS('http://www.w3.org/2000/svg', 'path');
-    el.setAttribute('d', pathGen(feat));
-    el.setAttribute('fill', mapBaseColor());
-    el.setAttribute('stroke', 'rgba(5,13,11,0.85)');
-    el.setAttribute('stroke-width', '1');
-    const c = pathGen.centroid(feat);
-    mapAttachEvents(el, name, c[0]||W/2, c[1]||H/2, svgEl, container, tooltip, detailPanel);
-    svgEl.appendChild(el);
-    elements.push(el);
-  });
-
-  const loading = section.querySelector('#map-loading');
-  if (loading) loading.style.display = 'none';
-
-  svgEl.addEventListener('mouseleave', () => {
-    if (!activePath) {
-      document.querySelectorAll('#caldas-map path,#caldas-map polygon').forEach(p => {
-        gsap.killTweensOf(p, 'opacity');
-        gsap.to(p, { opacity: 1, duration: 0.15 });
-      });
-    }
-  });
-
-  mapSvgElements  = elements;
-  mapSvgContainer = container;
-  mapDoRadarSweep(elements, container);
-}
-
-function mapRenderFallback(svgEl, container, tooltip, detailPanel, section) {
-  svgEl.setAttribute('viewBox', '0 0 860 520');
-  const MUNS = [
-    {c:17614,p:'16,175 112,158 124,195 120,272 82,298 46,296 20,272 16,224',   cx:68, cy:228},
-    {c:17777,p:'82,275 120,270 130,288 122,322 90,328 74,308 78,280',           cx:102,cy:299},
-    {c:17442,p:'78,325 122,320 125,348 94,354 74,340',                          cx:100,cy:337},
-    {c:17272,p:'116,160 168,150 182,184 164,224 128,230 112,202 120,182',       cx:148,cy:190},
-    {c:17042,p:'158,124 240,116 256,152 250,230 214,242 178,232 164,184 154,150',cx:207,cy:178},
-    {c:17088,p:'218,236 250,228 270,258 266,328 230,336 216,310 216,260',       cx:243,cy:283},
-    {c:17616,p:'156,320 216,312 222,350 214,398 168,406 148,376 150,340',       cx:185,cy:363},
-    {c:17877,p:'150,402 220,394 226,430 218,464 164,470 144,440 146,412',       cx:185,cy:433},
-    {c:17524,p:'260,316 340,308 350,358 340,396 300,404 260,392 256,352',       cx:303,cy:358},
-    {c:17174,p:'218,398 312,390 320,430 310,466 254,472 218,444',               cx:270,cy:433},
-    {c:17001,p:'335,280 425,272 434,314 427,386 387,400 350,387 345,345 334,300',cx:385,cy:337},
-    {c:17873,p:'390,393 428,386 441,420 432,494 390,500 373,469 376,415',       cx:407,cy:443},
-    {c:17486,p:'332,242 420,234 428,270 420,294 382,303 334,288 332,260',       cx:380,cy:267},
-    {c:17050,p:'366,192 446,184 456,220 448,244 410,254 368,244 365,211',       cx:410,cy:219},
-    {c:17653,p:'336,152 416,144 426,180 418,207 380,217 338,210 336,170',       cx:381,cy:180},
-    {c:17388,p:'414,141 488,133 496,168 489,197 454,204 416,198 416,167',       cx:453,cy:168},
-    {c:17513,p:'330,103 410,95 420,132 410,152 370,160 332,150 330,120',        cx:371,cy:128},
-    {c:17446,p:'488,101 566,94 576,140 568,189 530,199 492,190 489,130',        cx:530,cy:145},
-    {c:17013,p:'167,58 396,50 416,90 408,108 344,120 278,127 205,120 168,90',   cx:282,cy:88},
-    {c:17433,p:'460,196 534,189 541,226 534,269 497,276 462,262 460,217',       cx:500,cy:232},
-    {c:17665,p:'458,271 533,264 540,302 530,346 494,353 458,340 457,291',       cx:497,cy:308},
-    {c:17444,p:'530,264 606,257 614,297 607,349 568,359 533,344 530,280',       cx:570,cy:308},
-    {c:17541,p:'537,182 617,175 624,216 614,260 577,267 540,250 538,200',       cx:577,cy:220},
-    {c:17662,p:'614,114 750,106 754,233 747,310 703,319 645,312 616,269 614,114',cx:683,cy:213},
-    {c:17867,p:'607,340 647,334 657,376 646,420 601,426 579,409 578,362 605,344',cx:618,cy:383},
-    {c:17495,p:'644,377 714,370 720,416 711,459 664,466 643,436 643,395',       cx:679,cy:418},
-    {c:17380,p:'716,360 850,350 854,510 716,512 698,480 703,438 716,376',       cx:779,cy:433},
-  ];
-  const elements = [];
-  MUNS.forEach(m => {
-    const name = MAP_MUN_NAME[m.c] || '?';
-    mapAllMuns.push({ name });
-    const el = document.createElementNS('http://www.w3.org/2000/svg', 'polygon');
-    el.setAttribute('points', m.p);
-    el.setAttribute('fill', mapBaseColor());
-    el.setAttribute('stroke', 'rgba(5,13,11,0.85)');
-    el.setAttribute('stroke-width', '1.5');
-    mapAttachEvents(el, name, m.cx, m.cy, svgEl, container, tooltip, detailPanel);
-    svgEl.appendChild(el);
-    elements.push(el);
-  });
-  const loading = section.querySelector('#map-loading');
-  if (loading) loading.style.display = 'none';
-
-  svgEl.addEventListener('mouseleave', () => {
-    if (!activePath) {
-      document.querySelectorAll('#caldas-map path,#caldas-map polygon').forEach(p => {
-        gsap.killTweensOf(p, 'opacity');
-        gsap.to(p, { opacity: 1, duration: 0.15 });
-      });
-    }
-  });
-
-  mapSvgElements  = elements;
-  mapSvgContainer = container;
-  mapDoRadarSweep(elements, container);
-}
-
-function mapPlayEntrance(section) {
-  const headerEls = [...section.querySelectorAll('.map-label,.map-title,.map-desc-top')];
-  const container = mapSvgContainer || section.querySelector('.mapa-svg-container');
-  gsap.killTweensOf(headerEls);
-  gsap.killTweensOf(container);
-  gsap.fromTo(headerEls,
-    { y: 30, opacity: 0 },
-    { y: 0, opacity: 1, stagger: 0.15, duration: 0.85, ease: 'power3.out', delay: 0.3 });
-  gsap.fromTo(container,
-    { opacity: 0, y: 20 },
-    { opacity: 1, y: 0, duration: 1.0, ease: 'power3.out', delay: 0.6 });
-  mapDoRadarSweep(mapSvgElements, container);
-}
-
-function setupMapAnimation(section, tl) {
-  tl.fromTo(section, { opacity: 0 }, { opacity: 1, duration: 0.6, ease: 'power2.out' });
 }
 
 // ── GALLERY ANIMATION ─────────────────────────────────────────
@@ -718,22 +281,6 @@ function setupGalleryAnimation(section, tl) {
       { y: 0, opacity: 1, duration: 0.65, ease: 'power2.out' }, 0.65);
 }
 
-// ── TEXT CORRECTIONS ───────────────────────────────────────
-function initTextCorrections() {
-  const wanted = '¿Quien es Manuel Correa?';
-  document.querySelectorAll('.section-heading, h1, h2').forEach(el => {
-    const normalized = (el.textContent || '')
-      .replace(/\s+/g, ' ')
-      .trim()
-      .toLowerCase();
-
-    if (/qu[ií]e?n\s+es\s+manuel\s+correa\??/.test(normalized) ||
-        /manuel\s+correa/.test(normalized) && /qu[ií]e?n/.test(normalized)) {
-      el.textContent = wanted;
-      el.dataset.wrapped = 'false';
-    }
-  });
-}
 
 // ── SECTION ANIMATION SYSTEM ─────────────────────────────────
 function positionSection(section) {
@@ -798,9 +345,7 @@ function setupSectionAnimation(section) {
 
   const tl = gsap.timeline({ paused: true });
 
-  if (type === 'map-reveal') {
-    setupMapAnimation(section, tl);
-  } else if (type === 'gallery-reveal' || type === 'zoom-parallax' || type === 'oryzo-carousel') {
+  if (type === 'gallery-reveal' || type === 'zoom-parallax' || type === 'oryzo-carousel') {
     return;
   } else if (type === 'stagger-cards') {
     // Agenda Legislativa: header first, then cards en cascada cinematográfica
@@ -942,14 +487,6 @@ function setupSectionAnimation(section) {
       if (shouldShow && !visible) {
         visible = true;
         tl.play();
-        if (type === 'map-reveal') {
-          if (!mapDataReady) {
-            mapDataReady = true;
-            mapLoad(section);
-          } else if (mapSvgElements.length) {
-            mapPlayEntrance(section);
-          }
-        }
       } else if (!shouldShow && visible) {
         visible = false;
         if (tl.progress() > 0) tl.reverse();
@@ -958,14 +495,6 @@ function setupSectionAnimation(section) {
   });
 }
 
-// ── FONDO DIFUMINADO (post-galería) ───────────────────────────
-function initBgPhotoOverlay() {
-  const el = document.getElementById('bg-photo');
-  if (!el) return;
-  // Desactivado: dejamos solo los frames del video de fondo en toda la página
-  el.style.opacity = '0';
-  el.style.display = 'none';
-}
 
 // ── CUSTOM CURSOR ─────────────────────────────────────────────
 function initCustomCursor() {
@@ -1036,25 +565,6 @@ function initHeroFade() {
   });
 }
 
-// ── MAP TOOLTIP ────────────────────────────────────────────────
-function initMapTooltip() {
-  const tooltip = document.getElementById('map-tooltip');
-  if (!tooltip) return;
-
-  document.querySelectorAll('.municipality[data-name]').forEach(dot => {
-    dot.addEventListener('mouseenter', (e) => {
-      tooltip.textContent = e.target.dataset.name;
-      tooltip.style.opacity = '1';
-    });
-    dot.addEventListener('mousemove', (e) => {
-      tooltip.style.left = (e.clientX + 14) + 'px';
-      tooltip.style.top  = (e.clientY - 28) + 'px';
-    });
-    dot.addEventListener('mouseleave', () => {
-      tooltip.style.opacity = '0';
-    });
-  });
-}
 
 function initAgendaCards() {
   const cards = [...document.querySelectorAll('.agenda-card')];
@@ -1518,15 +1028,8 @@ function initHeader() {
         const target = document.getElementById(id) || document.querySelector(`[name="${id}"]`);
         if (!target) return;
 
-        // Handle special case: sections that require assets (map) to be ready.
         (async () => {
           try {
-            if (target.dataset.animation === 'map-reveal' && !mapDataReady && typeof mapLoad === 'function') {
-              await mapLoad(target);
-            } else if (target.dataset.animation === 'map-reveal' && mapSvgElements && mapSvgElements.length) {
-              mapPlayEntrance(target);
-            }
-
             // Recalculate layout and section positions after any potential DOM changes.
             // Run positionSection for all sections and refresh ScrollTrigger so
             // subsequent calculations match the real layout. Then wait a frame
@@ -1594,9 +1097,10 @@ function initHeader() {
   }
 }
 
-// ── LOADER (video colibrí — ~3s o reproducción completa) ──────
-// Muestrea el color de borde del video y lo aplica al fondo del loader
-// para que el video se integre sin caja visible.
+// ── LOADER ────────────────────────────────────────────────────
+// Soporta opcionalmente un video de marca (.loader-video): muestrea
+// el color de borde y lo aplica al fondo para integrarlo sin caja.
+// Si no hay video (caso por defecto), muestra el spinner CSS.
 function sampleVideoBgColor(video) {
   try {
     const c = document.createElement('canvas');
@@ -1807,17 +1311,6 @@ function initLenis() {
   window.addEventListener('scroll', () => ScrollTrigger.update(), { passive: true });
   window.lenis = lenis;
 
-  // Activate solid background overlay from #caldas onward to hide canvas frames
-  const solidBg = document.getElementById('solid-bg');
-  if (solidBg) {
-    ScrollTrigger.create({
-      trigger: '#caldas',
-      start: 'top top',
-      onEnter: () => solidBg.classList.add('is-active'),
-      onLeaveBack: () => solidBg.classList.remove('is-active')
-    });
-  }
-
   return lenis;
 }
 
@@ -1830,12 +1323,12 @@ function initContactForm() {
   form.addEventListener('submit', (e) => {
     e.preventDefault();
 
-    const nombre    = (document.getElementById('contact-nombre')   || {}).value || '';
-    const municipio = (document.getElementById('contact-municipio')|| {}).value || '';
-    const numero    = (document.getElementById('contact-numero')   || {}).value || '';
-    const mensaje   = (document.getElementById('contact-mensaje')  || {}).value || '';
+    const nombre  = (document.getElementById('contact-nombre')  || {}).value || '';
+    const asunto  = (document.getElementById('contact-asunto')  || {}).value || '';
+    const email   = (document.getElementById('contact-email')   || {}).value || '';
+    const mensaje = (document.getElementById('contact-mensaje') || {}).value || '';
 
-    if (!nombre.trim() || !municipio.trim() || !numero.trim() || !mensaje.trim()) return;
+    if (!nombre.trim() || !asunto.trim() || !email.trim() || !mensaje.trim()) return;
 
     // TODO: integrar el envío real (email, formspree, supabase, etc.)
     // De momento solo confirmamos al usuario que recibimos su mensaje.
@@ -1866,25 +1359,8 @@ async function init() {
   const sections = document.querySelectorAll('.scroll-section');
   sections.forEach(positionSection);
 
-  // Fake loader runs for ~1.5s; real frames load in parallel
+  // Loader de entrada (~1.5s) con cortina cinematográfica
   const loaderDone = runFakeLoader().then(slideOutLoader);
-
-  detectFrames().then(async (found) => {
-    if (!found) { drawGenerativeFrame(0, 200); return; }
-    const frameCounts = [300, 250, 240, 200, 180, 150, 120, 100, 80, 50];
-    let detected = 1;
-    for (const count of frameCounts) {
-      const exists = await new Promise(resolve => {
-        const img = new Image();
-        img.onload  = () => resolve(true);
-        img.onerror = () => resolve(false);
-        img.src = buildFrameUrl(count - 1);
-      });
-      if (exists) { detected = count; break; }
-    }
-    totalFrames = detected;
-    preloadFrames(totalFrames);
-  });
 
   await loaderDone;
   initHeroEntrance();
@@ -1893,10 +1369,9 @@ async function init() {
   initLenis();
   window.lenis.scrollTo(0, { immediate: true });
   initFrameScroll();
-  initBgPhotoOverlay();
+  initBgSwitcher();
   initHeroFade();
   initHeroBg();
-  initTextCorrections();
   sections.forEach(setupSectionAnimation);
   initAgendaCards();
   initZoomParallax();
@@ -1905,10 +1380,7 @@ async function init() {
   initContactForm();
   initFooter();
 
-  requestAnimationFrame(() => {
-    if (hasFrames && frames[0]) drawFrame(0);
-    else drawGenerativeFrame(0, 200);
-  });
+  requestAnimationFrame(() => renderBackground(0, VIRTUAL_FRAMES));
 }
 
 // DOM ready
